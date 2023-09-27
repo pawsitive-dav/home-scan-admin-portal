@@ -29,7 +29,7 @@ export default {
   modules: ['@nuxtjs/axios'],
 
   axios: {
-    baseURL: '/',
+    baseURL: 'http://localhost:8080/',
   },
 
   vuetify: {
@@ -38,13 +38,13 @@ export default {
       dark: false,
       themes: {
         light: {
-          primary: colors.blue.darken2,
+          primary: '#265b7f',
           accent: colors.grey.darken3,
           secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3,
+          info: '#4ca8f8',
+          warning: '#e09438',
+          error: '#ed7665',
+          success: '#31a969',
         },
       },
     },
