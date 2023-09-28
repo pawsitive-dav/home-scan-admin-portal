@@ -39,7 +39,7 @@
             Welcome to Admin Portal
           </div>
           <v-form ref="formLogin" v-model="valid" lazy-validation>
-            <label for="username">Username</label>
+            <cp-label>Username</cp-label>
             <v-text-field
               v-model="username"
               :rules="usernameRules"
@@ -49,7 +49,7 @@
               dense
               required
             />
-            <label for="password">Password</label>
+            <cp-label for="password">Password</cp-label>
             <v-text-field
               v-model="password"
               :rules="passwordRules"
@@ -133,35 +133,40 @@ export default {
         this.onLogin()
       }
     },
-    onLogin() {
+    async onLogin() {
       this.onLoading = true
 
-      // Test Error
-      setTimeout(() => {
-        this.snackbarControl.value = true
+      try {
+        const response = await this.$axios.post('/api/v1/auth/login/portal', {
+          username: this.username,
+          password: this.password,
+        })
+        console.log(response)
         this.onLoading = false
-      }, 1000)
-      setTimeout(() => {
-        this.snackbarControl.value = false
-      }, 3000)
-
-      // Test Wait for approve
-      // setTimeout(() => {
-      //   this.$router.push('wait-for-approve')
-      // }, 1000)
+      } catch (error) {
+        const errorData = error.response.data
+        if (errorData.statusCode === 401) {
+          this.$router.push('wait-for-approve')
+        } else {
+          this.snackbarControl.value = true
+          this.onLoading = false
+        }
+      }
     },
   },
 }
 </script>
 
 <style scoped>
+body {
+  background-color: var(--deep-blue-opacity-1);
+}
 .bg-auth {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--deep-blue-opacity-1);
 }
 .bg-auth-container {
   position: absolute;

@@ -201,12 +201,6 @@ body {
   box-shadow: var(--box-shadow-xl);
 }
 
-label {
-  font-weight: 500;
-  font-size: var(--font-size-caption);
-  color: var(--gray-600);
-}
-
 .cp-text-uppercase {
   text-transform: uppercase;
 }

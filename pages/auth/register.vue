@@ -8,14 +8,14 @@
       <div class="bg-auth-card">
         <div class="bg-auth-card-body">
           <div class="text-center cp-title cp-medium">Sign Up</div>
-          <div class="text-center cp-text-description mb-4 mt-2">
+          <div class="text-center cp-text-description mb-2 mt-2">
             Please fill in all the required information.
           </div>
           <v-tabs-items v-model="tab">
             <v-tab-item value="tab-1">
               <cp-divider text="Account" />
               <v-form ref="formLogin" v-model="valid" lazy-validation>
-                <label for="username"> Username </label>
+                <cp-label for="username"> Username </cp-label>
                 <v-text-field
                   v-model="username"
                   :rules="usernameRules"
@@ -31,12 +31,12 @@
                     <v-icon v-if="usernameIs === 'Available'" color="success">
                       mdi-check-circle-outline
                     </v-icon>
-                    <v-icon v-else color="error"
-                      >mdi-close-circle-outline</v-icon
-                    >
+                    <v-icon v-else color="error">
+                      mdi-close-circle-outline
+                    </v-icon>
                   </template>
                 </v-text-field>
-                <label for="password">Password</label>
+                <cp-label for="password">Password</cp-label>
                 <v-text-field
                   v-model="password"
                   :rules="passwordRules"
@@ -51,7 +51,7 @@
                   required
                   @click:append="showPassword = !showPassword"
                 />
-                <label for="password">Confirm Password</label>
+                <cp-label for="password">Confirm Password</cp-label>
                 <v-text-field
                   v-model="confirmPassword"
                   :rules="confirmPasswordRules"
@@ -71,30 +71,79 @@
                 />
               </v-form>
             </v-tab-item>
-
             <v-tab-item value="tab-2">
               <cp-divider text="Information" />
-              <v-form ref="formLogin" v-model="valid" lazy-validation>
-                <label for="first-name"> First Name </label>
+              <div v-if="!infoLoading">
+                <div v-if="!avatarSelect" class="avatar-upload">
+                  <div @click="onUploadAvatar()"></div>
+                </div>
+                <div v-else class="preview-avatar" @click="onUploadAvatar()">
+                  <v-img :src="avatarSelect" />
+                  <div class="overlay">
+                    <v-icon size="45" color="white" class="icon-cached">
+                      mdi-cached
+                    </v-icon>
+                  </div>
+                </div>
+              </div>
+              <div
+                v-else-if="infoLoading && avatarSelect"
+                class="preview-avatar-loading"
+              >
+                <v-img :src="avatarSelect" />
+              </div>
+              <div v-else>
+                <div class="avatar-upload-loading">
+                  <div></div>
+                </div>
+              </div>
+              <v-form ref="formInformation" v-model="validInfo" lazy-validation>
+                <cp-label for="first-name"> First Name </cp-label>
                 <v-text-field
                   v-model="firstName"
                   name="first-name"
+                  :rules="validationEngThai"
+                  :disabled="infoLoading"
+                  counter="60"
+                  maxlength="60"
                   outlined
                   dense
                   required
                 />
-                <label for="last-name"> Last Name </label>
+                <cp-label for="last-name"> Last Name </cp-label>
                 <v-text-field
                   v-model="lastName"
                   name="last-name"
+                  :rules="validationEngThai"
+                  :disabled="infoLoading"
+                  counter="60"
+                  maxlength="60"
                   outlined
                   dense
                   required
                 />
-                <label for="last-name"> Code Name </label>
+                <cp-label for="last-name">
+                  Code Name
+                  <v-tooltip top max-width="260">
+                    <template #activator="{ on, attrs }">
+                      <v-icon v-bind="attrs" size="18" v-on="on">
+                        mdi-information-slab-circle-outline
+                      </v-icon>
+                    </template>
+                    <span>
+                      <b>"Code Name"</b> is the name used for reference in your
+                      team. You can use your nickname as your Code Name. Please
+                      enter it in English only.
+                    </span>
+                  </v-tooltip>
+                </cp-label>
                 <v-text-field
-                  v-model="lastName"
+                  v-model="codeName"
                   name="last-name"
+                  :rules="validationEngThai"
+                  :disabled="infoLoading"
+                  counter="40"
+                  maxlength="40"
                   outlined
                   dense
                   required
@@ -117,10 +166,21 @@
               <div class="cp-text-capitalize">Next</div>
             </v-btn>
             <div v-else class="button-group">
-              <v-btn elevation="0" height="42" @click="tab = 'tab-1'">
+              <v-btn
+                :disabled="infoLoading"
+                elevation="0"
+                height="42"
+                @click="tab = 'tab-1'"
+              >
                 <div class="cp-text-capitalize">Back</div>
               </v-btn>
-              <v-btn color="primary" elevation="0" height="42">
+              <v-btn
+                :loading="infoLoading"
+                color="primary"
+                elevation="0"
+                height="42"
+                @click="validateInfo()"
+              >
                 <div class="cp-text-capitalize">Sign Up</div>
               </v-btn>
             </div>
@@ -185,9 +245,20 @@ export default {
       confirmPasswordRules: [(v) => !!v || 'Required'],
       showConfirmPassword: false,
       confirmPasswordError: '',
+      // Information
+      validInfo: false,
+      infoLoading: false,
+      avatarSelect: null,
       firstName: '',
       lastName: '',
       codeName: '',
+      validationEngThai: [
+        (v) => !!v || 'Required',
+        (v) =>
+          (!(/[a-zA-Z]/.test(v) && /[ก-ฮ]/.test(v)) &&
+            /^(?!.*[๐๑๒๓๔๕๖๗๘๙฿ๆฯ])[a-zA-Z\u0E01-\u0E5B]+$/.test(v)) ||
+          'Only English and Thai letters are allowed',
+      ],
     }
   },
   watch: {
@@ -264,16 +335,48 @@ export default {
     delay(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms))
     },
+    onUploadAvatar() {
+      const fileInput = document.createElement('input')
+      fileInput.type = 'file'
+      fileInput.accept = 'image/jpeg, image/jpg'
+      fileInput.style.display = 'none'
+      fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0]
+        if (file) {
+          const reader = new FileReader()
+          reader.onload = () => {
+            this.avatarSelect = reader.result
+          }
+          reader.readAsDataURL(file)
+        }
+      })
+      document.body.appendChild(fileInput)
+      fileInput.click()
+      fileInput.addEventListener('change', () => {
+        document.body.removeChild(fileInput)
+      })
+    },
+    validateInfo() {
+      if (this.$refs.formInformation.validate()) {
+        console.log(this.avatarSelect)
+        console.log(this.firstName)
+        console.log(this.lastName)
+        console.log(this.codeName)
+        this.infoLoading = true
+      }
+    },
   },
 }
 </script>
 
 <style scoped>
+body {
+  background-color: var(--deep-blue-opacity-1);
+}
 .bg-auth {
   position: relative;
   width: 100%;
   height: 100vh;
-  background-color: var(--deep-blue-opacity-1);
 }
 .bg-auth-container {
   position: absolute;
@@ -296,5 +399,93 @@ export default {
 .button-group {
   display: flex;
   justify-content: space-between;
+}
+.avatar-upload {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 150px;
+}
+.avatar-upload div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 75px;
+  cursor: pointer;
+  border: 1px dashed var(--gray-600);
+  background-color: var(--gray-opacity-1);
+  background-image: url('~/assets/user.svg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-size: 80px 80px;
+  transition: all ease 0.1s;
+}
+.avatar-upload-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 150px;
+}
+.avatar-upload-loading div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 75px;
+  background-color: var(--gray-opacity-1);
+  background-image: url('~/assets/user.svg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-size: 80px 80px;
+}
+.avatar-upload div:hover {
+  background-image: url('~/assets/upload.svg');
+  background-size: 40px 40px;
+}
+.preview-avatar {
+  position: relative;
+  overflow: hidden;
+  width: 150px;
+  height: 150px;
+  border-radius: 75px;
+  cursor: pointer;
+  border: 1px dashed var(--gray-600);
+  margin: auto;
+}
+.preview-avatar-loading {
+  overflow: hidden;
+  width: 150px;
+  height: 150px;
+  border-radius: 75px;
+  margin: auto;
+}
+.preview-avatar .overlay {
+  position: absolute;
+  top: 0;
+  width: 150px;
+  height: 150px;
+  z-index: 10;
+  transition: all ease 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.preview-avatar .overlay:hover {
+  background-color: #ffffff4f;
+}
+
+.preview-avatar .icon-cached {
+  opacity: 0;
+}
+
+.preview-avatar:hover .icon-cached {
+  opacity: 0.7;
 }
 </style>
