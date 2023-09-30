@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <page-loading />
+    <!-- <page-loading /> -->
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"

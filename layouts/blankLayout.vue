@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <!-- <page-loading /> -->
+    <page-loading />
     <v-main>
       <Nuxt />
     </v-main>

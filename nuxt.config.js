@@ -26,11 +26,7 @@ export default {
 
   buildModules: ['@nuxtjs/eslint-module', '@nuxtjs/vuetify'],
 
-  modules: ['@nuxtjs/axios'],
-
-  axios: {
-    baseURL: 'http://localhost:8080/',
-  },
+  modules: ['@nuxtjs/axios', '@nuxtjs/dotenv'],
 
   vuetify: {
     customVariables: ['~/assets/variables.scss'],

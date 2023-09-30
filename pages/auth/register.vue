@@ -5,11 +5,23 @@
       <div class="graphic-box-2"></div>
       <div class="graphic-box-3"></div>
       <div class="graphic-box-4"></div>
+      <v-snackbar
+        v-model="snackbarControl.value"
+        :timeout="5000"
+        color="error"
+        top
+      >
+        <span class="cp-medium">
+          {{ snackbarControl.message }}
+        </span>
+      </v-snackbar>
       <div class="bg-auth-card">
         <div class="bg-auth-card-body">
-          <div class="text-center cp-title cp-medium">Sign Up</div>
-          <div class="text-center cp-text-description mb-2 mt-2">
-            Please fill in all the required information.
+          <div v-if="tab !== 'tab-3'">
+            <div class="text-center cp-title cp-medium">Sign Up</div>
+            <div class="text-center cp-text-description mb-2 mt-2">
+              Please fill in all the required information.
+            </div>
           </div>
           <v-tabs-items v-model="tab">
             <v-tab-item value="tab-1">
@@ -73,30 +85,6 @@
             </v-tab-item>
             <v-tab-item value="tab-2">
               <cp-divider text="Information" />
-              <div v-if="!infoLoading">
-                <div v-if="!avatarSelect" class="avatar-upload">
-                  <div @click="onUploadAvatar()"></div>
-                </div>
-                <div v-else class="preview-avatar" @click="onUploadAvatar()">
-                  <v-img :src="avatarSelect" />
-                  <div class="overlay">
-                    <v-icon size="45" color="white" class="icon-cached">
-                      mdi-cached
-                    </v-icon>
-                  </div>
-                </div>
-              </div>
-              <div
-                v-else-if="infoLoading && avatarSelect"
-                class="preview-avatar-loading"
-              >
-                <v-img :src="avatarSelect" />
-              </div>
-              <div v-else>
-                <div class="avatar-upload-loading">
-                  <div></div>
-                </div>
-              </div>
               <v-form ref="formInformation" v-model="validInfo" lazy-validation>
                 <cp-label for="first-name"> First Name </cp-label>
                 <v-text-field
@@ -150,6 +138,16 @@
                 />
               </v-form>
             </v-tab-item>
+            <v-tab-item value="tab-3" class="text-center">
+              <v-icon color="success" size="60">mdi-check</v-icon>
+              <div class="cp-header-1 cp-semibold mb-4">
+                Regsiter Successfully
+              </div>
+              <div class="cp-text-description">
+                Your account is awaiting approval from the project owner. Please
+                wait a little longer.
+              </div>
+            </v-tab-item>
           </v-tabs-items>
 
           <div class="mt-4">
@@ -165,7 +163,7 @@
             >
               <div class="cp-text-capitalize">Next</div>
             </v-btn>
-            <div v-else class="button-group">
+            <div v-else-if="tab === 'tab-2'" class="button-group">
               <v-btn
                 :disabled="infoLoading"
                 elevation="0"
@@ -187,22 +185,16 @@
           </div>
         </div>
 
-        <div v-if="tab === 'tab-1'" class="bg-auth-card-footer pt-5">
+        <div v-if="tab !== 'tab-2'" class="bg-auth-card-footer pt-5">
           <div class="text-center">
-            <span class="mr-2">Already have an account?</span>
-            <a v-if="!onLoading" @click="$router.push('login')">
-              Sign in instead
-            </a>
-            <span
-              v-else
-              style="
-                color: var(--base-primary);
-                cursor: default;
-                font-weight: 500;
-              "
-            >
-              Sign in instead
+            <span v-if="tab !== 'tab-3'" class="mr-2">
+              Already have an account?
             </span>
+            <a v-if="!onLoading" @click="$router.push('login')">
+              <span v-if="tab !== 'tab-3'">Sign in instead</span>
+              <span v-else>Back to sign in</span>
+            </a>
+            <span v-else class="alternate-signin-text"> Sign in instead </span>
           </div>
           <cp-divider text="or" />
           <div class="cp-caption text-center cp-text-description">
@@ -218,7 +210,6 @@
 <script>
 export default {
   name: 'LoginPage',
-  layout: 'blankLayout',
   data() {
     return {
       tab: 'tab-1',
@@ -248,7 +239,6 @@ export default {
       // Information
       validInfo: false,
       infoLoading: false,
-      avatarSelect: null,
       firstName: '',
       lastName: '',
       codeName: '',
@@ -259,6 +249,11 @@ export default {
             /^(?!.*[๐๑๒๓๔๕๖๗๘๙฿ๆฯ])[a-zA-Z\u0E01-\u0E5B]+$/.test(v)) ||
           'Only English and Thai letters are allowed',
       ],
+      // Snackbar
+      snackbarControl: {
+        value: false,
+        message: '',
+      },
     }
   },
   watch: {
@@ -285,11 +280,10 @@ export default {
   },
   methods: {
     validate() {
-      this.tab = 'tab-2'
-      //   if (this.$refs.formLogin.validate()) {
-      //     this.onLoading = true
-      //     this.checkBeforeNext()
-      //   }
+      if (this.$refs.formLogin.validate()) {
+        this.onLoading = true
+        this.checkBeforeNext()
+      }
     },
     async onVerifyUsername() {
       const isValidUsername = this.$refs.formLogin.inputs[0].valid
@@ -297,7 +291,7 @@ export default {
         this.usernameLoading = true
         try {
           const response = await this.$axios.post(
-            '/api/v1/auth/verify/username',
+            `${process.env.AUTH_ENDPOINT}/v1/auth/verify/username`,
             {
               username: this.username,
             }
@@ -335,34 +329,32 @@ export default {
     delay(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms))
     },
-    onUploadAvatar() {
-      const fileInput = document.createElement('input')
-      fileInput.type = 'file'
-      fileInput.accept = 'image/jpeg, image/jpg'
-      fileInput.style.display = 'none'
-      fileInput.addEventListener('change', (event) => {
-        const file = event.target.files[0]
-        if (file) {
-          const reader = new FileReader()
-          reader.onload = () => {
-            this.avatarSelect = reader.result
-          }
-          reader.readAsDataURL(file)
-        }
-      })
-      document.body.appendChild(fileInput)
-      fileInput.click()
-      fileInput.addEventListener('change', () => {
-        document.body.removeChild(fileInput)
-      })
-    },
+
     validateInfo() {
       if (this.$refs.formInformation.validate()) {
-        console.log(this.avatarSelect)
-        console.log(this.firstName)
-        console.log(this.lastName)
-        console.log(this.codeName)
         this.infoLoading = true
+        this.onSignUp()
+      }
+    },
+    async onSignUp() {
+      try {
+        const { data } = await this.$axios.post(
+          `${process.env.AUTH_ENDPOINT}/v1/auth/register/portal`,
+          {
+            username: this.username,
+            password: this.password,
+            first_name: this.firstName,
+            last_name: this.lastName,
+            code_name: this.codeName,
+          }
+        )
+        // console.log(data)
+        if (data) this.tab = 'tab-3'
+      } catch (error) {
+        //   console.log(error.response.data)
+        this.snackbarControl.value = true
+        this.snackbarControl.message = 'Something went wrong please try again!'
+        this.infoLoading = false
       }
     },
   },
@@ -370,13 +362,14 @@ export default {
 </script>
 
 <style scoped>
-body {
-  background-color: var(--deep-blue-opacity-1);
-}
 .bg-auth {
-  position: relative;
-  width: 100%;
-  height: 100vh;
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #fafafa;
 }
 .bg-auth-container {
   position: absolute;
@@ -399,93 +392,5 @@ body {
 .button-group {
   display: flex;
   justify-content: space-between;
-}
-.avatar-upload {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 150px;
-}
-.avatar-upload div {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 150px;
-  height: 150px;
-  border-radius: 75px;
-  cursor: pointer;
-  border: 1px dashed var(--gray-600);
-  background-color: var(--gray-opacity-1);
-  background-image: url('~/assets/user.svg');
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-size: 80px 80px;
-  transition: all ease 0.1s;
-}
-.avatar-upload-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 150px;
-}
-.avatar-upload-loading div {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 150px;
-  height: 150px;
-  border-radius: 75px;
-  background-color: var(--gray-opacity-1);
-  background-image: url('~/assets/user.svg');
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-size: 80px 80px;
-}
-.avatar-upload div:hover {
-  background-image: url('~/assets/upload.svg');
-  background-size: 40px 40px;
-}
-.preview-avatar {
-  position: relative;
-  overflow: hidden;
-  width: 150px;
-  height: 150px;
-  border-radius: 75px;
-  cursor: pointer;
-  border: 1px dashed var(--gray-600);
-  margin: auto;
-}
-.preview-avatar-loading {
-  overflow: hidden;
-  width: 150px;
-  height: 150px;
-  border-radius: 75px;
-  margin: auto;
-}
-.preview-avatar .overlay {
-  position: absolute;
-  top: 0;
-  width: 150px;
-  height: 150px;
-  z-index: 10;
-  transition: all ease 0.3s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.preview-avatar .overlay:hover {
-  background-color: #ffffff4f;
-}
-
-.preview-avatar .icon-cached {
-  opacity: 0;
-}
-
-.preview-avatar:hover .icon-cached {
-  opacity: 0.7;
 }
 </style>

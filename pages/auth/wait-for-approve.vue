@@ -7,23 +7,8 @@
       <div class="graphic-box-4"></div>
 
       <div class="bg-auth-card">
-        <div class="bg-auth-card-header">
-          <div
-            style="
-              font-size: 30px;
-              width: 120px;
-              height: 120px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              font-weight: 700;
-              background-color: #e1e1e1;
-              margin: auto;
-              border-radius: 20px;
-            "
-          >
-            LOGO
-          </div>
+        <div class="text-center">
+          <v-icon color="primary" size="100">mdi-av-timer</v-icon>
         </div>
         <div class="bg-auth-card-body">
           <div class="text-center cp-title cp-medium my-4">
@@ -37,7 +22,7 @@
         <div class="bg-auth-card-footer pt-5">
           <div class="text-center">
             <span class="mr-2">Go back to</span>
-            <a @click="$router.push('login')"> Sign in </a>
+            <a @click="goToSignIn()"> Sign in </a>
           </div>
           <cp-divider text="or" />
           <div class="cp-caption text-center cp-text-description">
@@ -52,18 +37,23 @@
 
 <script>
 export default {
-  layout: 'blankLayout',
+  methods: {
+    goToSignIn() {
+      this.$router.push('login')
+    },
+  },
 }
 </script>
 
 <style scoped>
 .bg-auth {
   position: fixed;
+  z-index: 50;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--deep-blue-opacity-1);
+  background-color: #fafafa;
 }
 .bg-auth-container {
   position: absolute;

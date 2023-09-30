@@ -99,7 +99,20 @@
           </div>
           <cp-divider text="or" />
           <div class="cp-caption text-center cp-text-description">
-            If you forgot your password, <br />
+            If you
+            <a v-if="!onLoading" @click="$router.push('forgot-password')">
+              forgot your password
+            </a>
+            <span
+              v-else
+              style="
+                color: var(--base-primary);
+                cursor: default;
+                font-weight: 500;
+              "
+            >
+              forgot your password </span
+            >, <br />
             please contact your project's owner.
           </div>
         </div>
@@ -111,7 +124,6 @@
 <script>
 export default {
   name: 'LoginPage',
-  layout: 'blankLayout',
   data() {
     return {
       onLoading: false,
@@ -135,14 +147,19 @@ export default {
     },
     async onLogin() {
       this.onLoading = true
-
       try {
-        const response = await this.$axios.post('/api/v1/auth/login/portal', {
-          username: this.username,
-          password: this.password,
-        })
-        console.log(response)
-        this.onLoading = false
+        const { data } = await this.$axios.post(
+          `${process.env.AUTH_ENDPOINT}/v1/auth/login/portal`,
+          {
+            username: this.username,
+            password: this.password,
+          }
+        )
+        if (data) {
+          const hashToken = btoa(data.data.refreshToken)
+          localStorage.setItem('_cp_scpoe', hashToken)
+          this.$router.push('/')
+        }
       } catch (error) {
         const errorData = error.response.data
         if (errorData.statusCode === 401) {
@@ -158,15 +175,14 @@ export default {
 </script>
 
 <style scoped>
-body {
-  background-color: var(--deep-blue-opacity-1);
-}
 .bg-auth {
   position: fixed;
+  z-index: 50;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  background-color: #fafafa;
 }
 .bg-auth-container {
   position: absolute;

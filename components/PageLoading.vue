@@ -17,12 +17,21 @@ export default {
   },
   created() {
     setTimeout(() => {
-      this.classList.push('stop-loading')
-    }, 2000)
+      this.checkToken()
+    }, 1000)
   },
   methods: {
     checkToken() {
-      //
+      const refreshToken = localStorage.getItem('_cp_scpoe')
+      if (refreshToken) {
+        const decodeToken = atob(refreshToken)
+        console.log(decodeToken)
+        this.$router.push('/')
+        this.classList.push('stop-loading')
+      } else {
+        this.$router.push('/auth/login')
+        this.classList.push('stop-loading')
+      }
     },
   },
 }
@@ -60,18 +69,18 @@ export default {
 }
 
 .circle-border {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   padding: 3px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  background: rgb(63, 249, 220);
+  background: rgb(32, 33, 33);
   background: linear-gradient(
     0deg,
-    rgba(63, 249, 220, 0.1) 33%,
-    rgb(41, 218, 191) 100%
+    rgba(139, 139, 139, 0.1) 33%,
+    rgb(34, 34, 34) 100%
   );
   animation: spin 0.8s linear 0s infinite;
 }
