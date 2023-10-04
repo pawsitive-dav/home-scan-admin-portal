@@ -212,76 +212,87 @@ export default {
         this.onCheckUsername()
       }
     },
+
     validateResetCode() {
       if (this.$refs.formResetCode.validate()) {
         this.onCheckResetCode()
       }
     },
+
     validateNewPassword() {
       if (this.$refs.formNewPassword.validate()) {
         this.onCheckNewPassword()
       }
     },
+
     async onCheckUsername() {
       this.onLoading = true
-      try {
-        const { data } = await this.$axios.post(
-          `${process.env.AUTH_ENDPOINT}/v1/auth/password/required-reset`,
-          {
-            username: this.username,
-          }
-        )
-        if (data) {
-          this.onLoading = false
-          this.tab = 'tab-2'
-        }
-      } catch (error) {
-        this.snackbarControl.value = true
-        this.snackbarControl.message = 'Username is incorrect!'
-        this.onLoading = false
-      }
-    },
-    async onCheckResetCode() {
-      this.onLoading = true
-      try {
-        const { data } = await this.$axios.post(
-          `${process.env.AUTH_ENDPOINT}/v1/auth/password/verify-code`,
-          {
-            username: this.username,
-            reset_code: this.resetCode,
-          }
-        )
-        if (data) {
-          this.onLoading = false
-          this.tab = 'tab-3'
-        }
-      } catch (error) {
-        this.snackbarControl.value = true
-        this.snackbarControl.message = 'CODE is incorrect!'
-        this.onLoading = false
-      }
-    },
-    async onCheckNewPassword() {
-      this.onLoading = true
-      if (this.password === this.confirmPassword) {
-        try {
-          const { data } = await this.$axios.post(
-            `${process.env.AUTH_ENDPOINT}/v1/auth/password/reset`,
-            {
-              username: this.username,
-              reset_code: this.resetCode,
-              new_password: this.confirmPassword,
-            }
-          )
+
+      await this.$axios
+        .post(`${process.env.AUTH_ENDPOINT}/v1/auth/password/required-reset`, {
+          username: this.username,
+        })
+        .then(({ data }) => {
           if (data) {
             this.onLoading = false
-            this.tab = 'tab-4'
+            this.tab = 'tab-2'
           }
-        } catch (error) {
-          this.snackbarControl.value = true
-          this.snackbarControl.message = 'Update Fail'
-          this.onLoading = false
-        }
+        })
+        .catch((error) => {
+          if (error) {
+            this.snackbarControl.value = true
+            this.snackbarControl.message = 'Username is incorrect!'
+            this.onLoading = false
+          }
+        })
+    },
+
+    async onCheckResetCode() {
+      this.onLoading = true
+
+      await this.$axios
+        .post(`${process.env.AUTH_ENDPOINT}/v1/auth/password/verify-code`, {
+          username: this.username,
+          reset_code: this.resetCode,
+        })
+        .then(({ data }) => {
+          if (data) {
+            this.onLoading = false
+            this.tab = 'tab-3'
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            this.snackbarControl.value = true
+            this.snackbarControl.message = 'CODE is incorrect!'
+            this.onLoading = false
+          }
+        })
+    },
+
+    async onCheckNewPassword() {
+      this.onLoading = true
+
+      if (this.password === this.confirmPassword) {
+        await this.$axios
+          .post(`${process.env.AUTH_ENDPOINT}/v1/auth/password/reset`, {
+            username: this.username,
+            reset_code: this.resetCode,
+            new_password: this.confirmPassword,
+          })
+          .then(({ data }) => {
+            if (data) {
+              this.onLoading = false
+              this.tab = 'tab-4'
+            }
+          })
+          .catch((error) => {
+            if (error) {
+              this.snackbarControl.value = true
+              this.snackbarControl.message = 'Update Fail'
+              this.onLoading = false
+            }
+          })
       } else {
         this.confirmPasswordError = 'Password confirmation does not match!'
         this.onLoading = false

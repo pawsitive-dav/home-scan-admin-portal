@@ -122,6 +122,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'LoginPage',
   data() {
@@ -135,11 +137,12 @@ export default {
       showPassword: false,
       snackbarControl: {
         value: false,
-        message: 'Username or Password is incorrect!',
+        message: '',
       },
     }
   },
   methods: {
+    ...mapActions('user', ['setRefreshToken']),
     validate() {
       if (this.$refs.formLogin.validate()) {
         this.onLogin()
@@ -147,28 +150,45 @@ export default {
     },
     async onLogin() {
       this.onLoading = true
-      try {
-        const { data } = await this.$axios.post(
-          `${process.env.AUTH_ENDPOINT}/v1/auth/login/portal`,
-          {
-            username: this.username,
-            password: this.password,
+
+      await this.$axios
+        .post(`${process.env.AUTH_ENDPOINT}/v1/auth/login/portal`, {
+          username: this.username,
+          password: this.password,
+        })
+        .then(({ data }) => {
+          if (data) {
+            const hashToken = btoa(data.data.refreshToken)
+            localStorage.setItem('_cp_scpoe', hashToken)
+            this.setRefreshToken()
+            this.$router.push('/')
           }
-        )
-        if (data) {
-          const hashToken = btoa(data.data.refreshToken)
-          localStorage.setItem('_cp_scpoe', hashToken)
-          this.$router.push('/')
-        }
-      } catch (error) {
-        const errorData = error.response.data
-        if (errorData.statusCode === 401) {
-          this.$router.push('wait-for-approve')
-        } else {
-          this.snackbarControl.value = true
-          this.onLoading = false
-        }
-      }
+        })
+        .catch((error) => {
+          if (error.response) {
+            const errorData = error.response.data
+            if (errorData.statusCode === 401) {
+              this.$router.push('wait-for-approve')
+            } else {
+              this.snackbarControl.value = true
+              this.onLoading = false
+              this.snackbarControl.message =
+                'Username or Password is incorrect!'
+            }
+          } else if (error.request) {
+            // The request was made but no response was received
+            this.snackbarControl.value = true
+            this.onLoading = false
+            this.snackbarControl.message =
+              'No response received from server: ' + error.message
+          } else {
+            this.snackbarControl.value = true
+            this.onLoading = false
+            // Something happened in setting up the request that triggered an error
+            this.snackbarControl.message =
+              'Error setting up the request: ' + error.message
+          }
+        })
     },
   },
 }

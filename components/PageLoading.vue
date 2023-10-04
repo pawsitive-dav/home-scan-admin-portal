@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   data() {
     return {
@@ -21,17 +23,50 @@ export default {
     }, 1000)
   },
   methods: {
-    checkToken() {
+    ...mapActions('user', ['setRefreshToken']),
+    async checkToken() {
       const refreshToken = localStorage.getItem('_cp_scpoe')
+
       if (refreshToken) {
         const decodeToken = atob(refreshToken)
-        console.log(decodeToken)
-        this.$router.push('/')
-        this.classList.push('stop-loading')
+
+        await this.$axios
+          .post(`${process.env.AUTH_ENDPOINT}/v1/auth/verify/token`, null, {
+            headers: {
+              Authorization: `Bearer ${decodeToken}`,
+            },
+          })
+          .then(({ data }) => {
+            if (data) {
+              const res = data.data
+              const refresh = res.refresh
+              const newRefreshToken = res.refreshToken
+              this.setRefreshToken()
+
+              if (!refresh) {
+                this.checkPath()
+                this.classList.push('stop-loading')
+              } else {
+                localStorage.setItem('_cp_scope', newRefreshToken)
+                this.checkPath()
+                this.classList.push('stop-loading')
+              }
+            }
+          })
+          .catch((error) => {
+            if (error) {
+              this.$router.push('/auth/login')
+              this.classList.push('stop-loading')
+            }
+          })
       } else {
         this.$router.push('/auth/login')
         this.classList.push('stop-loading')
       }
+    },
+    checkPath() {
+      const pathNow = this.$route.path.startsWith('/auth/')
+      if (pathNow) this.$router.push('/')
     },
   },
 }

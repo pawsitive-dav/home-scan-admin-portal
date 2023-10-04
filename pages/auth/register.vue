@@ -48,7 +48,7 @@
                     </v-icon>
                   </template>
                 </v-text-field>
-                <cp-label for="password">Password</cp-label>
+                <cp-label>Password</cp-label>
                 <v-text-field
                   v-model="password"
                   :rules="passwordRules"
@@ -63,7 +63,7 @@
                   required
                   @click:append="showPassword = !showPassword"
                 />
-                <cp-label for="password">Confirm Password</cp-label>
+                <cp-label>Confirm Password</cp-label>
                 <v-text-field
                   v-model="confirmPassword"
                   :rules="confirmPasswordRules"
@@ -289,27 +289,37 @@ export default {
       const isValidUsername = this.$refs.formLogin.inputs[0].valid
       if (isValidUsername) {
         this.usernameLoading = true
-        try {
-          const response = await this.$axios.post(
-            `${process.env.AUTH_ENDPOINT}/v1/auth/verify/username`,
-            {
-              username: this.username,
+
+        await this.$axios
+          .post(`${process.env.AUTH_ENDPOINT}/v1/auth/verify/username`, {
+            username: this.username,
+          })
+          .then((response) => {
+            if (response.data) {
+              this.usernameIs = 'Available'
             }
-          )
-          if (response) this.usernameIs = 'Available'
-        } catch (error) {
-          const statusCode = error.response.data.statusCode
-          if (statusCode === 409) {
-            this.usernameIs = 'Unavailable'
-            this.usernameError =
-              'Username is already taken. Please choose another username.'
-            this.valid = false
-          }
-        } finally {
-          this.usernameLoading = false
-        }
+          })
+          .catch((error) => {
+            const statusCode = error.response
+              ? error.response.data.statusCode
+              : null
+            if (statusCode === 409) {
+              this.usernameIs = 'Unavailable'
+              this.usernameError =
+                'Username is already taken. Please choose another username.'
+              this.valid = false
+            } else {
+              this.usernameIs = 'Unavailable'
+              this.usernameError = 'Something went wrong please try again.'
+              this.valid = false
+            }
+          })
+          .finally(() => {
+            this.usernameLoading = false
+          })
       }
     },
+
     async checkBeforeNext() {
       if (this.usernameIs === 'Available') {
         if (this.password !== this.confirmPassword) {
@@ -337,25 +347,27 @@ export default {
       }
     },
     async onSignUp() {
-      try {
-        const { data } = await this.$axios.post(
-          `${process.env.AUTH_ENDPOINT}/v1/auth/register/portal`,
-          {
-            username: this.username,
-            password: this.password,
-            first_name: this.firstName,
-            last_name: this.lastName,
-            code_name: this.codeName,
+      await this.$axios
+        .post(`${process.env.AUTH_ENDPOINT}/v1/auth/register/portal`, {
+          username: this.username,
+          password: this.password,
+          first_name: this.firstName,
+          last_name: this.lastName,
+          code_name: this.codeName,
+        })
+        .then(({ data }) => {
+          if (data) {
+            this.tab = 'tab-3'
           }
-        )
-        // console.log(data)
-        if (data) this.tab = 'tab-3'
-      } catch (error) {
-        //   console.log(error.response.data)
-        this.snackbarControl.value = true
-        this.snackbarControl.message = 'Something went wrong please try again!'
-        this.infoLoading = false
-      }
+        })
+        .catch((error) => {
+          if (error) {
+            this.snackbarControl.value = true
+            this.snackbarControl.message =
+              'Something went wrong, please try again!'
+            this.infoLoading = false
+          }
+        })
     },
   },
 }
