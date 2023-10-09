@@ -9,13 +9,23 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   data() {
     return {
       classList: [],
     }
+  },
+  computed: {
+    ...mapState('user', ['accountAvailable']),
+  },
+  watch: {
+    accountAvailable(newValue) {
+      if (newValue === 'active') {
+        this.classList.push('stop-loading')
+      }
+    },
   },
   created() {
     setTimeout(() => {
@@ -25,13 +35,13 @@ export default {
   methods: {
     ...mapActions('user', ['setRefreshToken']),
     async checkToken() {
-      const refreshToken = localStorage.getItem('_cp_scpoe')
+      const refreshToken = localStorage.getItem('_cp_scope')
 
       if (refreshToken) {
         const decodeToken = atob(refreshToken)
 
         await this.$axios
-          .post(`${process.env.AUTH_ENDPOINT}/v1/auth/verify/token`, null, {
+          .post(`${process.env.API_ENDPOINT}/v1/auth/verify/token`, null, {
             headers: {
               Authorization: `Bearer ${decodeToken}`,
             },
@@ -42,14 +52,14 @@ export default {
               const refresh = res.refresh
               const newRefreshToken = res.refreshToken
               this.setRefreshToken()
-
               if (!refresh) {
                 this.checkPath()
-                this.classList.push('stop-loading')
+                // this.classList.push('stop-loading')
               } else {
-                localStorage.setItem('_cp_scope', newRefreshToken)
+                const hashToken = btoa(newRefreshToken)
+                localStorage.setItem('_cp_scope', hashToken)
                 this.checkPath()
-                this.classList.push('stop-loading')
+                // this.classList.push('stop-loading')
               }
             }
           })
@@ -60,7 +70,8 @@ export default {
             }
           })
       } else {
-        this.$router.push('/auth/login')
+        const pathNow = this.$route.path.startsWith('/auth/')
+        if (!pathNow) this.$router.push('/auth/login')
         this.classList.push('stop-loading')
       }
     },

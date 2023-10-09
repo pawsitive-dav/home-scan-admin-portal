@@ -4,6 +4,7 @@
       <v-card-text>
         <div class="cp-header-1">Dashboard</div>
         <div>Developing...</div>
+        <v-btn color="primary" @click="mockupData()">text</v-btn>
       </v-card-text>
     </v-card>
   </div>
@@ -11,16 +12,10 @@
 
 <script>
 export default {
-  name: 'HomePage',
-  data() {
-    return {
-      value: 0,
-    }
+  methods: {
+    mockupData() {
+      console.log('mockup')
+    },
   },
 }
 </script>
-
-<style scoped>
-.cp-dashboard {
-}
-</style>

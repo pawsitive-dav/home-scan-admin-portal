@@ -229,7 +229,7 @@ export default {
       this.onLoading = true
 
       await this.$axios
-        .post(`${process.env.AUTH_ENDPOINT}/v1/auth/password/required-reset`, {
+        .post(`${process.env.API_ENDPOINT}/v1/auth/password/required-reset`, {
           username: this.username,
         })
         .then(({ data }) => {
@@ -251,7 +251,7 @@ export default {
       this.onLoading = true
 
       await this.$axios
-        .post(`${process.env.AUTH_ENDPOINT}/v1/auth/password/verify-code`, {
+        .post(`${process.env.API_ENDPOINT}/v1/auth/password/verify-code`, {
           username: this.username,
           reset_code: this.resetCode,
         })
@@ -275,7 +275,7 @@ export default {
 
       if (this.password === this.confirmPassword) {
         await this.$axios
-          .post(`${process.env.AUTH_ENDPOINT}/v1/auth/password/reset`, {
+          .post(`${process.env.API_ENDPOINT}/v1/auth/password/reset`, {
             username: this.username,
             reset_code: this.resetCode,
             new_password: this.confirmPassword,

@@ -12,7 +12,7 @@
       <v-list-item-title class="ml-n4"> {{ list.title }} </v-list-item-title>
     </v-list-item>
 
-    <div class="text-divider">member & rules</div>
+    <div class="text-divider">members</div>
     <v-list-group
       :value="true"
       prepend-icon="mdi-account-circle-outline"
@@ -42,12 +42,12 @@ export default {
     ],
     members: [
       {
-        title: 'Table List',
-        path: '/users/list',
+        title: 'Team List',
+        path: '/users/team-list',
       },
       {
-        title: 'Rules',
-        path: '/users/rules',
+        title: 'Approval',
+        path: '/users/approval',
       },
     ],
   }),

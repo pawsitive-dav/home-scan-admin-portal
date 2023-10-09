@@ -13,7 +13,9 @@ export const mutations = {
     state.message = data.message
   },
   setCloseNotify(state) {
-    state.notifyValue = false
+    if (state.notifyValue) {
+      state.notifyValue = false
+    }
   },
 }
 

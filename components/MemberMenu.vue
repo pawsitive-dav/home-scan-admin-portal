@@ -146,20 +146,32 @@
                     elevation="0"
                     class="mt-4"
                     small
+                    @click="avatarSelect = ''"
+                  >
+                    <div class="cp-text-capitalize">cancel</div>
+                  </v-btn>
+                  <v-btn
+                    :disabled="modalLoading"
+                    elevation="0"
+                    class="mt-4"
+                    outlined
+                    small
                     @click="onUploadAvatar(), (imgErrorMessage = '')"
                   >
                     <div class="cp-text-capitalize">Change</div>
                   </v-btn>
-                  <v-btn
-                    :loading="modalLoading"
-                    color="primary"
-                    elevation="0"
-                    class="mt-4"
-                    small
-                    @click="uploadAvatar()"
-                  >
-                    <div class="cp-text-capitalize">Save</div>
-                  </v-btn>
+                  <div>
+                    <v-btn
+                      :loading="modalLoading"
+                      color="primary"
+                      elevation="0"
+                      class="mt-4"
+                      small
+                      @click="uploadAvatar()"
+                    >
+                      <div class="cp-text-capitalize">Save</div>
+                    </v-btn>
+                  </div>
                 </div>
                 <div v-if="imgErrorMessage" class="cp-caption error--text pt-4">
                   {{ imgErrorMessage }}
@@ -182,7 +194,7 @@
               </div>
               <div class="pb-6">
                 <div class="label-content">Role</div>
-                <div class="py-2">
+                <div class="py-2" style="text-transform: capitalize">
                   {{ role ? role : 'Null' }}
                 </div>
               </div>
@@ -199,7 +211,14 @@
               <v-divider />
               <div class="pt-6 pb-4">
                 <div class="label-content mb-2">Account</div>
-                <a class="error--text">Delete account</a>
+                <a
+                  class="error--text"
+                  @click="
+                    ;(dialogDeleteAccount = true), (dialogSetting = false)
+                  "
+                >
+                  Delete account
+                </a>
               </div>
             </v-col>
           </v-row>
@@ -220,7 +239,12 @@
         <v-card-title>
           Reset Password
           <v-spacer />
-          <v-btn icon class="mt-n4 mr-n4" @click="dialogResetPassword = false">
+          <v-btn
+            :disabled="modalLoading"
+            icon
+            class="mt-n4 mr-n4"
+            @click="dialogResetPassword = false"
+          >
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
@@ -278,6 +302,73 @@
         </v-toolbar>
       </v-card>
     </v-dialog>
+
+    <!-- Modal Delete Account -->
+    <v-dialog
+      v-model="dialogDeleteAccount"
+      :persistent="modalLoading"
+      max-width="400px"
+      transition="dialog-transition"
+      content-class="elevation-0"
+      scrollable
+    >
+      <v-card>
+        <v-card-title>
+          Delete Account
+          <v-spacer />
+          <v-btn
+            :disabled="modalLoading"
+            icon
+            class="mt-n4 mr-n4"
+            @click="dialogDeleteAccount = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text>
+          <div class="pb-4">
+            To proceed with the account deletion, please enter your Code Name to
+            confirm.
+
+            <v-card outlined class="mt-4">
+              <v-card-text>
+                <div class="cp-title cp-semibold">
+                  {{ codeName }}
+                </div>
+              </v-card-text>
+            </v-card>
+          </div>
+          <v-form
+            ref="formDeleteAccount"
+            v-model="validDeleteAccount"
+            lazy-validation
+          >
+            <cp-label>Code Name</cp-label>
+            <v-text-field
+              v-model="confirmDelete"
+              :rules="confirmDeleteRules"
+              :disabled="modalLoading"
+              outlined
+              dense
+              required
+            />
+          </v-form>
+        </v-card-text>
+        <v-toolbar flat>
+          <v-spacer />
+          <v-btn
+            :loading="modalLoading"
+            :disabled="!validDeleteAccount"
+            elevation="0"
+            height="42"
+            color="error"
+            @click="validateDeleteAccount()"
+          >
+            <div class="cp-text-capitalize">Confirm Delete</div>
+          </v-btn>
+        </v-toolbar>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -307,6 +398,15 @@ export default {
       confirmPasswordRules: [(v) => !!v || 'Required'],
       showConfirmPassword: false,
       confirmPasswordError: '',
+      //   Delete Account
+      dialogDeleteAccount: false,
+      validDeleteAccount: true,
+      deleteConfirm: false,
+      confirmDelete: '',
+      confirmDeleteRules: [
+        (v) => !!v || 'Required',
+        (v) => v === `${this.codeName}` || 'Code Name does not match',
+      ],
     }
   },
   computed: {
@@ -322,7 +422,7 @@ export default {
   watch: {
     avatarPath(newValue) {
       if (newValue) {
-        this.getAvatar(newValue)
+        this.internalAvatarPath = newValue
       } else {
         this.internalAvatarPath = null
       }
@@ -351,12 +451,18 @@ export default {
         this.confirmPasswordError = ''
       }
     },
+    dialogDeleteAccount(newValue) {
+      if (!newValue && !this.deleteConfirm) {
+        this.dialogSetting = true
+        this.$refs.formDeleteAccount.reset()
+      }
+    },
   },
   methods: {
     ...mapActions('user', ['getAccessToken', 'setLogout']),
     ...mapActions('notify', ['onNotify']),
     onLogOut() {
-      localStorage.removeItem('_cp_scpoe')
+      localStorage.removeItem('_cp_scope')
       this.setLogout()
       this.dialogLogout = false
       this.$router.push('/auth/login')
@@ -373,7 +479,6 @@ export default {
           reader.onload = () => {
             const image = new Image()
             image.src = reader.result
-
             image.onload = () => {
               if (image.width === image.height && image.width <= 500) {
                 this.avatarSelect = reader.result
@@ -396,12 +501,11 @@ export default {
       this.modalLoading = true
       const accessToken = await this.getAccessToken()
       if (accessToken) {
-        const encodedString = btoa(this.avatarSelect)
         await this.$axios
           .post(
-            `${process.env.AUTH_ENDPOINT}/v1/avatar/upload`,
+            `${process.env.API_ENDPOINT}/v1/avatar/upload`,
             {
-              image: encodedString,
+              image: this.avatarSelect,
             },
             {
               headers: {
@@ -412,6 +516,7 @@ export default {
           )
           .then((response) => {
             const data = response.data
+            console.log(data)
             if (data) {
               this.internalAvatarPath = this.avatarSelect
               this.modalLoading = false
@@ -428,27 +533,11 @@ export default {
             if (error) this.modalLoading = false
           })
       } else {
+        this.modalLoading = false
         alert('API authentication failed')
       }
     },
-    async getAvatar(imageId) {
-      const accessToken = await this.getAccessToken()
-      if (accessToken) {
-        await this.$axios
-          .get(`${process.env.AUTH_ENDPOINT}/v1/avatar/read/${imageId}`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            },
-          })
-          .then(({ data }) => {
-            this.internalAvatarPath = data.data
-          })
-          .catch((error) => {
-            if (error) alert('Get Avatar Fail')
-          })
-      }
-    },
+
     validateResetPassword() {
       if (this.$refs.formResetPassword.validate()) {
         if (this.password !== this.confirmPassword) {
@@ -464,7 +553,7 @@ export default {
       if (accessToken) {
         await this.$axios
           .post(
-            `${process.env.AUTH_ENDPOINT}/v1/member/update-password`,
+            `${process.env.API_ENDPOINT}/v1/member/update-password`,
             {
               new_password: this.confirmPassword,
             },
@@ -491,6 +580,48 @@ export default {
             if (error) this.modalLoading = false
           })
       } else {
+        this.modalLoading = false
+        alert('API authentication failed')
+      }
+    },
+    validateDeleteAccount() {
+      if (this.$refs.formDeleteAccount.validate()) {
+        this.onDeleteAccount()
+      }
+    },
+    async onDeleteAccount() {
+      this.modalLoading = true
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        await this.$axios
+          .post(`${process.env.API_ENDPOINT}/v1/auth/account/delete`, null, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          })
+          .then(({ data }) => {
+            if (data) {
+              this.deleteConfirm = true
+              this.dialogDeleteAccount = false
+              localStorage.removeItem('_cp_scope')
+              this.setLogout()
+              this.$router.push('/auth/login')
+            }
+          })
+          .catch((error) => {
+            if (error) {
+              this.modalLoading = false
+              this.onNotify({
+                notifyValue: true,
+                type: 'error',
+                title: 'Error',
+                message: 'Delete Account Fail',
+              })
+            }
+          })
+      } else {
+        this.modalLoading = false
         alert('API authentication failed')
       }
     },

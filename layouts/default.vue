@@ -66,39 +66,38 @@ export default {
   },
   watch: {
     refreshToken(newValue, oldValue) {
-      if (newValue) this.checkAccessToken()
+      if (newValue) this.getMyProfile()
     },
   },
   methods: {
     ...mapActions('user', ['getAccessToken', 'setMemberInfo']),
-    async checkAccessToken() {
+    async getMyProfile() {
       const accessToken = await this.getAccessToken()
-      if (accessToken) this.getMyProfile(accessToken)
-    },
-    async getMyProfile(accessToken) {
-      await this.$axios
-        .get(`${process.env.AUTH_ENDPOINT}/v1/member/my-information`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then(({ data }) => {
-          if (data) {
-            const res = data.data
-            const obj = {
-              accountId: res.account_id,
-              avatarPath: res.avatar_path,
-              firstName: res.first_name,
-              lastName: res.last_name,
-              codeName: res.code_name,
-              role: res.member_role,
+      if (accessToken) {
+        await this.$axios
+          .get(`${process.env.API_ENDPOINT}/v1/member/my-information`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then(({ data }) => {
+            if (data) {
+              const res = data.data
+              const obj = {
+                accountId: res.account_id,
+                avatarPath: res.avatar_path,
+                firstName: res.first_name,
+                lastName: res.last_name,
+                codeName: res.code_name,
+                role: res.member_role,
+              }
+              this.setMemberInfo(obj)
             }
-            this.setMemberInfo(obj)
-          }
-        })
-        .catch((error) => {
-          alert(error)
-        })
+          })
+          .catch((error) => {
+            alert(error)
+          })
+      }
     },
   },
 }

@@ -1,25 +1,25 @@
 <template>
-  <div class="bg-wait">
-    <div class="bg-wait-container">
+  <div class="bg-suspended">
+    <div class="bg-suspended-container">
       <div class="graphic-box-1"></div>
       <div class="graphic-box-2"></div>
       <div class="graphic-box-3"></div>
       <div class="graphic-box-4"></div>
 
-      <div class="bg-wait-card">
+      <div class="bg-suspended-card">
         <div class="text-center">
-          <v-icon color="primary" size="100">mdi-av-timer</v-icon>
+          <v-icon color="grey lighten-2" size="100">mdi-block-helper</v-icon>
         </div>
-        <div class="bg-wait-card-body">
+        <div class="bg-suspended-card-body">
           <div class="text-center cp-title cp-medium my-4">
-            Awaiting Approval
+            Your Account Has Been Suspended
           </div>
           <div class="cp-text-description text-center">
-            Your account is awaiting approval from the project owner. Please
-            wait a little longer.
+            We regret to inform you that your account has been suspended. Please
+            contact our support team for further assistance.
           </div>
         </div>
-        <div class="bg-wait-card-footer pt-5">
+        <div class="bg-suspended-card-footer pt-5">
           <div class="text-center">
             <span class="mr-2">Go back to</span>
             <a @click="goToSignIn()"> Sign in </a>
@@ -46,7 +46,7 @@ export default {
 </script>
 
 <style scoped>
-.bg-wait {
+.bg-suspended {
   position: fixed;
   z-index: 50;
   top: 0;
@@ -55,7 +55,7 @@ export default {
   bottom: 0;
   background-color: #fafafa;
 }
-.bg-wait-container {
+.bg-suspended-container {
   position: absolute;
   margin: auto;
   top: 0;
@@ -66,7 +66,7 @@ export default {
   max-height: fit-content;
   transition: all ease 1s;
 }
-.bg-wait-card {
+.bg-suspended-card {
   position: relative;
   z-index: 10;
   padding: var(--spacing-7);

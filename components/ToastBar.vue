@@ -1,6 +1,6 @@
 <template>
   <v-snackbar
-    v-model="notifyValue"
+    v-model="notifyValueInternal"
     timeout="2500"
     color="white"
     width="240"
@@ -32,7 +32,7 @@
       </v-icon>
       <span class="cp-body cp-medium">{{ title }}</span>
       <v-spacer />
-      <v-btn icon small color="#646464" @click="closeNotify()">
+      <v-btn icon small color="#646464" @click="notifyValueInternal = false">
         <v-icon small>mdi-close</v-icon>
       </v-btn>
     </div>
@@ -46,11 +46,21 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      typeInternal: 'info',
+      notifyValueInternal: false,
     }
   },
   computed: {
     ...mapState('notify', ['notifyValue', 'type', 'title', 'message']),
+  },
+  watch: {
+    notifyValue(newValue, oldValue) {
+      this.notifyValueInternal = newValue
+    },
+    notifyValueInternal(newValue, oldValue) {
+      if (!newValue) {
+        this.closeNotify()
+      }
+    },
   },
   methods: {
     ...mapActions('notify', ['closeNotify']),

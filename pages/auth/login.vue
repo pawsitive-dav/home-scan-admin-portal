@@ -152,14 +152,14 @@ export default {
       this.onLoading = true
 
       await this.$axios
-        .post(`${process.env.AUTH_ENDPOINT}/v1/auth/login/portal`, {
+        .post(`${process.env.API_ENDPOINT}/v1/auth/login/portal`, {
           username: this.username,
           password: this.password,
         })
         .then(({ data }) => {
           if (data) {
             const hashToken = btoa(data.data.refreshToken)
-            localStorage.setItem('_cp_scpoe', hashToken)
+            localStorage.setItem('_cp_scope', hashToken)
             this.setRefreshToken()
             this.$router.push('/')
           }
@@ -169,6 +169,8 @@ export default {
             const errorData = error.response.data
             if (errorData.statusCode === 401) {
               this.$router.push('wait-for-approve')
+            } else if (errorData.statusCode === 403) {
+              this.$router.push('suspended')
             } else {
               this.snackbarControl.value = true
               this.onLoading = false

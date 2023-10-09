@@ -1,5 +1,5 @@
 <template>
-  <div>My Profile Page</div>
+  <div>Approval Page</div>
 </template>
 
 <script>

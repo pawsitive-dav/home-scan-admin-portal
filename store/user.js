@@ -1,4 +1,5 @@
 export const state = () => ({
+  accountAvailable: 'wait',
   refreshToken: false,
   accountId: null,
   avatarPath: null,
@@ -21,6 +22,7 @@ export const mutations = {
     state.role = data.role
   },
   setLogout(state) {
+    state.accountAvailable = 'wait'
     state.refreshToken = false
     state.accountId = null
     state.avatarPath = null
@@ -28,6 +30,35 @@ export const mutations = {
     state.lastName = null
     state.codeName = null
     state.role = null
+  },
+  setAccountAvailable(state) {
+    state.accountAvailable = 'active'
+  },
+  verifyAccount(state, data) {
+    if (data.accountStatus === 'active') {
+      state.accountAvailable = 'active'
+    }
+    if (!data.accountStatus) {
+      state.refreshToken = false
+      state.accountId = null
+      state.avatarPath = null
+      state.firstName = null
+      state.lastName = null
+      state.codeName = null
+      state.role = null
+      localStorage.removeItem('_cp_scope')
+      window.location.href = '/auth/login'
+    } else if (data.accountStatus === 'suspended') {
+      state.refreshToken = false
+      state.accountId = null
+      state.avatarPath = null
+      state.firstName = null
+      state.lastName = null
+      state.codeName = null
+      state.role = null
+      localStorage.removeItem('_cp_scope')
+      window.location.href = '/auth/suspended'
+    }
   },
 }
 
@@ -41,19 +72,32 @@ export const actions = {
   },
 
   async getAccessToken({ commit }) {
-    const refreshToken = localStorage.getItem('_cp_scpoe')
+    const refreshToken = localStorage.getItem('_cp_scope')
     const decodeToken = atob(refreshToken)
-
     return await this.$axios
-      .post(`${process.env.AUTH_ENDPOINT}/v1/auth/verify/token`, null, {
+      .post(`${process.env.API_ENDPOINT}/v1/auth/verify/token`, null, {
         headers: {
           Authorization: `Bearer ${decodeToken}`,
         },
       })
       .then(({ data }) => {
         if (data && data.data) {
-          const accessToken = data.data.accessToken
-          return accessToken
+          const accountData = data.data
+          if (accountData.accountStatus === 'active') {
+            const accessToken = accountData.accessToken
+            commit('setAccountAvailable')
+            return accessToken
+          } else if (!accountData.accountStatus) {
+            commit('setLogout')
+            localStorage.removeItem('_cp_scope')
+            window.location.href = '/auth/login'
+          } else if (accountData.accountStatus === 'suspended') {
+            commit('setLogout')
+            localStorage.removeItem('_cp_scope')
+            window.location.href = '/auth/suspended'
+          } else {
+            return null
+          }
         }
         return null
       })
@@ -64,5 +108,9 @@ export const actions = {
 
   setLogout({ commit }) {
     commit('setLogout')
+  },
+
+  verifyAccount({ commit }, data) {
+    commit('verifyAccount', { ...data })
   },
 }

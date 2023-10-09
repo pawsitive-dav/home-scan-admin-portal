@@ -128,7 +128,7 @@
                 <v-text-field
                   v-model="codeName"
                   name="last-name"
-                  :rules="validationEngThai"
+                  :rules="validationEngOnly"
                   :disabled="infoLoading"
                   counter="40"
                   maxlength="40"
@@ -249,6 +249,10 @@ export default {
             /^(?!.*[๐๑๒๓๔๕๖๗๘๙฿ๆฯ])[a-zA-Z\u0E01-\u0E5B]+$/.test(v)) ||
           'Only English and Thai letters are allowed',
       ],
+      validationEngOnly: [
+        (v) => !!v || 'Required',
+        (v) => /^[a-zA-Z]+$/.test(v) || 'Please enter English letters only',
+      ],
       // Snackbar
       snackbarControl: {
         value: false,
@@ -291,7 +295,7 @@ export default {
         this.usernameLoading = true
 
         await this.$axios
-          .post(`${process.env.AUTH_ENDPOINT}/v1/auth/verify/username`, {
+          .post(`${process.env.API_ENDPOINT}/v1/auth/verify/username`, {
             username: this.username,
           })
           .then((response) => {
@@ -348,7 +352,7 @@ export default {
     },
     async onSignUp() {
       await this.$axios
-        .post(`${process.env.AUTH_ENDPOINT}/v1/auth/register/portal`, {
+        .post(`${process.env.API_ENDPOINT}/v1/auth/register/portal`, {
           username: this.username,
           password: this.password,
           first_name: this.firstName,
