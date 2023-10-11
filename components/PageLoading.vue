@@ -23,7 +23,9 @@ export default {
   watch: {
     accountAvailable(newValue) {
       if (newValue === 'active') {
-        this.classList.push('stop-loading')
+        setTimeout(() => {
+          this.classList.push('stop-loading')
+        }, 1000)
       }
     },
   },
@@ -36,10 +38,8 @@ export default {
     ...mapActions('user', ['setRefreshToken']),
     async checkToken() {
       const refreshToken = localStorage.getItem('_cp_scope')
-
       if (refreshToken) {
         const decodeToken = atob(refreshToken)
-
         await this.$axios
           .post(`${process.env.API_ENDPOINT}/v1/auth/verify/token`, null, {
             headers: {

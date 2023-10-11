@@ -7,11 +7,20 @@ export const state = () => ({
   lastName: null,
   codeName: null,
   role: null,
+  appRoleList: [],
+  appRoleListStatus: false,
 })
 
 export const mutations = {
   setRefreshToken(state) {
     state.refreshToken = true
+  },
+  setAppRole(state, data) {
+    if (Number(state.role) === data.role_level) state.role = data.role_name
+    state.appRoleList.push(data)
+  },
+  setAppRoleListStatus(state) {
+    state.appRoleListStatus = true
   },
   setMemberInfo(state, data) {
     state.accountId = data.accountId
@@ -112,5 +121,13 @@ export const actions = {
 
   verifyAccount({ commit }, data) {
     commit('verifyAccount', { ...data })
+  },
+
+  setAppRole({ commit }, data) {
+    commit('setAppRole', data)
+  },
+
+  setAppRoleStatus({ commit }) {
+    commit('setAppRoleListStatus')
   },
 }

@@ -65,12 +65,20 @@ export default {
     ...mapState('user', ['refreshToken']),
   },
   watch: {
-    refreshToken(newValue, oldValue) {
-      if (newValue) this.getMyProfile()
+    refreshToken(newValue) {
+      if (newValue) {
+        this.getMyProfile()
+        this.getAppRole()
+      }
     },
   },
   methods: {
-    ...mapActions('user', ['getAccessToken', 'setMemberInfo']),
+    ...mapActions('user', [
+      'getAccessToken',
+      'setMemberInfo',
+      'setAppRole',
+      'setAppRoleStatus',
+    ]),
     async getMyProfile() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
@@ -99,6 +107,37 @@ export default {
           })
       }
     },
+    async getAppRole() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        await this.$axios
+          .get(`${process.env.API_ENDPOINT}/v1/role/`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then(({ data }) => {
+            const setRole = data.data.sort(
+              (a, b) => b.role_level - a.role_level
+            )
+            for (let i = 0; i < setRole.length; i++) {
+              this.setAppRole(setRole[i])
+            }
+            this.setAppRoleStatus()
+          })
+          .catch((error) => {
+            alert(error)
+          })
+      }
+    },
   },
 }
 </script>
+
+<style lang="scss">
+tbody {
+  tr:hover {
+    background-color: transparent !important;
+  }
+}
+</style>

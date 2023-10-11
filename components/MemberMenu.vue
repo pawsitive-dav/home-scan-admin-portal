@@ -13,7 +13,7 @@
         <v-btn icon height="40" width="40" v-on="on">
           <v-avatar color="primary" size="40">
             <span v-if="!internalAvatarPath" class="white--text cp-subtitle">{{
-              codeName ? codeName[0] : 'Null'
+              codeName ? codeName[0] : ''
             }}</span>
             <v-img v-else :src="internalAvatarPath" />
           </v-avatar>
@@ -27,7 +27,7 @@
               class="white--text cp-subtitle"
               style="text-transform: uppercase"
             >
-              {{ codeName ? codeName[0] : 'Null' }}
+              {{ codeName ? codeName[0] : '' }}
             </span>
             <v-img v-else :src="internalAvatarPath" />
           </v-avatar>
@@ -40,7 +40,7 @@
               class="cp-caption cp-text-description"
               style="text-transform: capitalize"
             >
-              {{ role ? role : 'Null' }}
+              {{ role ? role : '-' }}
             </div>
           </div>
         </div>
@@ -77,12 +77,14 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
-        <v-card-text> Are you sure you want to log out? </v-card-text>
-        <v-toolbar flat>
-          <v-btn elevation="0" height="42" color="primary" block>
-            <div class="cp-text-capitalize" @click="onLogOut()">Log Out</div>
-          </v-btn>
-        </v-toolbar>
+        <v-card-text>
+          <div>Are you sure you want to log out?</div>
+          <div class="mt-4">
+            <v-btn elevation="0" height="42" color="primary" block>
+              <div class="cp-text-capitalize" @click="onLogOut()">Log Out</div>
+            </v-btn>
+          </div>
+        </v-card-text>
       </v-card>
     </v-dialog>
 
@@ -286,20 +288,20 @@
               @click:append="showConfirmPassword = !showConfirmPassword"
             />
           </v-form>
+
+          <div class="mt-4 d-flex flex-row-reverse">
+            <v-btn
+              :loading="modalLoading"
+              :disabled="!validResetPassword"
+              elevation="0"
+              height="42"
+              color="primary"
+              @click="validateResetPassword()"
+            >
+              <div class="cp-text-capitalize">Reset</div>
+            </v-btn>
+          </div>
         </v-card-text>
-        <v-toolbar flat>
-          <v-spacer />
-          <v-btn
-            :loading="modalLoading"
-            :disabled="!validResetPassword"
-            elevation="0"
-            height="42"
-            color="primary"
-            @click="validateResetPassword()"
-          >
-            <div class="cp-text-capitalize">Reset</div>
-          </v-btn>
-        </v-toolbar>
       </v-card>
     </v-dialog>
 
@@ -353,20 +355,20 @@
               required
             />
           </v-form>
+
+          <div class="mt-4 d-flex flex-row-reverse">
+            <v-btn
+              :loading="modalLoading"
+              :disabled="!validDeleteAccount"
+              elevation="0"
+              height="42"
+              color="error"
+              @click="validateDeleteAccount()"
+            >
+              <div class="cp-text-capitalize">Confirm Delete</div>
+            </v-btn>
+          </div>
         </v-card-text>
-        <v-toolbar flat>
-          <v-spacer />
-          <v-btn
-            :loading="modalLoading"
-            :disabled="!validDeleteAccount"
-            elevation="0"
-            height="42"
-            color="error"
-            @click="validateDeleteAccount()"
-          >
-            <div class="cp-text-capitalize">Confirm Delete</div>
-          </v-btn>
-        </v-toolbar>
       </v-card>
     </v-dialog>
   </div>
@@ -417,6 +419,7 @@ export default {
       'lastName',
       'codeName',
       'role',
+      'appRoleList',
     ]),
   },
   watch: {
@@ -516,7 +519,6 @@ export default {
           )
           .then((response) => {
             const data = response.data
-            console.log(data)
             if (data) {
               this.internalAvatarPath = this.avatarSelect
               this.modalLoading = false
