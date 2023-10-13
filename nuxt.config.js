@@ -4,8 +4,8 @@ export default {
   ssr: false,
 
   head: {
-    titleTemplate: '%s - admin-portal',
-    title: 'admin-portal',
+    titleTemplate: '%s - Med Metro',
+    title: 'Admin Portal',
     htmlAttrs: {
       lang: 'en',
     },

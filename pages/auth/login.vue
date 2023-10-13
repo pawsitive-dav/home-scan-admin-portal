@@ -17,22 +17,11 @@
       </v-snackbar>
       <div class="bg-auth-card">
         <div class="bg-auth-card-header">
-          <div
-            style="
-              font-size: 30px;
-              width: 120px;
-              height: 120px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              font-weight: 700;
-              background-color: #e1e1e1;
-              margin: auto;
-              border-radius: 20px;
-            "
-          >
-            LOGO
-          </div>
+          <v-img
+            :src="require('~/assets/images/med-metro-logo.png')"
+            width="300"
+            class="mx-auto"
+          />
         </div>
         <div class="bg-auth-card-body">
           <div class="text-center cp-title cp-medium my-4">
