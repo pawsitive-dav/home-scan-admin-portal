@@ -137,10 +137,10 @@ export default {
         this.onLogin()
       }
     },
-    async onLogin() {
+    onLogin() {
       this.onLoading = true
 
-      await this.$axios
+      this.$axios
         .post(`${process.env.API_ENDPOINT}/v1/auth/login/portal`, {
           username: this.username,
           password: this.password,

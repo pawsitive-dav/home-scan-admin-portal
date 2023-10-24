@@ -128,10 +128,9 @@
               elevation="0"
               height="42"
               color="error"
+              @click="onAccountReject()"
             >
-              <div class="cp-text-capitalize" @click="onAccountReject()">
-                Reject
-              </div>
+              <div class="cp-text-capitalize">Reject</div>
             </v-btn>
           </div>
         </v-card-text>
@@ -174,9 +173,9 @@
           <v-select
             v-model="approveRole"
             :items="roleList"
+            :disabled="modalLoading"
             item-text="role_name"
             item-value="role_level"
-            :disabled="modalLoading"
             hide-details
             outlined
             dense
@@ -188,10 +187,9 @@
               elevation="0"
               height="42"
               color="success"
+              @click="onAccountApprove()"
             >
-              <div class="cp-text-capitalize" @click="onAccountApprove()">
-                Approve
-              </div>
+              <div class="cp-text-capitalize">Approve</div>
             </v-btn>
           </div>
         </v-card-text>
@@ -237,8 +235,11 @@ export default {
   watch: {
     dialogApprove(newValue) {
       if (!this.roleList && newValue) {
-        this.roleList = this.appRoleList
         this.approveRole = this.appRoleList[0].role_level
+        const setRole = this.appRoleList.filter(
+          (obj) => obj.role_name !== 'System Admin'
+        )
+        this.roleList = setRole
       }
     },
   },

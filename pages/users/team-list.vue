@@ -60,19 +60,37 @@
         <v-chip
           v-else-if="item.member_role === 'App Owner'"
           class="mr-1"
-          style="background-color: rgba(224, 148, 56, var(--opacity-2))"
+          style="background-color: rgba(76, 168, 248, var(--opacity-2))"
         >
-          <v-icon size="18" style="color: var(--base-warning)">
+          <v-icon size="18" style="color: var(--base-info)">
             mdi-account-tie-outline
           </v-icon>
         </v-chip>
         <v-chip
-          v-else-if="item.member_role === 'Admin'"
+          v-else-if="item.member_role === 'Employee'"
           class="mr-1"
           style="background-color: rgba(76, 168, 248, var(--opacity-2))"
         >
           <v-icon size="18" style="color: var(--base-info)">
             mdi-account
+          </v-icon>
+        </v-chip>
+        <v-chip
+          v-else-if="item.member_role === 'Freelance'"
+          class="mr-1"
+          style="background-color: rgba(76, 168, 248, var(--opacity-2))"
+        >
+          <v-icon size="18" style="color: var(--base-info)">
+            mdi-account-outline
+          </v-icon>
+        </v-chip>
+        <v-chip
+          v-else-if="item.member_role === 'Branch'"
+          class="mr-1"
+          style="background-color: rgba(76, 168, 248, var(--opacity-2))"
+        >
+          <v-icon size="18" style="color: var(--base-info)">
+            mdi-home-account
           </v-icon>
         </v-chip>
         {{ item.member_role ? item.member_role : '-' }}
@@ -143,7 +161,7 @@
               </v-list-item-title>
             </v-list-item>
 
-            <v-hover v-slot="{ hover }">
+            <v-hover v-if="role == 'System Admin'" v-slot="{ hover }">
               <v-list-item
                 :class="{ 'red lighten-5 error--text': hover }"
                 @click=";(dialogDelete = true), (deleteSelect = item)"
@@ -299,6 +317,7 @@ export default {
       { text: 'CODE NAME', value: 'code_name' },
       { text: 'STATUS', value: 'account_status' },
       { text: 'LAST LOGIN', value: 'last_login' },
+      { text: 'CODE', value: 'reset_password_code' },
       { text: 'Actions', align: 'center', value: 'actions', sortable: false },
     ],
     desserts: [],
@@ -312,7 +331,7 @@ export default {
   }),
 
   computed: {
-    ...mapState('user', ['appRoleListStatus', 'appRoleList']),
+    ...mapState('user', ['appRoleListStatus', 'appRoleList', 'role']),
   },
 
   watch: {

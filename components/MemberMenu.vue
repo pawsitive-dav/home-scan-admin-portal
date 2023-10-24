@@ -80,8 +80,14 @@
         <v-card-text>
           <div>Are you sure you want to log out?</div>
           <div class="mt-4">
-            <v-btn elevation="0" height="42" color="primary" block>
-              <div class="cp-text-capitalize" @click="onLogOut()">Log Out</div>
+            <v-btn
+              elevation="0"
+              height="42"
+              color="primary"
+              block
+              @click="onLogOut()"
+            >
+              <div class="cp-text-capitalize">Log Out</div>
             </v-btn>
           </div>
         </v-card-text>
