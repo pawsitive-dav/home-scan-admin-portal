@@ -18,8 +18,8 @@
       <div class="bg-auth-card">
         <div class="bg-auth-card-header">
           <v-img
-            :src="require('~/assets/images/med-metro-logo.png')"
-            width="300"
+            :src="require('~/assets/images/home-logo.png')"
+            width="200"
             class="mx-auto"
           />
         </div>

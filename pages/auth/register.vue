@@ -251,7 +251,9 @@ export default {
       ],
       validationEngOnly: [
         (v) => !!v || 'Required',
-        (v) => /^[a-zA-Z]+$/.test(v) || 'Please enter English letters only',
+        (v) =>
+          /^[a-zA-Z0-9-]+$/.test(v) ||
+          'Please enter English letters and numbers only',
       ],
       // Snackbar
       snackbarControl: {

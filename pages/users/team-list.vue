@@ -49,53 +49,6 @@
         </div>
       </template>
 
-      <template #item.member_role="{ item }">
-        <v-chip
-          v-if="item.member_role === 'System Admin'"
-          class="mr-1"
-          style="background-color: rgba(23, 26, 28, var(--opacity-2))"
-        >
-          <v-icon size="18"> mdi-account-cog-outline </v-icon>
-        </v-chip>
-        <v-chip
-          v-else-if="item.member_role === 'App Owner'"
-          class="mr-1"
-          style="background-color: rgba(76, 168, 248, var(--opacity-2))"
-        >
-          <v-icon size="18" style="color: var(--base-info)">
-            mdi-account-tie-outline
-          </v-icon>
-        </v-chip>
-        <v-chip
-          v-else-if="item.member_role === 'Employee'"
-          class="mr-1"
-          style="background-color: rgba(76, 168, 248, var(--opacity-2))"
-        >
-          <v-icon size="18" style="color: var(--base-info)">
-            mdi-account
-          </v-icon>
-        </v-chip>
-        <v-chip
-          v-else-if="item.member_role === 'Freelance'"
-          class="mr-1"
-          style="background-color: rgba(76, 168, 248, var(--opacity-2))"
-        >
-          <v-icon size="18" style="color: var(--base-info)">
-            mdi-account-outline
-          </v-icon>
-        </v-chip>
-        <v-chip
-          v-else-if="item.member_role === 'Branch'"
-          class="mr-1"
-          style="background-color: rgba(76, 168, 248, var(--opacity-2))"
-        >
-          <v-icon size="18" style="color: var(--base-info)">
-            mdi-home-account
-          </v-icon>
-        </v-chip>
-        {{ item.member_role ? item.member_role : '-' }}
-      </template>
-
       <template #item.account_status="{ item }">
         <div class="cp-text-capitalize">
           <div v-if="!item.reset_password_code">
