@@ -61,7 +61,7 @@
               :loading="onLoading"
               color="primary"
               elevation="0"
-              height="42"
+              height="36"
               block
               @click="validate()"
             >

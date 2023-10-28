@@ -98,26 +98,42 @@
 
       <template #item.account_status="{ item }">
         <div class="cp-text-capitalize">
-          <v-chip
-            v-if="item.account_status === 'active'"
-            label
-            style="background-color: rgba(54, 188, 117, var(--opacity-2))"
-          >
-            <v-icon size="18" class="mr-1" style="color: var(--base-success)">
-              mdi-check
-            </v-icon>
-            <span class="success--text">
+          <div v-if="!item.reset_password_code">
+            <v-chip
+              v-if="item.account_status === 'active'"
+              label
+              style="background-color: rgba(54, 188, 117, var(--opacity-2))"
+            >
+              <v-icon size="18" class="mr-1" style="color: var(--base-success)">
+                mdi-check
+              </v-icon>
+              <span class="success--text">
+                {{ item.account_status }}
+              </span>
+            </v-chip>
+            <v-chip
+              v-else
+              label
+              style="background-color: rgba(23, 26, 28, var(--opacity-2))"
+            >
+              <v-icon size="18" class="mr-1"> mdi-cancel </v-icon>
               {{ item.account_status }}
-            </span>
-          </v-chip>
-          <v-chip
-            v-else
-            label
-            style="background-color: rgba(23, 26, 28, var(--opacity-2))"
-          >
-            <v-icon size="18" class="mr-1"> mdi-cancel </v-icon>
-            {{ item.account_status }}
-          </v-chip>
+            </v-chip>
+          </div>
+          <div v-else>
+            <div class="cp-semibold pb-1 warning--text">Reset Password</div>
+            <div class="code-box">
+              <b>CODE: </b>{{ item.reset_password_code }}
+              <v-icon
+                small
+                color="primary"
+                class="ml-2"
+                @click="onCopyToClipboard(item.reset_password_code)"
+              >
+                mdi-content-copy
+              </v-icon>
+            </div>
+          </div>
         </div>
       </template>
 
@@ -136,13 +152,13 @@
               color="primary"
               elevation="0"
               v-bind="attrs"
+              icon
               v-on="on"
             >
-              <div class="cp-text-capitalize">More</div>
-              <v-icon right>mdi-chevron-down</v-icon>
+              <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
-          <v-list nav>
+          <v-list nav dense>
             <v-list-item
               v-if="item.account_status === 'active'"
               @click=";(dialogSuspend = true), (suspendSelect = item)"
@@ -208,7 +224,7 @@
             <v-btn
               :loading="modalLoading"
               elevation="0"
-              height="42"
+              height="36"
               color="primary"
               @click="onSuspendAccount()"
             >
@@ -248,7 +264,7 @@
             <v-btn
               :loading="modalLoading"
               elevation="0"
-              height="42"
+              height="36"
               color="primary"
               @click="onActiveAccount()"
             >
@@ -287,7 +303,7 @@
             <v-btn
               :loading="modalLoading"
               elevation="0"
-              height="42"
+              height="36"
               color="error"
               @click="onDeleteAccount()"
             >
@@ -317,7 +333,6 @@ export default {
       { text: 'CODE NAME', value: 'code_name' },
       { text: 'STATUS', value: 'account_status' },
       { text: 'LAST LOGIN', value: 'last_login' },
-      { text: 'CODE', value: 'reset_password_code' },
       { text: 'Actions', align: 'center', value: 'actions', sortable: false },
     ],
     desserts: [],
@@ -511,6 +526,21 @@ export default {
           })
       }
     },
+
+    onCopyToClipboard(text) {
+      const textarea = document.createElement('textarea')
+      textarea.value = text
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+      this.onNotify({
+        notifyValue: true,
+        type: 'success',
+        title: 'Copy to clipboard',
+        message: `CODE ${text} copied to clipboard`,
+      })
+    },
   },
 }
 </script>
@@ -525,5 +555,11 @@ export default {
 }
 .layout-menu {
   box-shadow: var(--box-shadow-md);
+}
+.code-box {
+  background-color: var(--deep-blue-100);
+  padding: 2px 8px;
+  border-radius: 4px;
+  width: fit-content;
 }
 </style>

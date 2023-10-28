@@ -72,6 +72,7 @@
         <v-btn
           color="error"
           elevation="0"
+          small
           outlined
           @click=";(dialogReject = true), (rejectAccountSelect = item)"
         >
@@ -80,6 +81,7 @@
         <v-btn
           color="success"
           elevation="0"
+          small
           @click=";(dialogApprove = true), (approveAccountSelect = item)"
         >
           <div class="cp-text-capitalize">Approve</div>
@@ -126,7 +128,7 @@
             <v-btn
               :loading="modalLoading"
               elevation="0"
-              height="42"
+              height="36"
               color="error"
               @click="onAccountReject()"
             >
@@ -185,7 +187,7 @@
             <v-btn
               :loading="modalLoading"
               elevation="0"
-              height="42"
+              height="36"
               color="success"
               @click="onAccountApprove()"
             >

@@ -157,7 +157,7 @@
               :loading="onLoading"
               color="primary"
               elevation="0"
-              height="42"
+              height="36"
               block
               @click="validate()"
             >
@@ -167,7 +167,7 @@
               <v-btn
                 :disabled="infoLoading"
                 elevation="0"
-                height="42"
+                height="36"
                 @click="tab = 'tab-1'"
               >
                 <div class="cp-text-capitalize">Back</div>
@@ -176,7 +176,7 @@
                 :loading="infoLoading"
                 color="primary"
                 elevation="0"
-                height="42"
+                height="36"
                 @click="validateInfo()"
               >
                 <div class="cp-text-capitalize">Sign Up</div>

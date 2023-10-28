@@ -82,7 +82,7 @@
           <div class="mt-4">
             <v-btn
               elevation="0"
-              height="42"
+              height="36"
               color="primary"
               block
               @click="onLogOut()"
@@ -300,7 +300,7 @@
               :loading="modalLoading"
               :disabled="!validResetPassword"
               elevation="0"
-              height="42"
+              height="36"
               color="primary"
               @click="validateResetPassword()"
             >
@@ -367,7 +367,7 @@
               :loading="modalLoading"
               :disabled="!validDeleteAccount"
               elevation="0"
-              height="42"
+              height="36"
               color="error"
               @click="validateDeleteAccount()"
             >

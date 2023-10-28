@@ -26,17 +26,30 @@
     </v-list-item>
 
     <div class="text-divider">customer data</div>
+
+    <v-list-item
+      v-for="(list, index) in dataBacklog"
+      :key="'dataBacklog' + index"
+      :to="list.path"
+      color="primary"
+    >
+      <v-list-item-icon>
+        <v-icon class="ml-1">mdi-account-question-outline</v-icon>
+      </v-list-item-icon>
+      <v-list-item-title class="ml-n4"> {{ list.title }} </v-list-item-title>
+    </v-list-item>
+
     <v-list-group
       :value="false"
       prepend-icon="mdi-clipboard-account-outline"
       color="primary"
     >
       <template #activator>
-        <v-list-item-title class="ml-n4">Website</v-list-item-title>
+        <v-list-item-title class="ml-n4">Internal Data</v-list-item-title>
       </template>
       <v-list-item
-        v-for="(list, index) in customerWebsite"
-        :key="'customerWebsite' + index"
+        v-for="(list, index) in internalData"
+        :key="'internalData' + index"
         :to="list.path"
       >
         <v-list-item-icon class="ml-2">
@@ -52,31 +65,11 @@
       color="primary"
     >
       <template #activator>
-        <v-list-item-title class="ml-n4">Landing Page</v-list-item-title>
+        <v-list-item-title class="ml-n4">External Data</v-list-item-title>
       </template>
       <v-list-item
-        v-for="(list, index) in customerLanding"
-        :key="'customerLanding' + index"
-        :to="list.path"
-      >
-        <v-list-item-icon class="ml-2">
-          <v-icon size="12">mdi-circle-outline</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title class="ml-n6">{{ list.title }}</v-list-item-title>
-      </v-list-item>
-    </v-list-group>
-
-    <v-list-group
-      :value="false"
-      prepend-icon="mdi-clipboard-account-outline"
-      color="primary"
-    >
-      <template #activator>
-        <v-list-item-title class="ml-n4">Admin Entry Data</v-list-item-title>
-      </template>
-      <v-list-item
-        v-for="(list, index) in customerEntryByAdmin"
-        :key="'customerEntryByAdmin' + index"
+        v-for="(list, index) in externalData"
+        :key="'externalData' + index"
         :to="list.path"
       >
         <v-list-item-icon class="ml-2">
@@ -154,10 +147,17 @@ export default {
         show: true,
       },
     ],
-    customerWebsite: [
+    dataBacklog: [
+      {
+        title: 'Backlog Data',
+        path: '/customers/backlog/data-list',
+        show: true,
+      },
+    ],
+    internalData: [
       {
         title: 'Data List',
-        path: '/',
+        path: '/customers/internal/data-list',
         show: true,
       },
       {
@@ -166,22 +166,10 @@ export default {
         show: true,
       },
     ],
-    customerLanding: [
+    externalData: [
       {
         title: 'Data List',
-        path: '/',
-        show: true,
-      },
-      {
-        title: 'Rejected',
-        path: '/',
-        show: true,
-      },
-    ],
-    customerEntryByAdmin: [
-      {
-        title: 'Data List',
-        path: '/customers/admin-data',
+        path: '/customers/external/data-list',
         show: true,
       },
       {
@@ -197,8 +185,13 @@ export default {
     ],
     customerSettign: [
       {
+        title: 'Services',
+        path: '/customers/setting/services',
+        show: true,
+      },
+      {
         title: 'Branches',
-        path: '/',
+        path: '/customers/setting/branches',
         show: true,
       },
     ],

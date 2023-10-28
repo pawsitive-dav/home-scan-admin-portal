@@ -44,7 +44,7 @@
                   :loading="onLoading"
                   color="primary"
                   elevation="0"
-                  height="42"
+                  height="36"
                   block
                   @click="validateUsername()"
                 >
@@ -78,7 +78,7 @@
                   :loading="onLoading"
                   color="primary"
                   elevation="0"
-                  height="42"
+                  height="36"
                   block
                   @click="validateResetCode()"
                 >
@@ -134,7 +134,7 @@
                   :loading="onLoading"
                   color="primary"
                   elevation="0"
-                  height="42"
+                  height="36"
                   block
                   @click="validateNewPassword()"
                 >
