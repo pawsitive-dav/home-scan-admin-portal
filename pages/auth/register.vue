@@ -18,23 +18,22 @@
       <div class="bg-auth-card">
         <div class="bg-auth-card-body">
           <div v-if="tab !== 'tab-3'">
-            <div class="text-center cp-title cp-medium">Sign Up</div>
+            <div class="text-center cp-title cp-medium">สมัครบัญชีผู้ใช้</div>
             <div class="text-center cp-text-description mb-2 mt-2">
-              Please fill in all the required information.
+              กรุณากรอกข้อมูลให้ครบทั้งหมด
             </div>
           </div>
           <v-tabs-items v-model="tab">
             <v-tab-item value="tab-1">
-              <cp-divider text="Account" />
-              <v-form ref="formLogin" v-model="valid" lazy-validation>
-                <cp-label for="username"> Username </cp-label>
+              <cp-divider text="ข้อมูล บัญชีผู้ใช้" />
+              <v-form ref="formRegister" v-model="valid" lazy-validation>
+                <cp-label> บัญชีผู้ใช้ </cp-label>
                 <v-text-field
                   v-model="username"
                   :rules="usernameRules"
                   :disabled="onLoading"
                   :loading="usernameLoading"
                   :error-messages="usernameError"
-                  name="username"
                   outlined
                   dense
                   required
@@ -48,7 +47,7 @@
                     </v-icon>
                   </template>
                 </v-text-field>
-                <cp-label>Password</cp-label>
+                <cp-label>รหัสผ่าน</cp-label>
                 <v-text-field
                   v-model="password"
                   :rules="passwordRules"
@@ -57,13 +56,12 @@
                     showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
                   "
                   :type="showPassword ? 'text' : 'password'"
-                  name="password"
                   outlined
                   dense
                   required
                   @click:append="showPassword = !showPassword"
                 />
-                <cp-label>Confirm Password</cp-label>
+                <cp-label>ยืนยันรหัสผ่าน</cp-label>
                 <v-text-field
                   v-model="confirmPassword"
                   :rules="confirmPasswordRules"
@@ -75,7 +73,6 @@
                   "
                   :type="showConfirmPassword ? 'text' : 'password'"
                   :error-messages="confirmPasswordError"
-                  name="password"
                   outlined
                   dense
                   required
@@ -84,12 +81,11 @@
               </v-form>
             </v-tab-item>
             <v-tab-item value="tab-2">
-              <cp-divider text="Information" />
+              <cp-divider text="ข้อมูลผู้ใช้" />
               <v-form ref="formInformation" v-model="validInfo" lazy-validation>
-                <cp-label for="first-name"> First Name </cp-label>
+                <cp-label> ชื่อ </cp-label>
                 <v-text-field
                   v-model="firstName"
-                  name="first-name"
                   :rules="validationEngThai"
                   :disabled="infoLoading"
                   counter="60"
@@ -98,10 +94,9 @@
                   dense
                   required
                 />
-                <cp-label for="last-name"> Last Name </cp-label>
+                <cp-label> นามสกุล </cp-label>
                 <v-text-field
                   v-model="lastName"
-                  name="last-name"
                   :rules="validationEngThai"
                   :disabled="infoLoading"
                   counter="60"
@@ -110,25 +105,10 @@
                   dense
                   required
                 />
-                <cp-label for="last-name">
-                  Code Name
-                  <v-tooltip top max-width="260">
-                    <template #activator="{ on, attrs }">
-                      <v-icon v-bind="attrs" size="18" v-on="on">
-                        mdi-information-slab-circle-outline
-                      </v-icon>
-                    </template>
-                    <span>
-                      <b>"Code Name"</b> is the name used for reference in your
-                      team. You can use your nickname as your Code Name. Please
-                      enter it in English only.
-                    </span>
-                  </v-tooltip>
-                </cp-label>
+                <cp-label> ชื่อที่ใช้อ้างอิงในการทำงาน </cp-label>
                 <v-text-field
                   v-model="codeName"
-                  name="last-name"
-                  :rules="validationEngOnly"
+                  :rules="validationCodeName"
                   :disabled="infoLoading"
                   counter="40"
                   maxlength="40"
@@ -140,12 +120,10 @@
             </v-tab-item>
             <v-tab-item value="tab-3" class="text-center">
               <v-icon color="success" size="60">mdi-check</v-icon>
-              <div class="cp-header-1 cp-semibold mb-4">
-                Regsiter Successfully
-              </div>
+              <div class="cp-header-1 cp-semibold mb-4">การสมัครสำเร็จ</div>
               <div class="cp-text-description">
-                Your account is awaiting approval from the project owner. Please
-                wait a little longer.
+                บัญชีของคุณกำลังรอการอนุมัติจากเจ้าของระบบ <br />
+                โปรดรอการยืนยันการสมัคร
               </div>
             </v-tab-item>
           </v-tabs-items>
@@ -161,7 +139,7 @@
               block
               @click="validate()"
             >
-              <div class="cp-text-capitalize">Next</div>
+              <div class="cp-text-capitalize">ต่อไป</div>
             </v-btn>
             <div v-else-if="tab === 'tab-2'" class="button-group">
               <v-btn
@@ -170,16 +148,17 @@
                 height="36"
                 @click="tab = 'tab-1'"
               >
-                <div class="cp-text-capitalize">Back</div>
+                <div class="cp-text-capitalize">ย้อนกลับ</div>
               </v-btn>
               <v-btn
                 :loading="infoLoading"
+                :disabled="!validInfo"
                 color="primary"
                 elevation="0"
                 height="36"
                 @click="validateInfo()"
               >
-                <div class="cp-text-capitalize">Sign Up</div>
+                <div class="cp-text-capitalize">ยืนยันการสมัคร</div>
               </v-btn>
             </div>
           </div>
@@ -188,18 +167,18 @@
         <div v-if="tab !== 'tab-2'" class="bg-auth-card-footer pt-5">
           <div class="text-center">
             <span v-if="tab !== 'tab-3'" class="mr-2">
-              Already have an account?
+              คุณมีบัญชีผู้ใช้อยู่แล้ว?
             </span>
             <a v-if="!onLoading" @click="$router.push('login')">
-              <span v-if="tab !== 'tab-3'">Sign in instead</span>
-              <span v-else>Back to sign in</span>
+              <span v-if="tab !== 'tab-3'">เข้าสู่ระบบ</span>
+              <span v-else>กลับหน้าเข้าสู่ระบบ</span>
             </a>
-            <span v-else class="alternate-signin-text"> Sign in instead </span>
+            <span v-else class="alternate-signin-text"> เข้าสู่ระบบ </span>
           </div>
-          <cp-divider text="or" />
+          <cp-divider text="หรือ" />
           <div class="cp-caption text-center cp-text-description">
-            If you encounter issues, <br />
-            please contact your project's owner.
+            ถ้าคุณติดปัญหาการสมัคร, <br />
+            กรุนาติดต่อหัวหน้างานของคุณ
           </div>
         </div>
       </div>
@@ -220,20 +199,20 @@ export default {
       usernameIs: '',
       usernameError: '',
       usernameRules: [
-        (v) => !!v || 'Required',
+        (v) => !!v || 'ข้อมูลจำเป็น',
         (v) =>
           /^[a-z][a-z0-9]*$/.test(v) ||
-          'Username can only start with a letter (a-z) and contain letters (a-z) and numbers (0-9)',
-        (v) => (v && v.length >= 8) || 'Username must be at least 8 characters',
+          'ชื่อผู้ใช้ต้องเริ่มต้นด้วยตัวอักษร (a-z) และตัวอักษรทั้งหมดต้องเป็น (a-z) หรือตัวเลขเท่านั้น',
+        (v) => (v && v.length >= 8) || 'กรอกบัญชีผู้ใช้ 8 หลักขึ้นไป',
       ],
       password: '',
       passwordRules: [
-        (v) => !!v || 'Required',
-        (v) => (v && v.length >= 8) || 'Password must be at least 8 characters',
+        (v) => !!v || 'ข้อมูลจำเป็น',
+        (v) => (v && v.length >= 8) || 'กรอกรหัสผ่าน 8 หลักขึ้นไป',
       ],
       showPassword: false,
       confirmPassword: '',
-      confirmPasswordRules: [(v) => !!v || 'Required'],
+      confirmPasswordRules: [(v) => !!v || 'ข้อมูลจำเป็น'],
       showConfirmPassword: false,
       confirmPasswordError: '',
       // Information
@@ -243,17 +222,15 @@ export default {
       lastName: '',
       codeName: '',
       validationEngThai: [
-        (v) => !!v || 'Required',
+        (v) => !!v || 'ข้อมูลจำเป็น',
         (v) =>
           (!(/[a-zA-Z]/.test(v) && /[ก-ฮ]/.test(v)) &&
             /^(?!.*[๐๑๒๓๔๕๖๗๘๙฿ๆฯ])[a-zA-Z\u0E01-\u0E5B]+$/.test(v)) ||
-          'Only English and Thai letters are allowed',
+          'กรอกภาษาอังกฤษ หรือ ภาษาไทยเท่านั้น',
       ],
-      validationEngOnly: [
-        (v) => !!v || 'Required',
-        (v) =>
-          /^[a-zA-Z0-9-]+$/.test(v) ||
-          'Please enter English letters and numbers only',
+      validationCodeName: [
+        (v) => !!v || 'ข้อมูลจำเป็น',
+        (v) => v[0] !== ' ' || 'ตัวอักษรแรกห้ามเป็นค่าว่าง',
       ],
       // Snackbar
       snackbarControl: {
@@ -286,13 +263,13 @@ export default {
   },
   methods: {
     validate() {
-      if (this.$refs.formLogin.validate()) {
+      if (this.$refs.formRegister.validate()) {
         this.onLoading = true
         this.checkBeforeNext()
       }
     },
     async onVerifyUsername() {
-      const isValidUsername = this.$refs.formLogin.inputs[0].valid
+      const isValidUsername = this.$refs.formRegister.inputs[0].valid
       if (isValidUsername) {
         this.usernameLoading = true
 
@@ -312,11 +289,12 @@ export default {
             if (statusCode === 409) {
               this.usernameIs = 'Unavailable'
               this.usernameError =
-                'Username is already taken. Please choose another username.'
+                'บัญชีผู้ใช้นี้ถูกใช้งานแล้ว กรุณาใช้บัญชีผู้ใช้อื่น'
               this.valid = false
             } else {
               this.usernameIs = 'Unavailable'
-              this.usernameError = 'Something went wrong please try again.'
+              this.usernameError =
+                'ระบบเกิดข้อผู้พลาดบางอย่าง กรุณาลองใหม่อีกครั้ง!'
               this.valid = false
             }
           })
@@ -329,7 +307,7 @@ export default {
     async checkBeforeNext() {
       if (this.usernameIs === 'Available') {
         if (this.password !== this.confirmPassword) {
-          this.confirmPasswordError = 'Password confirmation does not match!'
+          this.confirmPasswordError = 'คุณยืนยันรหัสผ่านไม่ถูกต้อง!'
           this.onLoading = false
         } else {
           this.tab = 'tab-2'
@@ -359,7 +337,7 @@ export default {
           password: this.password,
           first_name: this.firstName,
           last_name: this.lastName,
-          code_name: this.codeName,
+          code_name: this.codeName.trim(),
         })
         .then(({ data }) => {
           if (data) {
@@ -370,7 +348,7 @@ export default {
           if (error) {
             this.snackbarControl.value = true
             this.snackbarControl.message =
-              'Something went wrong, please try again!'
+              'ระบบเกิดข้อผู้พลาดบางอย่าง กรุณาลองใหม่อีกครั้ง!'
             this.infoLoading = false
           }
         })

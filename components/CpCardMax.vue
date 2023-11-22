@@ -1,5 +1,5 @@
 <template>
-  <div class="cp-card">
+  <div class="cp-card-max">
     <slot></slot>
   </div>
 </template>
@@ -16,8 +16,9 @@ export default {
 </script>
 
 <style scoped>
-.cp-card {
+.cp-card-max {
   width: 100%;
+  height: 100%;
   border-radius: 6px;
   background-color: #ffffff;
   box-shadow: var(--box-shadow-md);

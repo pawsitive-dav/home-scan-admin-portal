@@ -12,22 +12,21 @@
         </div>
         <div class="bg-suspended-card-body">
           <div class="text-center cp-title cp-medium my-4">
-            Your Account Has Been Suspended
+            บัญชีของคุณถูกระงับการใช้งาน
           </div>
           <div class="cp-text-description text-center">
-            We regret to inform you that your account has been suspended. Please
-            contact our support team for further assistance.
+            ว่าบัญชีของคุณได้ถูกระงับชั่วคราว
+            กรุณาติดต่อหัวหน้างานเพื่อขอความช่วยเหลือเพิ่มเติม
           </div>
         </div>
         <div class="bg-suspended-card-footer pt-5">
           <div class="text-center">
-            <span class="mr-2">Go back to</span>
-            <a @click="goToSignIn()"> Sign in </a>
+            <span class="mr-2">กลับหน้า</span>
+            <a @click="goToSignIn()"> เข้าสู่ระบบ </a>
           </div>
-          <cp-divider text="or" />
+          <cp-divider text="หรือ" />
           <div class="cp-caption text-center cp-text-description">
-            If you encounter issues, <br />
-            please contact your project's owner.
+            ถ้าคุณติดปัญหาการใช้งาน กรุณาติดต่อหัวหน้างานของคุณ
           </div>
         </div>
       </div>

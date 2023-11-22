@@ -24,21 +24,18 @@
           />
         </div>
         <div class="bg-auth-card-body">
-          <div class="text-center cp-title cp-medium my-4">
-            Welcome to Admin Portal
-          </div>
+          <div class="text-center cp-title cp-medium my-4">เข้าสู่ระบบ</div>
           <v-form ref="formLogin" v-model="valid" lazy-validation>
-            <cp-label>Username</cp-label>
+            <cp-label>บัญชีผู้ใช้</cp-label>
             <v-text-field
               v-model="username"
               :rules="usernameRules"
               :disabled="onLoading"
-              name="username"
               outlined
               dense
               required
             />
-            <cp-label for="password">Password</cp-label>
+            <cp-label>รหัสผ่าน</cp-label>
             <v-text-field
               v-model="password"
               :rules="passwordRules"
@@ -47,7 +44,6 @@
                 showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
               "
               :type="showPassword ? 'text' : 'password'"
-              name="password"
               outlined
               dense
               required
@@ -65,15 +61,15 @@
               block
               @click="validate()"
             >
-              <div class="cp-text-capitalize">Sign In</div>
+              <div class="cp-text-capitalize">เข้าสู่ระบบ</div>
             </v-btn>
           </div>
         </div>
         <div class="bg-auth-card-footer pt-5">
           <div class="text-center">
-            <span class="mr-2">New on our admin portal?</span>
+            <span class="mr-2">คุณเป็นผู้ใช้งานใหม่ใช่ไหม?</span>
             <a v-if="!onLoading" @click="$router.push('register')">
-              Create an account
+              สร้างบัญชีผู้ใช้ใหม่
             </a>
             <span
               v-else
@@ -83,14 +79,13 @@
                 font-weight: 500;
               "
             >
-              Create an account
+              สร้างบัญชีผู้ใช้ใหม่
             </span>
           </div>
-          <cp-divider text="or" />
+          <cp-divider text="หรือ" />
           <div class="cp-caption text-center cp-text-description">
-            If you
             <a v-if="!onLoading" @click="$router.push('forgot-password')">
-              forgot your password
+              ลืมรหัสผ่าน?
             </a>
             <span
               v-else
@@ -100,9 +95,8 @@
                 font-weight: 500;
               "
             >
-              forgot your password </span
-            >, <br />
-            please contact your project's owner.
+              ลืมรหัสผ่าน?
+            </span>
           </div>
         </div>
       </div>
@@ -120,9 +114,9 @@ export default {
       onLoading: false,
       valid: true,
       username: '',
-      usernameRules: [(v) => !!v || 'Required'],
+      usernameRules: [(v) => !!v || 'ข้อมูลจำเป็น'],
       password: '',
-      passwordRules: [(v) => !!v || 'Required'],
+      passwordRules: [(v) => !!v || 'ข้อมูลจำเป็น'],
       showPassword: false,
       snackbarControl: {
         value: false,
@@ -164,7 +158,7 @@ export default {
               this.snackbarControl.value = true
               this.onLoading = false
               this.snackbarControl.message =
-                'Username or Password is incorrect!'
+                'บัญชีผู้ใช้ หรือ รหัสผ่าน ไม่ถูกต้อง!'
             }
           } else if (error.request) {
             // The request was made but no response was received

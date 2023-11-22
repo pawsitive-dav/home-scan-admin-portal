@@ -4,7 +4,7 @@ export default {
   ssr: false,
 
   head: {
-    titleTemplate: '%s - Med Metro',
+    titleTemplate: '%s - HomeScan Secure',
     title: 'Admin Portal',
     htmlAttrs: {
       lang: 'en',

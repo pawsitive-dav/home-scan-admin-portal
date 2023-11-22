@@ -12,9 +12,10 @@
       <template #activator="{ on }">
         <v-btn icon height="40" width="40" v-on="on">
           <v-avatar color="primary" size="40">
-            <span v-if="!internalAvatarPath" class="white--text cp-subtitle">{{
-              codeName ? codeName[0] : ''
-            }}</span>
+            <v-img
+              v-if="!internalAvatarPath"
+              :src="require('@/assets/images/no-avatar.png')"
+            />
             <v-img v-else :src="internalAvatarPath" />
           </v-avatar>
         </v-btn>
@@ -22,13 +23,10 @@
       <cp-card>
         <div class="layout-menu-header">
           <v-avatar color="primary" size="40">
-            <span
+            <v-img
               v-if="!internalAvatarPath"
-              class="white--text cp-subtitle"
-              style="text-transform: uppercase"
-            >
-              {{ codeName ? codeName[0] : '' }}
-            </span>
+              :src="require('@/assets/images/no-avatar.png')"
+            />
             <v-img v-else :src="internalAvatarPath" />
           </v-avatar>
           <div>
@@ -47,15 +45,15 @@
         <v-divider />
         <ul>
           <li @click="dialogSetting = true">
-            <v-icon class="li-icon">mdi-tune-vertical-variant</v-icon>
-            <span>Settings</span>
+            <v-icon small class="li-icon">mdi-tune-vertical-variant</v-icon>
+            <span>ตั้งค่าบัญชีผู้ใช้</span>
           </li>
         </ul>
         <v-divider />
         <ul>
-          <li @click="dialogLogout = true">
-            <v-icon class="li-icon">mdi-logout</v-icon>
-            <span>Log Out</span>
+          <li class="li-error" @click="dialogLogout = true">
+            <v-icon small class="li-icon-error">mdi-logout</v-icon>
+            <span>ออกจากระบบ</span>
           </li>
         </ul>
       </cp-card>
@@ -64,30 +62,30 @@
     <!-- Modal Log Out -->
     <v-dialog
       v-model="dialogLogout"
-      max-width="300px"
+      max-width="350px"
       transition="dialog-transition"
       content-class="elevation-0"
       scrollable
     >
       <v-card>
         <v-card-title>
-          Log Out
+          กรุณายืนยันการออกจากระบบ
           <v-spacer />
           <v-btn icon class="mt-n4 mr-n4" @click="dialogLogout = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
         <v-card-text>
-          <div>Are you sure you want to log out?</div>
+          <div>คุณแน่ใจว่าจะออกจากระบบ?</div>
           <div class="mt-4">
             <v-btn
               elevation="0"
               height="36"
-              color="primary"
+              color="error"
               block
               @click="onLogOut()"
             >
-              <div class="cp-text-capitalize">Log Out</div>
+              <div class="cp-text-capitalize">ออกจากระบบ</div>
             </v-btn>
           </div>
         </v-card-text>
@@ -105,7 +103,7 @@
     >
       <v-card>
         <v-card-title>
-          Account Setting
+          ตั้งค่าบัญชีผู้ใช้
           <v-spacer />
           <v-btn
             :disabled="modalLoading"
@@ -122,17 +120,10 @@
               <div class="text-center">
                 <div>
                   <v-avatar v-if="!avatarSelect" size="150" color="primary">
-                    <div
+                    <v-img
                       v-if="!internalAvatarPath"
-                      style="
-                        font-size: 5rem;
-                        text-transform: uppercase;
-                        font-weight: 700;
-                        color: #ffffff;
-                      "
-                    >
-                      {{ codeName ? codeName[0] : 'U' }}
-                    </div>
+                      :src="require('@/assets/images/no-avatar.png')"
+                    />
                     <v-img v-else :src="internalAvatarPath" />
                   </v-avatar>
                   <v-avatar v-else size="150" color="primary">
@@ -146,7 +137,7 @@
                   small
                   @click="onUploadAvatar(), (imgErrorMessage = '')"
                 >
-                  <div class="cp-text-capitalize">Edit</div>
+                  <div class="cp-text-capitalize">แก้ไข</div>
                 </v-btn>
                 <div v-else>
                   <v-btn
@@ -156,7 +147,7 @@
                     small
                     @click="avatarSelect = ''"
                   >
-                    <div class="cp-text-capitalize">cancel</div>
+                    <div class="cp-text-capitalize">ยกเลิก</div>
                   </v-btn>
                   <v-btn
                     :disabled="modalLoading"
@@ -166,7 +157,7 @@
                     small
                     @click="onUploadAvatar(), (imgErrorMessage = '')"
                   >
-                    <div class="cp-text-capitalize">Change</div>
+                    <div class="cp-text-capitalize">เปลี่ยน</div>
                   </v-btn>
                   <div>
                     <v-btn
@@ -177,7 +168,7 @@
                       small
                       @click="uploadAvatar()"
                     >
-                      <div class="cp-text-capitalize">Save</div>
+                      <div class="cp-text-capitalize">บันทึก</div>
                     </v-btn>
                   </div>
                 </div>
@@ -188,7 +179,7 @@
             </v-col>
             <v-col cols="7">
               <div class="pb-6">
-                <div class="label-content">Name</div>
+                <div class="label-content">ชื่อ นามสกุล</div>
                 <div class="py-2">
                   <span class="mr-1">{{ firstName ? firstName : 'Null' }}</span>
                   <span>{{ lastName ? lastName : 'Null' }}</span>
@@ -201,31 +192,31 @@
                 </div>
               </div>
               <div class="pb-6">
-                <div class="label-content">Role</div>
+                <div class="label-content">บทบาทในระบบ</div>
                 <div class="py-2" style="text-transform: capitalize">
                   {{ role ? role : 'Null' }}
                 </div>
               </div>
               <div class="pb-6">
-                <div class="label-content mb-2">Password</div>
+                <div class="label-content mb-2">รหัสผ่าน</div>
                 <a
                   @click="
                     ;(dialogResetPassword = true), (dialogSetting = false)
                   "
                 >
-                  Change password
+                  เปลี่ยนรหัสผ่าน
                 </a>
               </div>
               <v-divider />
               <div class="pt-6 pb-4">
-                <div class="label-content mb-2">Account</div>
+                <div class="label-content mb-2">บัญชี</div>
                 <a
                   class="error--text"
                   @click="
                     ;(dialogDeleteAccount = true), (dialogSetting = false)
                   "
                 >
-                  Delete account
+                  ลบบัญชี
                 </a>
               </div>
             </v-col>
@@ -245,7 +236,7 @@
     >
       <v-card>
         <v-card-title>
-          Reset Password
+          เปลี่ยนรหัสผ่าน
           <v-spacer />
           <v-btn
             :disabled="modalLoading"
@@ -262,7 +253,7 @@
             v-model="validResetPassword"
             lazy-validation
           >
-            <cp-label>New Password</cp-label>
+            <cp-label>รหัสผ่านใหม่</cp-label>
             <v-text-field
               v-model="password"
               :rules="passwordRules"
@@ -277,7 +268,7 @@
               required
               @click:append="showPassword = !showPassword"
             />
-            <cp-label>Confirm New Password</cp-label>
+            <cp-label>ยืนยันรหัสผ่านใหม่</cp-label>
             <v-text-field
               v-model="confirmPassword"
               :rules="confirmPasswordRules"
@@ -304,7 +295,7 @@
               color="primary"
               @click="validateResetPassword()"
             >
-              <div class="cp-text-capitalize">Reset</div>
+              <div class="cp-text-capitalize">ยืนยัน</div>
             </v-btn>
           </div>
         </v-card-text>
@@ -315,14 +306,14 @@
     <v-dialog
       v-model="dialogDeleteAccount"
       :persistent="modalLoading"
-      max-width="400px"
+      max-width="450px"
       transition="dialog-transition"
       content-class="elevation-0"
       scrollable
     >
       <v-card>
         <v-card-title>
-          Delete Account
+          ยืนยันลบบัญชี
           <v-spacer />
           <v-btn
             :disabled="modalLoading"
@@ -335,9 +326,7 @@
         </v-card-title>
         <v-card-text>
           <div class="pb-4">
-            To proceed with the account deletion, please enter your Code Name to
-            confirm.
-
+            เพื่อดำเนินการลบบัญชี โปรดป้อน Code Name ของคุณเพื่อยืนยัน
             <v-card outlined class="mt-4">
               <v-card-text>
                 <div class="cp-title cp-semibold">
@@ -371,7 +360,7 @@
               color="error"
               @click="validateDeleteAccount()"
             >
-              <div class="cp-text-capitalize">Confirm Delete</div>
+              <div class="cp-text-capitalize">ลบบัญชี</div>
             </v-btn>
           </div>
         </v-card-text>
@@ -398,12 +387,12 @@ export default {
       validResetPassword: true,
       password: '',
       passwordRules: [
-        (v) => !!v || 'Required',
-        (v) => (v && v.length >= 8) || 'Password must be at least 8 characters',
+        (v) => !!v || 'ข้อมูลจำเป็น',
+        (v) => (v && v.length >= 8) || 'กรอกรหัสผ่าน 8 หลักขึ้นไป',
       ],
       showPassword: false,
       confirmPassword: '',
-      confirmPasswordRules: [(v) => !!v || 'Required'],
+      confirmPasswordRules: [(v) => !!v || 'ข้อมูลจำเป็น'],
       showConfirmPassword: false,
       confirmPasswordError: '',
       //   Delete Account
@@ -412,8 +401,8 @@ export default {
       deleteConfirm: false,
       confirmDelete: '',
       confirmDeleteRules: [
-        (v) => !!v || 'Required',
-        (v) => v === `${this.codeName}` || 'Code Name does not match',
+        (v) => !!v || 'ข้อมูลจำเป็น',
+        (v) => v === `${this.codeName}` || 'Code Name ไม่ถูกต้อง',
       ],
     }
   },
@@ -493,7 +482,7 @@ export default {
                 this.avatarSelect = reader.result
               } else {
                 this.imgErrorMessage =
-                  'The image must have a 1:1 aspect ratio and be no larger than 500x500 pixels.'
+                  'รูป Avatar จะต้องมีอัตราส่วน 1:1 และขนาดไม่เกิน 500x500 พิกเซลเท่านั้น'
               }
             }
           }
@@ -533,7 +522,7 @@ export default {
                 notifyValue: true,
                 type: 'success',
                 title: 'Success',
-                message: 'Change avatar successfully.',
+                message: 'เปลี่ยนรูป Avatar สำเร็จ',
               })
             }
           })
@@ -549,7 +538,7 @@ export default {
     validateResetPassword() {
       if (this.$refs.formResetPassword.validate()) {
         if (this.password !== this.confirmPassword) {
-          this.confirmPasswordError = 'Password confirmation does not match!'
+          this.confirmPasswordError = 'คุณยืนยันรหัสผ่านไม่ถูกต้อง!'
         } else {
           this.onResetPassword()
         }
@@ -580,7 +569,7 @@ export default {
                 notifyValue: true,
                 type: 'success',
                 title: 'Success',
-                message: 'Change password successfully.',
+                message: 'เปลี่ยนรหัสผ่านสำเร็จ',
               })
             }
           })
@@ -623,8 +612,8 @@ export default {
               this.onNotify({
                 notifyValue: true,
                 type: 'error',
-                title: 'Error',
-                message: 'Delete Account Fail',
+                title: 'เกิดข้อผิดพลาด',
+                message: 'ลบบัญชีไม่สำเร็จ',
               })
             }
           })
@@ -664,10 +653,20 @@ li:hover {
   background-color: var(--deep-blue-opacity-2);
   color: var(--base-primary);
 }
+li.li-error:hover {
+  background-color: var(--red-opacity-2);
+  color: var(--base-error);
+}
 li > .li-icon {
   margin-right: 12px;
 }
 li:hover > .li-icon {
   color: var(--base-primary);
+}
+li > .li-icon-error {
+  margin-right: 12px;
+}
+li:hover > .li-icon-error {
+  color: var(--base-error);
 }
 </style>

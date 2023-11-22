@@ -9,12 +9,12 @@
     >
       <template #top>
         <v-toolbar flat>
-          <v-toolbar-title>Team List</v-toolbar-title>
+          <v-toolbar-title>ผู้ใช้งานทั้งหมด</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            label="ค้นหา"
             single-line
             hide-details
             outlined
@@ -28,17 +28,7 @@
         <div class="col-user">
           <v-avatar size="40" color="primary">
             <img v-if="item.avatar_path" :src="item.avatar_path" />
-            <span
-              v-else
-              style="
-                text-transform: uppercase;
-                font-size: 22px;
-                font-weight: 500;
-                color: #ffffff;
-              "
-            >
-              {{ item.code_name[0] }}
-            </span>
+            <v-img v-else :src="require('@/assets/images/no-avatar.png')" />
           </v-avatar>
           <div>
             <div class="cp-medium">
@@ -61,7 +51,7 @@
                 mdi-check
               </v-icon>
               <span class="success--text">
-                {{ item.account_status }}
+                {{ item.account_status ? 'เปิดให้ใช้งาน' : '-' }}
               </span>
             </v-chip>
             <v-chip
@@ -70,11 +60,11 @@
               style="background-color: rgba(23, 26, 28, var(--opacity-2))"
             >
               <v-icon size="18" class="mr-1"> mdi-cancel </v-icon>
-              {{ item.account_status }}
+              {{ item.account_status ? 'ระงับการใช้งาน' : '-' }}
             </v-chip>
           </div>
           <div v-else>
-            <div class="cp-semibold pb-1 warning--text">Reset Password</div>
+            <div class="cp-semibold pb-1 warning--text">ขอเปลี่ยนรหัสผ่าน</div>
             <div class="code-box">
               <b>CODE: </b>{{ item.reset_password_code }}
               <v-icon
@@ -91,10 +81,10 @@
       </template>
 
       <template #item.last_login="{ item }">
-        <span v-if="item.last_login">{{ formaDateTime(item.last_login) }}</span>
-        <span v-else class="cp-text-description">
-          The user has not yet logged in.
-        </span>
+        <span v-if="item.last_login">{{
+          formatDateTime(item.last_login)
+        }}</span>
+        <span v-else class="cp-text-disable"> ยังไม่เคยเข้าสู่ระบบ </span>
       </template>
 
       <template #item.actions="{ item }">
@@ -117,7 +107,7 @@
               @click=";(dialogSuspend = true), (suspendSelect = item)"
             >
               <v-list-item-title>
-                <span class="px-2">Suspend</span>
+                <span class="px-2">ระงับการใช้งาน</span>
               </v-list-item-title>
             </v-list-item>
 
@@ -126,7 +116,7 @@
               @click=";(dialogActive = true), (activeSelect = item)"
             >
               <v-list-item-title>
-                <span class="px-2">Activating</span>
+                <span class="px-2">เปิดการใช้งาน</span>
               </v-list-item-title>
             </v-list-item>
 
@@ -136,7 +126,7 @@
                 @click=";(dialogDelete = true), (deleteSelect = item)"
               >
                 <v-list-item-title>
-                  <span class="px-2">Delete</span>
+                  <span class="px-2">ลบบัญชี</span>
                 </v-list-item-title>
               </v-list-item>
             </v-hover>
@@ -145,7 +135,7 @@
       </template>
 
       <template #no-data>
-        <div class="my-6">No data available in table.</div>
+        <div class="my-6">ไม่มีรายการผู้ใช้งาน</div>
       </template>
     </v-data-table>
 
@@ -160,7 +150,7 @@
     >
       <v-card>
         <v-card-title>
-          Suspend Account
+          ระงับการใช้งานบัญชี
           <v-spacer />
           <v-btn
             :disabled="modalLoading"
@@ -172,7 +162,7 @@
           </v-btn>
         </v-card-title>
         <v-card-text>
-          Are you sure you want to suspend this account?
+          คุณแน่ใจหรือไม่ที่คุณจะระงับการใช้งานบัญชีนี้?
           <div class="mt-6 d-flex flex-row-reverse">
             <v-btn
               :loading="modalLoading"
@@ -181,7 +171,7 @@
               color="primary"
               @click="onSuspendAccount()"
             >
-              <div class="cp-text-capitalize">Suspend</div>
+              <div class="cp-text-capitalize">ยืนยัน</div>
             </v-btn>
           </div>
         </v-card-text>
@@ -199,7 +189,7 @@
     >
       <v-card>
         <v-card-title>
-          Activating Account
+          เปิดการใช้งาน
           <v-spacer />
           <v-btn
             :disabled="modalLoading"
@@ -211,8 +201,8 @@
           </v-btn>
         </v-card-title>
         <v-card-text>
-          When you enable the usage of this account, the system will change the
-          status of this account to Active.
+          ระบบจะเปลี่ยนสถานะของบัญชีเป็น "เปิดให้ใช้งาน"
+          และบัญชีนี้จะสามารถกลับมาใช้งานระบบได้ตามปกติ
           <div class="mt-6 d-flex flex-row-reverse">
             <v-btn
               :loading="modalLoading"
@@ -221,7 +211,7 @@
               color="primary"
               @click="onActiveAccount()"
             >
-              <div class="cp-text-capitalize">Confirm</div>
+              <div class="cp-text-capitalize">ยืนยัน</div>
             </v-btn>
           </div>
         </v-card-text>
@@ -239,7 +229,7 @@
     >
       <v-card>
         <v-card-title>
-          Delete Account
+          ลบบัญชี
           <v-spacer />
           <v-btn
             :disabled="modalLoading"
@@ -251,7 +241,7 @@
           </v-btn>
         </v-card-title>
         <v-card-text>
-          Are you sure you want to delete this account?
+          คุณแน่ใจหรือไม่ที่คุณจะลบบัญชีนี้?
           <div class="mt-6 d-flex flex-row-reverse">
             <v-btn
               :loading="modalLoading"
@@ -260,7 +250,7 @@
               color="error"
               @click="onDeleteAccount()"
             >
-              <div class="cp-text-capitalize">Delete</div>
+              <div class="cp-text-capitalize">ยืนยัน</div>
             </v-btn>
           </div>
         </v-card-text>
@@ -278,15 +268,20 @@ export default {
     search: '',
     headers: [
       {
-        text: 'USER',
+        text: 'บัญชีผู้ใช้',
         sortable: false,
         value: 'user',
       },
-      { text: 'ROLE', value: 'member_role' },
-      { text: 'CODE NAME', value: 'code_name' },
-      { text: 'STATUS', value: 'account_status' },
-      { text: 'LAST LOGIN', value: 'last_login' },
-      { text: 'Actions', align: 'center', value: 'actions', sortable: false },
+      { text: 'Code Name', value: 'code_name' },
+      { text: 'บทบาท', value: 'member_role' },
+      { text: 'สถานะ', value: 'account_status' },
+      { text: 'เข้าสู่ระบบเมื่อ', value: 'last_login' },
+      {
+        text: 'การดำเนินการ',
+        align: 'center',
+        value: 'actions',
+        sortable: false,
+      },
     ],
     desserts: [],
     modalLoading: false,
@@ -297,6 +292,10 @@ export default {
     dialogDelete: false,
     deleteSelect: null,
   }),
+
+  head: {
+    title: 'Team',
+  },
 
   computed: {
     ...mapState('user', ['appRoleListStatus', 'appRoleList', 'role']),
@@ -356,10 +355,9 @@ export default {
       this.desserts = data
     },
 
-    formaDateTime(dateTimeStr) {
-      const dateTime = moment(dateTimeStr)
-      const thaiDateTime = dateTime.format('DD-MM-YYYY HH:mm:ss')
-      return thaiDateTime
+    formatDateTime(dateStr) {
+      const result = moment(dateStr).locale('th').format('DD/MMM/yyyy - HH:mm')
+      return result
     },
 
     async onSuspendAccount() {
@@ -384,9 +382,9 @@ export default {
             this.onNotify({
               notifyValue: true,
               type: 'success',
-              title: 'Success',
+              title: 'การดำเนินการสำเร็จ',
               message:
-                'Account ' + this.suspendSelect.username + ' is suspended.',
+                'บัญชี ' + this.suspendSelect.username + ' ถูกระงับการใช้งาน',
             })
             this.getTeamList()
           })
@@ -395,7 +393,7 @@ export default {
             this.onNotify({
               notifyValue: true,
               type: 'error',
-              title: 'Error',
+              title: 'ดำเนินการผิดพลาด',
               message: error,
             })
           })
@@ -424,8 +422,9 @@ export default {
             this.onNotify({
               notifyValue: true,
               type: 'success',
-              title: 'Success',
-              message: 'Account ' + this.activeSelect.username + ' is actived.',
+              title: 'การดำเนินการสำเร็จ',
+              message:
+                'บัญชี ' + this.activeSelect.username + ' ถูกเปิดให้ใช้งาน',
             })
             this.getTeamList()
           })
@@ -434,7 +433,7 @@ export default {
             this.onNotify({
               notifyValue: true,
               type: 'error',
-              title: 'Error',
+              title: 'ดำเนินการผิดพลาด',
               message: error,
             })
           })
@@ -463,8 +462,8 @@ export default {
             this.onNotify({
               notifyValue: true,
               type: 'success',
-              title: 'Success',
-              message: 'Account ' + this.deleteSelect.username + ' is deleted.',
+              title: 'การดำเนินการสำเร็จ',
+              message: 'บัญชี ' + this.deleteSelect.username + ' ถูกลบแล้ว',
             })
             this.getTeamList()
           })
@@ -473,7 +472,7 @@ export default {
             this.onNotify({
               notifyValue: true,
               type: 'error',
-              title: 'Error',
+              title: 'ดำเนินการผิดพลาด',
               message: error,
             })
           })
@@ -490,8 +489,8 @@ export default {
       this.onNotify({
         notifyValue: true,
         type: 'success',
-        title: 'Copy to clipboard',
-        message: `CODE ${text} copied to clipboard`,
+        title: 'คัดลอกไปยังคลิปบอร์ด',
+        message: `CODE ${text} ถูกคัดลอกไปยังคลิปบอร์ด`,
       })
     },
   },

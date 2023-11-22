@@ -19,16 +19,14 @@
         <div class="bg-forgot-card-body">
           <v-tabs-items v-model="tab">
             <v-tab-item value="tab-1">
-              <div class="text-center cp-title cp-medium">
-                Forgot Your Password?
-              </div>
-              <cp-divider text="Please enter your username to proceed." />
+              <div class="text-center cp-title cp-medium">คุณลืมรหัสผ่าน?</div>
+              <cp-divider text="กรุณากรอกบัญชีผู้ใช้เพื่อไปขั้นตอนถัดไป" />
               <v-form
                 ref="formUsername"
                 v-model="validUsername"
                 lazy-validation
               >
-                <cp-label>Username</cp-label>
+                <cp-label>บัญชีผู้ใช้</cp-label>
                 <v-text-field
                   v-model="username"
                   :rules="usernameRules"
@@ -48,15 +46,13 @@
                   block
                   @click="validateUsername()"
                 >
-                  <div class="cp-text-capitalize">Next</div>
+                  <div class="cp-text-capitalize">ต่อไป</div>
                 </v-btn>
               </div>
             </v-tab-item>
             <v-tab-item value="tab-2">
-              <div class="text-center cp-title cp-medium">
-                Enter Reset Password CODE
-              </div>
-              <cp-divider text="Please enter your reset CODE to proceed." />
+              <div class="text-center cp-title cp-medium">Reset CODE</div>
+              <cp-divider text="กรอก Reset CODE เพื่อไปขั้นตอนถัดไป" />
               <v-form
                 ref="formResetCode"
                 v-model="validResetCode"
@@ -82,14 +78,16 @@
                   block
                   @click="validateResetCode()"
                 >
-                  <div class="cp-text-capitalize">Next</div>
+                  <div class="cp-text-capitalize">ต่อไป</div>
                 </v-btn>
               </div>
             </v-tab-item>
             <v-tab-item value="tab-3">
-              <div class="text-center cp-title cp-medium">Reset Password</div>
-              <cp-divider text="Please enter your new password." />
-              <cp-label for="password">Password</cp-label>
+              <div class="text-center cp-title cp-medium">
+                สร้างรหัสผ่านใหม่
+              </div>
+              <cp-divider text="กรุณากรอก รหัสผ่านใหม่" />
+              <cp-label for="password">รหัสผ่าน</cp-label>
               <v-form
                 ref="formNewPassword"
                 v-model="validNewPassword"
@@ -109,7 +107,7 @@
                   required
                   @click:append="showPassword = !showPassword"
                 />
-                <cp-label for="password">Confirm Password</cp-label>
+                <cp-label for="password">ยืนยันรหัสผ่าน</cp-label>
                 <v-text-field
                   v-model="confirmPassword"
                   :rules="confirmPasswordRules"
@@ -138,7 +136,7 @@
                   block
                   @click="validateNewPassword()"
                 >
-                  <div class="cp-text-capitalize">Confirm</div>
+                  <div class="cp-text-capitalize">ยืนยัน</div>
                 </v-btn>
               </div>
             </v-tab-item>
@@ -146,19 +144,24 @@
               <div class="text-center">
                 <v-icon color="success" size="60">mdi-check</v-icon>
                 <div class="cp-header-1 cp-semibold mb-4">
-                  Reset Password Successfully
+                  เปลี่ยนรหัสผ่านใหม่สำเร็จ
                 </div>
                 <div class="cp-text-description">
-                  Your password has been successfully reset. Please use your new
-                  password to log in.
+                  ระบบได้เปลี่ยนรหัสผ่านของคุณเป็นรหัสผ่านใหม่แล้ว
                 </div>
               </div>
             </v-tab-item>
           </v-tabs-items>
-          <div v-if="tab !== 'tab-3'">
-            <cp-divider text="or" />
+          <div v-if="tab === 'tab-1' || tab === 'tab-2'">
+            <cp-divider text="หรือ" />
             <div class="text-center">
-              <a @click="$router.push('login')"> Back to sign in </a>
+              <a @click="$router.push('login')"> กลับหน้าเข้าสู่ระบบ </a>
+            </div>
+          </div>
+          <div v-if="tab === 'tab-4'">
+            <cp-divider text="กรุณาใช้รหัสผ่านใหม่เพื่อเข้าสู่ระบบ" />
+            <div class="text-center">
+              <a @click="$router.push('login')"> เข้าสู่ระบบ </a>
             </div>
           </div>
         </div>
@@ -177,21 +180,21 @@ export default {
 
       validUsername: true,
       username: '',
-      usernameRules: [(v) => !!v || 'Required'],
+      usernameRules: [(v) => !!v || 'ข้อมูลจำเป็น'],
 
       validResetCode: true,
       resetCode: '',
-      resetCodeRules: [(v) => !!v || 'Required'],
+      resetCodeRules: [(v) => !!v || 'ข้อมูลจำเป็น'],
 
       validNewPassword: true,
       password: '',
       passwordRules: [
-        (v) => !!v || 'Required',
-        (v) => (v && v.length >= 8) || 'Password must be at least 8 characters',
+        (v) => !!v || 'ข้อมูลจำเป็น',
+        (v) => (v && v.length >= 8) || 'กรอกรหัสผ่าน 8 หลักขึ้นไป',
       ],
       showPassword: false,
       confirmPassword: '',
-      confirmPasswordRules: [(v) => !!v || 'Required'],
+      confirmPasswordRules: [(v) => !!v || 'ข้อมูลจำเป็น'],
       showConfirmPassword: false,
       confirmPasswordError: '',
 
@@ -241,7 +244,7 @@ export default {
         .catch((error) => {
           if (error) {
             this.snackbarControl.value = true
-            this.snackbarControl.message = 'Username is incorrect!'
+            this.snackbarControl.message = 'บัญชีผู้ใช้ไม่ถูกต้อง!'
             this.onLoading = false
           }
         })
@@ -264,7 +267,7 @@ export default {
         .catch((error) => {
           if (error) {
             this.snackbarControl.value = true
-            this.snackbarControl.message = 'CODE is incorrect!'
+            this.snackbarControl.message = 'CODE ไม่ถูกต้อง!'
             this.onLoading = false
           }
         })
@@ -289,12 +292,12 @@ export default {
           .catch((error) => {
             if (error) {
               this.snackbarControl.value = true
-              this.snackbarControl.message = 'Update Fail'
+              this.snackbarControl.message = 'System Update Fail'
               this.onLoading = false
             }
           })
       } else {
-        this.confirmPasswordError = 'Password confirmation does not match!'
+        this.confirmPasswordError = 'คุณยืนยันรหัสผ่านไม่ถูกต้อง!'
         this.onLoading = false
       }
     },

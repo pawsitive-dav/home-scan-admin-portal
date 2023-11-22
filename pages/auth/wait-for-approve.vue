@@ -12,22 +12,21 @@
         </div>
         <div class="bg-wait-card-body">
           <div class="text-center cp-title cp-medium my-4">
-            Awaiting Approval
+            บัญชีผู้ใช้ รอการอนุมัติ
           </div>
           <div class="cp-text-description text-center">
-            Your account is awaiting approval from the project owner. Please
-            wait a little longer.
+            บัญชีของคุณกำลังรอการอนุมัติจากเจ้าของระบบ <br />
+            โปรดรอการอนุมัติ
           </div>
         </div>
         <div class="bg-wait-card-footer pt-5">
           <div class="text-center">
-            <span class="mr-2">Go back to</span>
-            <a @click="goToSignIn()"> Sign in </a>
+            <span class="mr-2">กลับหน้า</span>
+            <a @click="goToSignIn()"> เข้าสู่ระบบ </a>
           </div>
-          <cp-divider text="or" />
+          <cp-divider text="หรือ" />
           <div class="cp-caption text-center cp-text-description">
-            If you encounter issues, <br />
-            please contact your project's owner.
+            ถ้าคุณติดปัญหาการใช้งาน กรุณาติดต่อหัวหน้างานของคุณ
           </div>
         </div>
       </div>

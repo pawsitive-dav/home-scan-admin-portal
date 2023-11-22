@@ -9,12 +9,12 @@
     >
       <template #top>
         <v-toolbar flat>
-          <v-toolbar-title>Account Approval</v-toolbar-title>
+          <v-toolbar-title>รายการอนุมัติ</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            label="ค้นหา"
             single-line
             hide-details
             outlined
@@ -28,17 +28,7 @@
         <div class="col-user">
           <v-avatar size="40" color="primary">
             <img v-if="item.avatar_path" :src="item.avatar_path" />
-            <span
-              v-else
-              style="
-                text-transform: uppercase;
-                font-size: 22px;
-                font-weight: 500;
-                color: #ffffff;
-              "
-            >
-              {{ item.code_name[0] }}
-            </span>
+            <v-img v-else :src="require('@/assets/images/no-avatar.png')" />
           </v-avatar>
           <div>
             <div class="cp-medium">
@@ -56,7 +46,7 @@
             style="background-color: rgba(224, 148, 56, var(--opacity-2))"
           >
             <span style="color: var(--base-warning)">{{
-              item.account_status
+              item.account_status ? 'รอการอนุมัติ' : '-'
             }}</span>
           </v-chip>
         </div>
@@ -64,7 +54,7 @@
 
       <template #item.created_at="{ item }">
         <div class="cp-text-capitalize">
-          {{ formaDateTime(item.created_at) }}
+          {{ formatDateTime(item.created_at) }}
         </div>
       </template>
 
@@ -76,7 +66,7 @@
           outlined
           @click=";(dialogReject = true), (rejectAccountSelect = item)"
         >
-          <div class="cp-text-capitalize">Reject</div>
+          <div class="cp-text-capitalize">ไม่อนุมัติ</div>
         </v-btn>
         <v-btn
           color="success"
@@ -84,12 +74,12 @@
           small
           @click=";(dialogApprove = true), (approveAccountSelect = item)"
         >
-          <div class="cp-text-capitalize">Approve</div>
+          <div class="cp-text-capitalize">อนุมัติ</div>
         </v-btn>
       </template>
 
       <template #no-data>
-        <div class="my-6">No data available in table.</div>
+        <div class="my-6">ไม่มีรายการอนุมัติ</div>
       </template>
     </v-data-table>
 
@@ -104,7 +94,7 @@
     >
       <v-card>
         <v-card-title>
-          Reject Account
+          ยืนยันไม่อนุมัติบัญชี
           <v-spacer />
           <v-btn
             :disabled="modalLoading"
@@ -116,10 +106,10 @@
           </v-btn>
         </v-card-title>
         <v-card-text>
-          Are you sure you want to reject this account?
+          คุณแน่ใจหรือไม่ที่คุณจะการไม่อนุมัติบัญชีนี้?
           <v-card outlined class="mt-2">
             <div class="pa-2">
-              <b>Name :</b>
+              <b>ชื่อ นามสกุล :</b>
               {{ rejectAccountSelect.first_name }}
               {{ rejectAccountSelect.last_name }}
             </div>
@@ -132,7 +122,7 @@
               color="error"
               @click="onAccountReject()"
             >
-              <div class="cp-text-capitalize">Reject</div>
+              <div class="cp-text-capitalize">ยืนยัน</div>
             </v-btn>
           </div>
         </v-card-text>
@@ -150,7 +140,7 @@
     >
       <v-card>
         <v-card-title>
-          Approve Account
+          ยืนยันอนุมัติบัญชี
           <v-spacer />
           <v-btn
             :disabled="modalLoading"
@@ -163,15 +153,15 @@
         </v-card-title>
         <v-card-text>
           <div class="pb-2">
-            <b>Username :</b>
+            <b>บัญชีผู้ใช้ :</b>
             {{ approveAccountSelect.username }}
           </div>
           <div class="pb-4">
-            <b>Name :</b>
+            <b>ชื่อ นามสกุล :</b>
             {{ approveAccountSelect.first_name }}
             {{ approveAccountSelect.last_name }}
           </div>
-          <cp-label>User Role</cp-label>
+          <cp-label>บทบาท</cp-label>
           <v-select
             v-model="approveRole"
             :items="roleList"
@@ -191,7 +181,7 @@
               color="success"
               @click="onAccountApprove()"
             >
-              <div class="cp-text-capitalize">Approve</div>
+              <div class="cp-text-capitalize">อนุมัติ</div>
             </v-btn>
           </div>
         </v-card-text>
@@ -209,14 +199,19 @@ export default {
     search: '',
     headers: [
       {
-        text: 'USER',
+        text: 'บัญชี',
         sortable: false,
         value: 'user',
       },
-      { text: 'CODE NAME', value: 'code_name' },
-      { text: 'STATUS', value: 'account_status' },
-      { text: 'REGISTER DATE', value: 'created_at' },
-      { text: 'ACTION', align: 'center', value: 'actions', sortable: false },
+      { text: 'Code Name', value: 'code_name' },
+      { text: 'สถานะ', value: 'account_status' },
+      { text: 'วันที่สมัคร', value: 'created_at' },
+      {
+        text: 'การดำเนินการ',
+        align: 'center',
+        value: 'actions',
+        sortable: false,
+      },
     ],
     desserts: [],
     modalLoading: false,
@@ -229,6 +224,10 @@ export default {
     approveRole: 0,
     roleList: null,
   }),
+
+  head: {
+    title: 'Account Approval',
+  },
 
   computed: {
     ...mapState('user', ['appRoleList']),
@@ -276,10 +275,9 @@ export default {
       }
       this.desserts = data
     },
-    formaDateTime(dateTimeStr) {
-      const dateTime = moment(dateTimeStr)
-      const thaiDateTime = dateTime.format('DD-MM-YYYY HH:mm:ss')
-      return thaiDateTime
+    formatDateTime(dateStr) {
+      const result = moment(dateStr).locale('th').format('DD/MMM/yyyy - HH:mm')
+      return result
     },
     async onAccountReject() {
       const accessToken = await this.getAccessToken()
@@ -307,9 +305,9 @@ export default {
             this.onNotify({
               notifyValue: true,
               type: 'success',
-              title: 'Success',
+              title: 'การดำเนินการสำเร็จ',
               message:
-                'Account ' + this.rejectAccountSelect.username + 'is rejected.',
+                'บัญชี ' + this.rejectAccountSelect.username + ' ถูกปฏิเสธ',
             })
           })
           .catch((error) => {
@@ -317,7 +315,7 @@ export default {
             this.onNotify({
               notifyValue: true,
               type: 'error',
-              title: 'Error',
+              title: 'ดำเนินการผิดพลาด',
               message: error,
             })
           })
@@ -350,11 +348,11 @@ export default {
             this.onNotify({
               notifyValue: true,
               type: 'success',
-              title: 'Success',
+              title: 'การดำเนินการสำเร็จ',
               message:
-                'Account ' +
+                'บัญชี ' +
                 this.approveAccountSelect.username +
-                'is approved.',
+                ' ถูกอณุมัติแล้ว',
             })
           })
           .catch((error) => {
@@ -362,7 +360,7 @@ export default {
             this.onNotify({
               notifyValue: true,
               type: 'error',
-              title: 'Error',
+              title: 'ดำเนินการผิดพลาด',
               message: error,
             })
           })

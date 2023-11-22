@@ -3,11 +3,9 @@
     <page-loading />
 
     <v-navigation-drawer v-model="drawer" fixed app>
-      <v-toolbar elevation="0">
-        <v-icon size="50" color="#265b7f" class="mr-3">
-          mdi-alpha-a-circle
-        </v-icon>
-        <span class="cp-title cp-semibold"> Admin Portal</span>
+      <v-toolbar elevation="0" class="cp-header-3 cp-semibold">
+        <span style="color: var(--base-primary)" class="mr-2">HomeScan</span>
+        <span style="color: var(--base-success)">Secure</span>
       </v-toolbar>
 
       <treeview-sidebar />
@@ -45,8 +43,7 @@
         rights reserved.</span
       >
       <v-spacer />
-      <a class="mx-2">Documentation</a>
-      <a class="mx-2">Support</a>
+      <a class="mx-2">Version: 1.0.0</a>
     </v-footer>
   </v-app>
 </template>
