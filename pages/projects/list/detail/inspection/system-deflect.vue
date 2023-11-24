@@ -84,7 +84,7 @@
           </div>
           <v-divider class="my-4" />
 
-          <v-row>
+          <v-row v-if="systemDetail">
             <v-col
               v-for="(list, index) in deflectList"
               :key="index + 'deflectList'"
@@ -112,7 +112,13 @@
                     </v-btn>
                   </div>
                 </v-img>
-                <div class="box-status">
+                <div
+                  v-if="
+                    systemDetail.report_status == 'in-progress' ||
+                    systemDetail.report_status == null
+                  "
+                  class="box-status"
+                >
                   <div
                     :class="
                       list.deflect_status == 1 ? 'status-pass-active' : ''
@@ -142,6 +148,7 @@
                     </span>
                     <span v-else>ผ่าน</span>
                   </div>
+
                   <div
                     :class="
                       list.deflect_status == 0 ? 'status-not-pass-active' : ''
@@ -172,8 +179,42 @@
                     <span v-else>ไม่ผ่าน</span>
                   </div>
                 </div>
+                <div v-else>
+                  <div v-if="list.deflect_status == 1" class="box-status-only">
+                    <div class="status-pass">
+                      <v-icon color="success" large>
+                        mdi-checkbox-outline
+                      </v-icon>
+                      <span class="success--text"> ผ่าน </span>
+                    </div>
+                    <div class="status">
+                      <v-icon large color="grey">
+                        mdi-checkbox-blank-outline
+                      </v-icon>
+                      <span class="grey--text"> ไม่ผ่าน </span>
+                    </div>
+                  </div>
+                  <div v-if="list.deflect_status == 0" class="box-status-only">
+                    <div class="status">
+                      <v-icon color="grey" large>
+                        mdi-checkbox-blank-outline
+                      </v-icon>
+                      <span class="grey--text"> ผ่าน </span>
+                    </div>
+                    <div class="status-not-pass">
+                      <v-icon large color="error">
+                        mdi-close-box-outline
+                      </v-icon>
+                      <span class="error--text"> ไม่ผ่าน </span>
+                    </div>
+                  </div>
+                </div>
                 <div class="d-flex align-center">
                   <v-text-field
+                    v-if="
+                      systemDetail.report_status == 'in-progress' ||
+                      systemDetail.report_status == null
+                    "
                     v-model="list.deflect_detail_new"
                     :append-icon="
                       list.deflect_detail !== list.deflect_detail_new
@@ -187,7 +228,25 @@
                     @blur="list.deflect_detail_new = list.deflect_detail"
                     @click:append="onSaveDeflectDetail(list)"
                   />
-                  <div class="px-4">
+                  <div v-else>
+                    <cp-label>รายละเอียด:</cp-label>
+                    <div
+                      style="
+                        overflow-wrap: break-word;
+                        word-wrap: break-word;
+                        width: 100%;
+                      "
+                    >
+                      {{ list.deflect_detail || '-' }}
+                    </div>
+                  </div>
+                  <div
+                    v-if="
+                      systemDetail.report_status == 'in-progress' ||
+                      systemDetail.report_status == null
+                    "
+                    class="px-4"
+                  >
                     <v-icon
                       class="cp-delete-icon"
                       @click="
@@ -201,7 +260,14 @@
                 </div>
               </div>
             </v-col>
-            <v-col cols="12" md="4">
+            <v-col
+              v-if="
+                systemDetail.report_status == 'in-progress' ||
+                systemDetail.report_status == null
+              "
+              cols="12"
+              md="4"
+            >
               <div class="card-add">
                 <div class="box-select" @click="openImageInput()">
                   <div class="text-center">
@@ -922,7 +988,7 @@ export default {
   margin-bottom: 16px;
 }
 
-.status {
+.box-status .status {
   font-size: 18px;
   width: 100%;
   display: flex;
@@ -936,17 +1002,17 @@ export default {
   transition: all ease 0.3s;
 }
 
-.status-pass:hover {
+.box-status .status-pass:hover {
   background-color: var(--green-100);
 }
-.status-pass-active {
+.box-status .status-pass-active {
   cursor: default;
   background-color: var(--green-100);
 }
-.status-not-pass:hover {
+.box-status .status-not-pass:hover {
   background-color: var(--red-100);
 }
-.status-not-pass-active {
+.box-status .status-not-pass-active {
   cursor: default;
   background-color: var(--red-100);
 }
@@ -975,5 +1041,45 @@ export default {
   border-radius: 4px;
   background-color: var(--gray-opacity-1);
   color: var(--gray-500);
+}
+.box-status-only {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.box-status-only .status {
+  font-size: 18px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  border-radius: 8px;
+  background-color: var(--gray-opacity-1);
+}
+.box-status-only .status-pass {
+  font-size: 18px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  border-radius: 8px;
+  background-color: var(--green-100);
+}
+.box-status-only .status-not-pass {
+  font-size: 18px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  border-radius: 8px;
+  background-color: var(--red-100);
 }
 </style>

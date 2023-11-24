@@ -141,8 +141,8 @@
         </template>
 
         <template #item.actions="{ item }">
-          <cp-col v-if="item.report_status == 'approved'" min="80">
-            <v-btn color="primary" outlined small @click="createPDF()">
+          <cp-col v-if="item.report_path" min="80">
+            <v-btn color="primary" outlined small @click="downloadPDF()">
               <v-icon left>mdi-file-download-outline</v-icon>
               (PDF)
             </v-btn>
@@ -271,8 +271,8 @@ export default {
     ...mapActions('user', ['getAccessToken']),
     ...mapActions('notify', ['onNotify']),
 
-    createPDF() {
-      console.log('Create PDF')
+    downloadPDF() {
+      console.log('Download PDF')
     },
 
     formatDate(dateStr) {

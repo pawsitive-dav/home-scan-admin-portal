@@ -101,7 +101,8 @@
                     <v-spacer />
                     <v-btn
                       :disabled="
-                        inspectionDetail.report_status != 'in-progress'
+                        inspectionDetail.report_status == 'approval' ||
+                        inspectionDetail.report_status == 'approved'
                       "
                       elevation="0"
                       height="36"
@@ -185,9 +186,18 @@
 
                 <template #item.actions="{ item }">
                   <cp-col
-                    v-if="inspectionDetail.report_status == 'in-progress'"
+                    v-if="
+                      inspectionDetail.report_status == 'approval' ||
+                      inspectionDetail.report_status == 'approved'
+                    "
                     min="100"
                   >
+                    <v-icon small disabled class="mr-2">
+                      mdi-pencil-off-outline
+                    </v-icon>
+                    <v-icon small disabled> mdi-delete-off-outline </v-icon>
+                  </cp-col>
+                  <cp-col v-else min="100">
                     <v-icon
                       small
                       class="mr-2"
@@ -209,12 +219,6 @@
                     >
                       mdi-trash-can-outline
                     </v-icon>
-                  </cp-col>
-                  <cp-col v-else min="100">
-                    <v-icon small disabled class="mr-2">
-                      mdi-pencil-off-outline
-                    </v-icon>
-                    <v-icon small disabled> mdi-delete-off-outline </v-icon>
                   </cp-col>
                 </template>
 
@@ -248,7 +252,8 @@
                     <v-spacer />
                     <v-btn
                       :disabled="
-                        inspectionDetail.report_status != 'in-progress'
+                        inspectionDetail.report_status == 'approval' ||
+                        inspectionDetail.report_status == 'approved'
                       "
                       elevation="0"
                       height="36"
@@ -332,9 +337,18 @@
 
                 <template #item.actions="{ item }">
                   <cp-col
-                    v-if="inspectionDetail.report_status == 'in-progress'"
+                    v-if="
+                      inspectionDetail.report_status == 'approval' ||
+                      inspectionDetail.report_status == 'approved'
+                    "
                     min="100"
                   >
+                    <v-icon small disabled class="mr-2">
+                      mdi-pencil-off-outline
+                    </v-icon>
+                    <v-icon small disabled> mdi-delete-off-outline </v-icon>
+                  </cp-col>
+                  <cp-col v-else min="100">
                     <v-icon
                       small
                       class="mr-2"
@@ -355,12 +369,6 @@
                     >
                       mdi-trash-can-outline
                     </v-icon>
-                  </cp-col>
-                  <cp-col v-else min="100">
-                    <v-icon small disabled class="mr-2">
-                      mdi-pencil-off-outline
-                    </v-icon>
-                    <v-icon small disabled> mdi-delete-off-outline </v-icon>
                   </cp-col>
                 </template>
 
@@ -384,7 +392,10 @@
                 </div>
                 <v-spacer />
                 <v-btn
-                  :disabled="inspectionDetail.report_status != 'in-progress'"
+                  :disabled="
+                    inspectionDetail.report_status == 'approval' ||
+                    inspectionDetail.report_status == 'approved'
+                  "
                   elevation="0"
                   height="36"
                   color="primary"
@@ -499,7 +510,8 @@
                         <v-spacer />
                         <v-btn
                           :disabled="
-                            inspectionDetail.report_status != 'in-progress'
+                            inspectionDetail.report_status == 'approval' ||
+                            inspectionDetail.report_status == 'approved'
                           "
                           icon
                           small
@@ -511,13 +523,14 @@
                         >
                           <v-icon
                             v-if="
-                              inspectionDetail.report_status == 'in-progress'
+                              inspectionDetail.report_status == 'approval' ||
+                              inspectionDetail.report_status == 'approved'
                             "
                             small
                           >
-                            mdi-pencil-outline
+                            mdi-pencil-off-outline
                           </v-icon>
-                          <v-icon v-else small>mdi-pencil-off-outline</v-icon>
+                          <v-icon v-else small>mdi-pencil-outline</v-icon>
                         </v-btn>
                       </div>
                     </div>
@@ -547,7 +560,10 @@
                 </v-btn>
                 <v-switch
                   v-model="imageMultipleDelete.active"
-                  :disabled="inspectionDetail.report_status != 'in-progress'"
+                  :disabled="
+                    inspectionDetail.report_status == 'approval' ||
+                    inspectionDetail.report_status == 'approved'
+                  "
                   label="ลบหลายรูป"
                   inset
                 ></v-switch>
@@ -649,7 +665,8 @@
                         <v-btn
                           :disabled="
                             imageMultipleDelete.active ||
-                            inspectionDetail.report_status != 'in-progress'
+                            inspectionDetail.report_status == 'approval' ||
+                            inspectionDetail.report_status == 'approved'
                           "
                           icon
                           small
@@ -661,18 +678,20 @@
                         >
                           <v-icon
                             v-if="
-                              inspectionDetail.report_status == 'in-progress'
+                              inspectionDetail.report_status == 'approval' ||
+                              inspectionDetail.report_status == 'approved'
                             "
                             small
                           >
-                            mdi-pencil-outline
+                            mdi-pencil-off-outline
                           </v-icon>
-                          <v-icon v-else small>mdi-pencil-off-outline</v-icon>
+                          <v-icon v-else small> mdi-pencil-outline </v-icon>
                         </v-btn>
                         <v-btn
                           :disabled="
                             imageMultipleDelete.active ||
-                            inspectionDetail.report_status != 'in-progress'
+                            inspectionDetail.report_status == 'approval' ||
+                            inspectionDetail.report_status == 'approved'
                           "
                           icon
                           small
@@ -683,13 +702,14 @@
                         >
                           <v-icon
                             v-if="
-                              inspectionDetail.report_status == 'in-progress'
+                              inspectionDetail.report_status == 'approval' ||
+                              inspectionDetail.report_status == 'approved'
                             "
                             small
                           >
-                            mdi-trash-can-outline
+                            mdi-delete-off-outline
                           </v-icon>
-                          <v-icon v-else small> mdi-delete-off-outline </v-icon>
+                          <v-icon v-else small> mdi-trash-can-outline </v-icon>
                         </v-btn>
                       </div>
                     </div>
@@ -2862,7 +2882,10 @@ export default {
     },
 
     handleMouseDown(data) {
-      if (this.inspectionDetail.report_status === 'in-progress') {
+      if (
+        this.inspectionDetail.report_status === 'in-progress' ||
+        this.inspectionDetail.report_status === null
+      ) {
         this.isMouseDown = true
         setTimeout(() => {
           if (this.isMouseDown) {

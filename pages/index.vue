@@ -1,20 +1,34 @@
 <template>
-  <div class="cp-dev">
-    <div class="text-center">
-      <v-icon size="100" color="grey">mdi-xml</v-icon>
-      <div class="cp-title">กำลังดำเนินการ</div>
-    </div>
+  <div>
+    <v-btn color="primary" @click="onPDFCreate()">PDF</v-btn>
   </div>
 </template>
 
-<style>
-.cp-dev {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 80vh;
-  background-color: var(--gray-opacity-1);
-  color: var(--gray-400);
+<script>
+import '@/static/Sarabun-Regular-normal.js'
+import jsPDF from 'jspdf'
+
+export default {
+  data() {
+    return {
+      pdfOption: {
+        orientation: 'p',
+        format: 'a4',
+        unit: 'px',
+        lineHeight: 2,
+        putOnlyUsedFonts: true,
+      },
+    }
+  },
+  methods: {
+    onPDFCreate() {
+      // eslint-disable-next-line new-cap
+      const pafDoc = new jsPDF()
+      pafDoc.setFont('Sarabun-Regular', 'normal')
+      pafDoc.setTextColor('#265B7F')
+      pafDoc.text('สวัสดีภาษาไทย', 10, 10)
+      pafDoc.save('pdf-thai.pdf')
+    },
+  },
 }
-</style>
+</script>

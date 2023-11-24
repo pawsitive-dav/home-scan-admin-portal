@@ -84,7 +84,7 @@
           </div>
           <v-divider class="my-4" />
 
-          <v-row>
+          <v-row v-if="locationDetail">
             <v-col
               v-for="(list, index) in deflectList"
               :key="index + 'deflectList'"
@@ -113,7 +113,7 @@
                   </div>
                 </v-img>
                 <div v-if="list.deflect_status == null" class="box-status-wait">
-                  <v-icon>mdi-home-search-outline</v-icon>
+                  <v-icon class="wait-icon">mdi-home-search-outline</v-icon>
                   รอเจ้าหน้าที่ตรวจสอบข้อมูล
                 </div>
                 <div v-else>
@@ -149,6 +149,10 @@
 
                 <div class="d-flex align-center">
                   <v-text-field
+                    v-if="
+                      locationDetail.report_status == 'in-progress' ||
+                      locationDetail.report_status == null
+                    "
                     v-model="list.deflect_detail_new"
                     :append-icon="
                       list.deflect_detail !== list.deflect_detail_new
@@ -162,7 +166,25 @@
                     @blur="list.deflect_detail_new = list.deflect_detail"
                     @click:append="onSaveDeflectDetail(list)"
                   />
-                  <div class="px-4">
+                  <div v-else>
+                    <cp-label>รายละเอียด:</cp-label>
+                    <div
+                      style="
+                        overflow-wrap: break-word;
+                        word-wrap: break-word;
+                        width: 100%;
+                      "
+                    >
+                      {{ list.deflect_detail || '-' }}
+                    </div>
+                  </div>
+                  <div
+                    v-if="
+                      locationDetail.report_status == 'in-progress' ||
+                      locationDetail.report_status == null
+                    "
+                    class="px-4"
+                  >
                     <v-icon
                       class="cp-delete-icon"
                       @click="
@@ -176,7 +198,14 @@
                 </div>
               </div>
             </v-col>
-            <v-col cols="12" md="4">
+            <v-col
+              v-if="
+                locationDetail.report_status == 'in-progress' ||
+                locationDetail.report_status == null
+              "
+              cols="12"
+              md="4"
+            >
               <div class="card-add">
                 <div class="box-select" @click="openImageInput()">
                   <div class="text-center">
@@ -884,8 +913,13 @@ export default {
   gap: 8px;
   height: 50px;
   border-radius: 8px;
-  background-color: var(--gray-opacity-1);
+  background-color: var(--orange-opacity-1);
+  border: 1px solid var(--orange-500);
+  color: var(--orange-600);
   margin-bottom: 16px;
+}
+.box-status-wait .wait-icon {
+  color: var(--orange-600);
 }
 .box-status-only {
   width: 100%;

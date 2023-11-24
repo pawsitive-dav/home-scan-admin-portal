@@ -1390,7 +1390,6 @@
             รายการตรวจนี้อาจจะมีข้อมูล Location, System หรือรายการ Deflect อยู่
             โปรดตรวจสอบให้แน่ใจก่อนลบ เพราะการลบนี้จะทำให้ข้อมูลทั้งหมดหายไป
           </v-alert>
-          {{ projectInspection.delete.reportStatus }}
           <v-alert
             v-if="
               projectInspection.delete.reportStatus == 'approval' ||

@@ -129,12 +129,20 @@
               ยืนยันรายงาน
             </v-btn>
             <v-btn
-              v-if="reportDetail.report_status == 'approved'"
+              v-if="
+                reportDetail.report_status == 'approved' &&
+                !reportDetail.report_path
+              "
+              :loading="downloadPDFLoading"
               color="primary"
               outlined
               large
               @click="createPDF()"
             >
+              <v-icon class="mr-2">mdi-file-star-outline</v-icon>
+              สร้างรายงาน (PDF)
+            </v-btn>
+            <v-btn v-else color="primary" large>
               <v-icon class="mr-2">mdi-file-download-outline</v-icon>
               รายงาน (PDF)
             </v-btn>
@@ -321,12 +329,6 @@
       >
         <div v-if="!list.edit">
           <div class="note-title">{{ list.report_title }}</div>
-          <div
-            v-if="list.report_description"
-            class="note-description cp-text-description"
-          >
-            {{ list.report_description }}
-          </div>
           <v-row no-gutters>
             <v-col
               v-for="(item, i) in list.note_list"
@@ -375,17 +377,6 @@
                 maxlength="100"
                 counter="100"
                 outlined
-              />
-            </div>
-            <div>
-              <v-textarea
-                v-model="list.editNote.description"
-                :disabled="list.editNote.loading"
-                placeholder="รายละเอียด (ถ้ามี)"
-                maxlength="250"
-                counter="250"
-                outlined
-                auto-grow
               />
             </div>
             <v-row>
@@ -473,17 +464,6 @@
               maxlength="100"
               counter="100"
               outlined
-            />
-          </div>
-          <div>
-            <v-textarea
-              v-model="addNote.description"
-              :disabled="addNote.loading"
-              placeholder="รายละเอียด (ถ้ามี)"
-              maxlength="250"
-              counter="250"
-              outlined
-              auto-grow
             />
           </div>
           <v-row>
@@ -718,7 +698,7 @@
                       <div>
                         <v-icon small>mdi-calendar-clock-outline</v-icon>
                         <span class="cp-text-description">{{
-                          formatDate(deflectItem.created_at)
+                          formatDateMax(deflectItem.created_at)
                         }}</span>
                       </div>
                     </div>
@@ -838,7 +818,7 @@
                       <div>
                         <v-icon small>mdi-calendar-clock-outline</v-icon>
                         <span class="cp-text-description">{{
-                          formatDate(deflectItem.created_at)
+                          formatDateMax(deflectItem.created_at)
                         }}</span>
                       </div>
                     </div>
@@ -954,7 +934,7 @@
         <v-card-text>
           <div>
             <div class="warning--text pb-4">
-              การขอยืนยันจะทำให้ไม่สามารถแก้ไขข้อมูลรายงานนี้ได้
+              การขอยืนยันจะทำให้ไม่สามารถแก้ไขข้อมูลทั้งหมดที่เกี่ยวข้องกับโปรเจคนี้ได้อีก
             </div>
             <cp-label>หัวหน้าทีมตรวจของโปรเจค</cp-label>
             <v-card outlined class="pa-2">
@@ -1082,6 +1062,8 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import moment from 'moment'
+import '@/static/Sarabun-Regular-normal.js'
+import '@/static/Sarabun-SemiBold-normal.js'
 import jsPDF from 'jspdf'
 
 export default {
@@ -1100,7 +1082,6 @@ export default {
         loading: false,
         valid: false,
         title: '',
-        description: '',
         noteList: [],
       },
       deleteNoteGroup: {
@@ -1130,6 +1111,7 @@ export default {
         loading: false,
         dialog: false,
       },
+      downloadPDFLoading: false,
     }
   },
 
@@ -1175,9 +1157,12 @@ export default {
     },
 
     formatDate(dateStr) {
-      const result = moment(dateStr)
-        .locale('th')
-        .format('DD/MMMM/yyyy เวลา HH:mm')
+      const result = moment(dateStr).locale('th').format('DD/MMMM/yyyy')
+      return result
+    },
+
+    formatDatePDF(dateStr) {
+      const result = moment(dateStr).locale('th').format('DD MMMM yyyy')
       return result
     },
 
@@ -1256,7 +1241,6 @@ export default {
                   loading: false,
                   valid: true,
                   title: item.report_title,
-                  description: item.report_description,
                   noteList: item.note_list.map((note) => ({
                     noteListValue: note.list_message,
                   })),
@@ -1328,7 +1312,6 @@ export default {
         this.addNote.loading = true
         const setData = {
           title: this.addNote.title.trim(),
-          description: this.addNote.description.trim(),
           noteList: [],
         }
         for (let i = 0; i < this.addNote.noteList.length; i++) {
@@ -1345,7 +1328,6 @@ export default {
                 inspection_id: this.reportDetail.inspection_id,
                 report_id: this.$route.query.id,
                 report_title: setData.title,
-                report_description: setData.description,
                 note_list: setData.noteList,
               },
               {
@@ -1358,7 +1340,6 @@ export default {
               if (data.data) {
                 this.onGetReportNoteList()
                 this.addNote.title = ''
-                this.addNote.description = ''
                 this.addNote.noteList = []
                 this.$refs.formAddNote.resetValidation()
                 this.addNote.loading = false
@@ -1395,7 +1376,6 @@ export default {
 
     cancelEditNoteGroup(data) {
       data.editNote.title = data.report_title
-      data.editNote.description = data.report_description
       data.editNote.noteList = data.note_list.map((note) => ({
         noteListValue: note.list_message,
       }))
@@ -1418,7 +1398,6 @@ export default {
         data.editNote.loading = true
         const setData = {
           title: data.editNote.title.trim(),
-          description: data.editNote.description.trim(),
           noteList: [],
         }
 
@@ -1441,7 +1420,6 @@ export default {
                 report_id: this.$route.query.id,
                 report_note_id: data.report_note_id,
                 report_title: setData.title,
-                report_description: setData.description,
                 note_list: setData.noteList,
               },
               {
@@ -1765,14 +1743,958 @@ export default {
       }
     },
 
+    async getImageBase64(imagePath) {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        try {
+          const response = await this.$axios.post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/report/image-64`,
+            {
+              image_path: imagePath,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          return response.data.data
+        } catch (error) {
+          this.onNotify({
+            notifyValue: true,
+            type: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            message: error.response,
+          })
+        }
+      }
+    },
+
     createPDF() {
+      this.downloadPDFLoading = true
+      const pdfPageDetail = [
+        {
+          page: 1,
+          mainImage: this.projectFile.main,
+          projectDetail: this.reportDetail.project_detail,
+          typeDetail: this.reportDetail.type_detail,
+          customerDetail: this.reportDetail.customer_detail,
+          coordinatorDetail: this.reportDetail.coordinator_detail,
+        },
+      ]
+
+      const planList = [
+        this.projectFile.plan1,
+        this.projectFile.plan2,
+        this.projectFile.plan3,
+        this.projectFile.plan4,
+      ].filter(Boolean)
+
+      planList.forEach((plan, index) => {
+        const pageNumber = Math.floor(index / 2) + 2
+        const planNumber = index + 1
+
+        pdfPageDetail[pageNumber - 1] = pdfPageDetail[pageNumber - 1] || {
+          page: pageNumber,
+        }
+        pdfPageDetail[pageNumber - 1][`plan${planNumber}`] = {
+          plan: planNumber,
+          image: plan,
+        }
+      })
+
+      const noteDataGroup = this.noteGroupList.map((e) => ({
+        title: e.report_title,
+        noteList: e.note_list.map((x) => ({
+          listMessage: x.list_message,
+        })),
+      }))
+
+      const filterKeys = ['image_path', 'deflect_status', 'deflect_detail']
+      const filterDeflectList = (list) =>
+        list.map((deflect) =>
+          Object.fromEntries(
+            Object.entries(deflect).filter(([key]) => filterKeys.includes(key))
+          )
+        )
+
+      const filteredLocationSetup = this.locationList.map((e) => ({
+        locationName: e.location_name,
+        deflectList: filterDeflectList(e.deflect_list),
+      }))
+
+      const filteredSystemSetup = this.systemList.map((e) => ({
+        systemName: e.system_name,
+        deflectList: filterDeflectList(e.deflect_list),
+      }))
+
+      this.setupImage(
+        pdfPageDetail,
+        noteDataGroup,
+        filteredLocationSetup,
+        filteredSystemSetup
+      )
+    },
+
+    async setupImage(
+      pdfPageDetail,
+      noteDataGroup,
+      filteredLocationSetup,
+      filteredSystemSetup
+    ) {
+      // Setup Main Image
+      const mainImage = await this.getImageBase64(pdfPageDetail[0].mainImage)
+      this.convertBase64To16by9(mainImage.image, (resultBase64) => {
+        pdfPageDetail[0].mainImage = {
+          image: resultBase64,
+          width: mainImage.width,
+          height: mainImage.height,
+        }
+      })
+
+      // Setup Plan Image
+      if (pdfPageDetail[1]) {
+        if (pdfPageDetail[1].plan1) {
+          const plan1Data = await this.getImageBase64(
+            pdfPageDetail[1].plan1.image
+          )
+          pdfPageDetail[1].plan1.image = plan1Data.image
+          pdfPageDetail[1].plan1.width = plan1Data.width
+          pdfPageDetail[1].plan1.height = plan1Data.height
+        }
+
+        if (pdfPageDetail[1].plan2) {
+          const plan2Data = await this.getImageBase64(
+            pdfPageDetail[1].plan2.image
+          )
+          pdfPageDetail[1].plan2.image = plan2Data.image
+          pdfPageDetail[1].plan2.width = plan2Data.width
+          pdfPageDetail[1].plan2.height = plan2Data.height
+        }
+      }
+
+      if (pdfPageDetail[2]) {
+        if (pdfPageDetail[2].plan3) {
+          const plan3Data = await this.getImageBase64(
+            pdfPageDetail[2].plan3.image
+          )
+          pdfPageDetail[2].plan3.image = plan3Data.image
+          pdfPageDetail[2].plan3.width = plan3Data.width
+          pdfPageDetail[2].plan3.height = plan3Data.height
+        }
+        if (pdfPageDetail[2].plan4) {
+          const plan4Data = await this.getImageBase64(
+            pdfPageDetail[2].plan4.image
+          )
+          pdfPageDetail[2].plan4.image = plan4Data.image
+          pdfPageDetail[2].plan4.width = plan4Data.width
+          pdfPageDetail[2].plan4.height = plan4Data.height
+        }
+      }
+
+      // Setup Location Deflect Image
+      const updateLocationImage = async (deflectListItem) => {
+        const imageData = await this.getImageBase64(deflectListItem.image_path)
+        deflectListItem.image_path = imageData.image
+        return deflectListItem
+      }
+
+      const updateLocationDeflectList = async (locationItem) => {
+        const updatedDeflectList = await Promise.all(
+          locationItem.deflectList.map(updateLocationImage)
+        )
+        locationItem.deflectList = updatedDeflectList
+        return locationItem
+      }
+
+      const updatedLocationSetup = await Promise.all(
+        filteredLocationSetup.map(updateLocationDeflectList)
+      )
+
+      // Setup System Deflect Image
+      const updateSystemImage = async (deflectListItem) => {
+        const imageData = await this.getImageBase64(deflectListItem.image_path)
+        deflectListItem.image_path = imageData.image
+        return deflectListItem
+      }
+
+      const updateSystemDeflectList = async (systemItem) => {
+        const updatedDeflectList = await Promise.all(
+          systemItem.deflectList.map(updateSystemImage)
+        )
+        systemItem.deflectList = updatedDeflectList
+        return systemItem
+      }
+
+      const updatedSystemSetup = await Promise.all(
+        filteredSystemSetup.map(updateSystemDeflectList)
+      )
+
+      this.onCreateFilePDF(
+        pdfPageDetail,
+        noteDataGroup,
+        updatedLocationSetup,
+        updatedSystemSetup
+      )
+    },
+
+    convertBase64To16by9(base64, callback) {
+      const img = new Image()
+      img.onload = function () {
+        const aspectRatio = 16 / 9
+        const imgWidth = img.width
+        const imgHeight = img.height
+        const imgAspectRatio = imgWidth / imgHeight
+
+        let newWidth, newHeight, offsetX, offsetY
+        if (imgAspectRatio > aspectRatio) {
+          newWidth = imgHeight * aspectRatio
+          newHeight = imgHeight
+          offsetX = (imgWidth - newWidth) / 2
+          offsetY = 0
+        } else {
+          newWidth = imgWidth
+          newHeight = imgWidth / aspectRatio
+          offsetX = 0
+          offsetY = (imgHeight - newHeight) / 2
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = 16 * 50
+        canvas.height = 9 * 50
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(
+          img,
+          offsetX,
+          offsetY,
+          newWidth,
+          newHeight,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        )
+        const resultBase64 = canvas.toDataURL('image/jpeg')
+        callback(resultBase64)
+      }
+      img.src = base64
+    },
+
+    drawSection(pdfDoc, x, y, width, title) {
+      pdfDoc.setLineWidth(0.5)
+      pdfDoc.setDrawColor('#E8E8E8')
+      pdfDoc.line(x, y, x + width, y)
+
+      pdfDoc.setFontSize(14)
+      pdfDoc.setTextColor('#265B7F')
+      pdfDoc.setFont('Sarabun-SemiBold', 'normal')
+      this.thaitext(pdfDoc, title, x, y + 8)
+
+      pdfDoc.setLineWidth(0.5)
+      pdfDoc.setDrawColor('#E8E8E8')
+      pdfDoc.line(x, y + 11.5, x + width, y + 11.5)
+    },
+
+    drawSectionError(pdfDoc, x, y, width, title) {
+      pdfDoc.setLineWidth(0.5)
+      pdfDoc.setDrawColor('#E8E8E8')
+      pdfDoc.line(x, y, x + width, y)
+
+      pdfDoc.setFontSize(14)
+      pdfDoc.setTextColor('#ED7665')
+      pdfDoc.setFont('Sarabun-SemiBold', 'normal')
+      this.thaitext(pdfDoc, title, x, y + 8)
+
+      pdfDoc.setLineWidth(0.5)
+      pdfDoc.setDrawColor('#E8E8E8')
+      pdfDoc.line(x, y + 11.5, x + width, y + 11.5)
+    },
+
+    drawLabel(pdfDoc, x, y, title) {
+      pdfDoc.setFontSize(12)
+      pdfDoc.setTextColor('#676268')
+      pdfDoc.setFont('Sarabun-SemiBold', 'normal')
+      this.thaitext(pdfDoc, title, x, y)
+    },
+
+    drawValue(pdfDoc, x, y, title, maxWidth) {
+      pdfDoc.setFontSize(12)
+      pdfDoc.setTextColor('#676268')
+      pdfDoc.setFont('Sarabun-Regular', 'normal')
+      const textLines = pdfDoc.splitTextToSize(title, maxWidth)
+      for (let i = 0; i < textLines.length; i++) {
+        this.thaitext(pdfDoc, textLines[i], x, y + i * 5.5)
+      }
+    },
+
+    drawNoteTitle(pdfDoc, x, y, title, maxWidth) {
+      pdfDoc.setFontSize(12)
+      pdfDoc.setTextColor('#171A1C')
+      pdfDoc.setFont('Sarabun-SemiBold', 'normal')
+      const textLines = pdfDoc.splitTextToSize(title, maxWidth)
+      for (let i = 0; i < textLines.length; i++) {
+        this.thaitext(pdfDoc, textLines[i], x, y + i * 5.5)
+      }
+    },
+
+    drawValueList(pdfDoc, x, y, title, maxWidth) {
+      const textLines = pdfDoc.splitTextToSize(title, maxWidth)
+      for (let i = 0; i < textLines.length; i++) {
+        this.thaitext(pdfDoc, textLines[i], x, y + i * 5)
+      }
+    },
+
+    drawValueListItem(pdfDoc, x, y, text) {
+      pdfDoc.setFontSize(10)
+      pdfDoc.setTextColor('#676268')
+      pdfDoc.setFont('Sarabun-Regular', 'normal')
+      pdfDoc.text('-', x + 5, y + 16)
+      this.drawValueList(pdfDoc, x + 10, y + 16, text, 77.5)
+    },
+
+    drawNoteBox(pdfDoc, x, y, title, item) {
+      pdfDoc.setDrawColor('#D3CFCF')
+      const noteBox = {
+        x,
+        y,
+        width: 180,
+        height: 25,
+      }
+      this.drawNoteTitle(
+        pdfDoc,
+        noteBox.x + 5,
+        noteBox.y + 8,
+        title,
+        noteBox.width - 10
+      )
+
+      if (item[0]) {
+        this.drawValueListItem(
+          pdfDoc,
+          noteBox.x,
+          noteBox.y,
+          item[0].listMessage
+        )
+      }
+      if (item[1]) {
+        this.drawValueListItem(
+          pdfDoc,
+          noteBox.x + 87.5,
+          noteBox.y,
+          item[1].listMessage
+        )
+      }
+
+      if (item[2]) {
+        this.drawValueListItem(
+          pdfDoc,
+          noteBox.x,
+          noteBox.y + 12,
+          item[2].listMessage
+        )
+        noteBox.height = noteBox.height + 12
+      }
+      if (item[3]) {
+        this.drawValueListItem(
+          pdfDoc,
+          noteBox.x + 87.5,
+          noteBox.y + 12,
+          item[3].listMessage
+        )
+      }
+
+      if (item[4]) {
+        this.drawValueListItem(
+          pdfDoc,
+          noteBox.x,
+          noteBox.y + 24,
+          item[4].listMessage
+        )
+        noteBox.height = noteBox.height + 12
+      }
+      if (item[5]) {
+        this.drawValueListItem(
+          pdfDoc,
+          noteBox.x + 87.5,
+          noteBox.y + 24,
+          item[5].listMessage
+        )
+      }
+
+      if (item[6]) {
+        this.drawValueListItem(
+          pdfDoc,
+          noteBox.x,
+          noteBox.y + 36,
+          item[6].listMessage
+        )
+        noteBox.height = noteBox.height + 12
+      }
+      if (item[7]) {
+        this.drawValueListItem(
+          pdfDoc,
+          noteBox.x + 87.5,
+          noteBox.y + 36,
+          item[7].listMessage
+        )
+      }
+
+      if (item[8]) {
+        this.drawValueListItem(
+          pdfDoc,
+          noteBox.x,
+          noteBox.y + 48,
+          item[8].listMessage
+        )
+        noteBox.height = noteBox.height + 12
+      }
+      if (item[9]) {
+        this.drawValueListItem(
+          pdfDoc,
+          noteBox.x + 87.5,
+          noteBox.y + 48,
+          item[9].listMessage
+        )
+      }
+
+      pdfDoc.rect(noteBox.x, noteBox.y, noteBox.width, noteBox.height)
+    },
+
+    drawFooterNote(pdfDoc) {
+      pdfDoc.setFontSize(8.5)
+      pdfDoc.setTextColor('#ED7665')
+      pdfDoc.setFont('Sarabun-Regular', 'normal')
+      this.thaitext(pdfDoc, 'หมายเหตุ:', 15, 290)
+      pdfDoc.setTextColor('#747677')
+      this.thaitext(
+        pdfDoc,
+        'การตรวจสอบทั้งหมดขึ้นอยู่กับสภาพปัจจุบันของหน้างานในวันที่ตรวจสอบ และขึ้นอยู่กับ specification ของโครงการที่ทำการตรวจสอบ',
+        30,
+        290
+      )
+    },
+
+    thaitext(pdfDoc, str, x, y) {
+      const sara = ['่', '้', '๊', '๋', '์']
+      const pushers = ['ิ', 'ี', 'ึ', 'ื', 'ำ', 'ั']
+      let base = ''
+      const dim = pdfDoc.getTextDimensions(str)
+      for (let i = 0; i < str.length; i++) {
+        const c = str.charAt(i)
+        if (!sara.includes(c)) {
+          base += c
+        } else {
+          const pusher = base.charAt(base.length - 1)
+          if (!pushers.includes(pusher)) {
+            if (str.charAt(i + 1) !== '' && str.charAt(i + 1) === 'ำ') {
+              const len = pdfDoc.getTextWidth(base + 'ำ')
+              pdfDoc.text(c, x + len, y - dim.h / 4)
+            } else {
+              base += c
+            }
+          } else {
+            const len = pdfDoc.getTextWidth(base)
+            pdfDoc.text(c, x + len, y - dim.h / 4)
+          }
+        }
+      }
+      pdfDoc.text(base, x, y)
+    },
+
+    setImageCenter(maxHeight, imageWidth, imageHeight) {
+      const targetHeight = maxHeight
+      const aspectRatio = imageWidth / imageHeight
+      const targetWidth = targetHeight * aspectRatio
+      const pageWidth = 210
+      const xPosition = (pageWidth - targetWidth) / 2
+      return [xPosition, targetWidth]
+    },
+
+    deflectBox(pdfDoc, image, status, detail, x, y) {
+      pdfDoc.setDrawColor('#D3CFCF')
+      pdfDoc.rect(x, y, 88, 80)
+      if (image) {
+        pdfDoc.addImage(image, 'JPEG', x + 4, y + 4, 80, 50)
+      } else {
+        pdfDoc.rect(x + 4, y + 4, 80, 50)
+      }
+      if (status === 1) {
+        const statusPassActive = require('@/assets/images/pass-active.jpg')
+        pdfDoc.addImage(statusPassActive, 'JPG', x + 4, y + 57, 37.5, 8)
+        const statusNotPass = require('@/assets/images/not-pass.jpg')
+        pdfDoc.addImage(statusNotPass, 'JPG', x + 46.5, y + 57, 37.5, 8)
+      } else if (status === 0) {
+        const statusPass = require('@/assets/images/pass.jpg')
+        pdfDoc.addImage(statusPass, 'JPG', x + 4, y + 57, 37.5, 8)
+        const statusNotPassActive = require('@/assets/images/not-pass-active.jpg')
+        pdfDoc.addImage(statusNotPassActive, 'JPG', x + 46.5, y + 57, 37.5, 8)
+      }
+      this.drawValue(pdfDoc, x + 4, y + 71, detail, 80)
+    },
+
+    onCreateFilePDF(
+      pdfPageDetail,
+      noteDataGroup,
+      updatedLocationSetup,
+      updatedSystemSetup
+    ) {
       // eslint-disable-next-line new-cap
       const pdfDoc = new jsPDF()
 
       const imageHeader = require('@/assets/images/header-page.png')
-      pdfDoc.addImage(imageHeader, 'PNG', 10, 10, 180, 43.55)
+      pdfDoc.addImage(imageHeader, 'PNG', 15, 15, 180, 43.55)
 
-      pdfDoc.save('pdf-test.pdf')
+      // ---> Main Image
+      if (pdfPageDetail[0].mainImage) {
+        const mainImage = pdfPageDetail[0].mainImage
+        pdfDoc.addImage(mainImage.image, 'JPEG', 15, 65, 180, 101.25)
+      } else {
+        pdfDoc.setFillColor('#F2F2F2')
+        pdfDoc.rect(15, 65, 180, 94, 'F')
+      }
+
+      const projectDetail = pdfPageDetail[0].projectDetail
+      this.drawSection(pdfDoc, 15, 165, 85, 'ข้อมูล โปรเจค')
+      this.drawLabel(pdfDoc, 15, 188, 'ชื่อโปรเจค')
+      this.drawValue(pdfDoc, 42, 188, projectDetail.project_name, 58)
+      this.drawLabel(pdfDoc, 15, 200, 'ตรวจรอบที่')
+      this.drawValue(pdfDoc, 42, 200, projectDetail.inspection_no, 58)
+      this.drawLabel(pdfDoc, 15, 212, 'วันที่เข้าตรวจ')
+      this.drawValue(
+        pdfDoc,
+        42,
+        212,
+        this.formatDatePDF(projectDetail.working_date),
+        58
+      )
+
+      const customerDetail = pdfPageDetail[0].customerDetail
+      this.drawSection(pdfDoc, 115, 165, 80, 'ข้อมูล ลูกค้า')
+      this.drawLabel(pdfDoc, 115, 188, 'ชื่อ')
+      this.drawValue(pdfDoc, 135, 188, customerDetail.name, 60)
+      this.drawLabel(pdfDoc, 115, 200, 'เบอร์โทร')
+      this.drawValue(
+        pdfDoc,
+        135,
+        200,
+        customerDetail.phone
+          ? this.formatPhoneNumber(customerDetail.phone)
+          : '-',
+        60
+      )
+      this.drawLabel(pdfDoc, 115, 212, 'อีเมล')
+      this.drawValue(pdfDoc, 135, 212, customerDetail.email || '-', 60)
+
+      const typeDetail = pdfPageDetail[0].typeDetail
+      this.drawSection(pdfDoc, 15, 224, 85, 'ข้อมูล ' + typeDetail.project_type)
+      this.drawLabel(pdfDoc, 15, 246, 'ประเภท')
+      this.drawValue(pdfDoc, 42, 246, typeDetail.project_type, 58)
+      this.drawLabel(pdfDoc, 15, 258, 'เลขที่')
+      this.drawValue(pdfDoc, 42, 258, typeDetail.type_address || '-', 58)
+      this.drawLabel(pdfDoc, 15, 270, 'พื้นที่ใช้สอย')
+      this.drawValue(
+        pdfDoc,
+        42,
+        270,
+        `${typeDetail.type_usable_area} ตร.ม.`,
+        58
+      )
+
+      const coordinatorDetail = pdfPageDetail[0].coordinatorDetail
+      this.drawSection(pdfDoc, 115, 224, 85, 'ข้อมูล เจ้าหน้าที่โครงการ')
+      this.drawLabel(pdfDoc, 115, 246, 'ชื่อ')
+      this.drawValue(pdfDoc, 135, 246, coordinatorDetail.name, 60)
+      this.drawLabel(pdfDoc, 115, 258, 'เบอร์โทร')
+      this.drawValue(
+        pdfDoc,
+        135,
+        258,
+        coordinatorDetail.phone
+          ? this.formatPhoneNumber(coordinatorDetail.phone)
+          : '-',
+        60
+      )
+      this.drawLabel(pdfDoc, 115, 270, 'อีเมล')
+      this.drawValue(pdfDoc, 135, 270, coordinatorDetail.email || '-', 60)
+
+      // ---> Plan 1 Page
+
+      const planPage1 = pdfPageDetail[1]
+      if (planPage1) {
+        pdfDoc.addPage()
+        this.drawSection(pdfDoc, 15, 10, 180, 'แปลน')
+
+        if (planPage1.plan1) {
+          const target = this.setImageCenter(
+            120,
+            planPage1.plan1.width,
+            planPage1.plan1.height
+          )
+          this.setImageCenter()
+          pdfDoc.addImage(
+            planPage1.plan1.image,
+            'JPEG',
+            target[0],
+            32,
+            target[1],
+            120
+          )
+        }
+
+        if (planPage1.plan2) {
+          const target = this.setImageCenter(
+            120,
+            planPage1.plan2.width,
+            planPage1.plan2.height
+          )
+          this.setImageCenter()
+          pdfDoc.addImage(
+            planPage1.plan2.image,
+            'JPEG',
+            target[0],
+            160,
+            target[1],
+            120
+          )
+        }
+      }
+
+      // ---> Plan 2 Page
+      const planPage2 = pdfPageDetail[2]
+      if (planPage2) {
+        pdfDoc.addPage()
+        this.drawSection(pdfDoc, 15, 10, 180, 'แปลน')
+
+        if (planPage2.plan3) {
+          const target = this.setImageCenter(
+            120,
+            planPage2.plan3.width,
+            planPage2.plan3.height
+          )
+          this.setImageCenter()
+          pdfDoc.addImage(
+            planPage2.plan3.image,
+            'JPEG',
+            target[0],
+            32,
+            target[1],
+            120
+          )
+        }
+
+        if (planPage2.plan4) {
+          const target = this.setImageCenter(
+            120,
+            planPage2.plan4.width,
+            planPage2.plan4.height
+          )
+          this.setImageCenter()
+          pdfDoc.addImage(
+            planPage2.plan4.image,
+            'JPEG',
+            target[0],
+            160,
+            target[1],
+            120
+          )
+        }
+      }
+
+      // ---> Note Page
+      let pageHeightStart = 0
+      noteDataGroup.forEach((element, index) => {
+        if (element.noteList.length === 1 || element.noteList.length === 2) {
+          element.heightBox = 25
+        } else if (
+          element.noteList.length === 3 ||
+          element.noteList.length === 4
+        ) {
+          element.heightBox = 37
+        } else if (
+          element.noteList.length === 5 ||
+          element.noteList.length === 6
+        ) {
+          element.heightBox = 49
+        } else if (
+          element.noteList.length === 7 ||
+          element.noteList.length === 8
+        ) {
+          element.heightBox = 61
+        } else if (
+          element.noteList.length === 9 ||
+          element.noteList.length === 10
+        ) {
+          element.heightBox = 72
+        }
+
+        if (pageHeightStart === 0) {
+          element.newPage = true
+          element.yPosition = 26
+          pageHeightStart = 26 + element.heightBox + 5
+        } else if (pageHeightStart >= 220) {
+          element.newPage = true
+          pageHeightStart = 26
+          element.yPosition = 26
+          pageHeightStart = 26 + element.heightBox + 5
+        } else {
+          element.newPage = false
+          element.yPosition = pageHeightStart
+          pageHeightStart = pageHeightStart + element.heightBox + 5
+        }
+      })
+
+      noteDataGroup.forEach((element) => {
+        if (element.newPage) {
+          pdfDoc.addPage()
+          this.drawSectionError(pdfDoc, 15, 10, 180, 'หมายเหตุ')
+          this.drawFooterNote(pdfDoc)
+          this.drawNoteBox(
+            pdfDoc,
+            15,
+            element.yPosition,
+            element.title,
+            element.noteList
+          )
+        } else {
+          this.drawNoteBox(
+            pdfDoc,
+            15,
+            element.yPosition,
+            element.title,
+            element.noteList
+          )
+        }
+      })
+
+      const topLeft = [15, 28]
+      const topRight = [107, 28]
+      const centerLeft = [15, 112]
+      const centerRight = [107, 112]
+      const bottomLeft = [15, 196]
+      const bottomRight = [107, 196]
+
+      // ---> Location Page
+      const newMockupLocation = []
+
+      updatedLocationSetup.forEach((location) => {
+        const deflectList = location.deflectList
+        let pageCount = 0
+        let boxCount = 1
+        for (let i = 0; i < deflectList.length; i++) {
+          if (i % 6 === 0) {
+            newMockupLocation.push({
+              newPage: true,
+              locationName: location.locationName,
+              deflect_detail: deflectList[i].deflect_detail,
+              deflect_status: deflectList[i].deflect_status,
+              image_path: deflectList[i].image_path,
+              position: 'top-left',
+            })
+            // eslint-disable-next-line no-unused-vars
+            pageCount++
+            // eslint-disable-next-line no-unused-vars
+            boxCount++
+          } else {
+            let positionSetup = ''
+            if (boxCount === 2) {
+              positionSetup = 'top-right'
+            } else if (boxCount === 3) {
+              positionSetup = 'center-left'
+            } else if (boxCount === 4) {
+              positionSetup = 'center-right'
+            } else if (boxCount === 5) {
+              positionSetup = 'bottom-left'
+            } else if (boxCount === 6) {
+              positionSetup = 'bottom-right'
+            }
+            newMockupLocation.push({
+              newPage: false,
+              locationName: location.locationName,
+              deflect_detail: deflectList[i].deflect_detail,
+              deflect_status: deflectList[i].deflect_status,
+              image_path: deflectList[i].image_path,
+              position: positionSetup,
+            })
+            // eslint-disable-next-line no-unused-vars
+            boxCount++
+            if (boxCount === 7) boxCount = 1
+          }
+        }
+      })
+
+      newMockupLocation.forEach((box) => {
+        if (box.newPage) {
+          pdfDoc.addPage()
+          this.drawSection(pdfDoc, 15, 10, 180, 'Location: ' + box.locationName)
+          this.drawFooterNote(pdfDoc)
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            topLeft[0],
+            topLeft[1]
+          )
+        } else if (box.position === 'top-right') {
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            topRight[0],
+            topRight[1]
+          )
+        } else if (box.position === 'center-left') {
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            centerLeft[0],
+            centerLeft[1]
+          )
+        } else if (box.position === 'center-right') {
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            centerRight[0],
+            centerRight[1]
+          )
+        } else if (box.position === 'bottom-left') {
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            bottomLeft[0],
+            bottomLeft[1]
+          )
+        } else if (box.position === 'bottom-right') {
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            bottomRight[0],
+            bottomRight[1]
+          )
+        }
+      })
+
+      // ---> System Page
+      const newMockupSystem = []
+
+      updatedSystemSetup.forEach((system) => {
+        const deflectList = system.deflectList
+        let pageCount = 0
+        let boxCount = 1
+        for (let i = 0; i < deflectList.length; i++) {
+          if (i % 6 === 0) {
+            newMockupSystem.push({
+              newPage: true,
+              systemName: system.systemName,
+              deflect_detail: deflectList[i].deflect_detail,
+              deflect_status: deflectList[i].deflect_status,
+              image_path: deflectList[i].image_path,
+              position: 'top-left',
+            })
+            // eslint-disable-next-line no-unused-vars
+            pageCount++
+            // eslint-disable-next-line no-unused-vars
+            boxCount++
+          } else {
+            let positionSetup = ''
+            if (boxCount === 2) {
+              positionSetup = 'top-right'
+            } else if (boxCount === 3) {
+              positionSetup = 'center-left'
+            } else if (boxCount === 4) {
+              positionSetup = 'center-right'
+            } else if (boxCount === 5) {
+              positionSetup = 'bottom-left'
+            } else if (boxCount === 6) {
+              positionSetup = 'bottom-right'
+            }
+            newMockupSystem.push({
+              newPage: false,
+              systemName: system.systemName,
+              deflect_detail: deflectList[i].deflect_detail,
+              deflect_status: deflectList[i].deflect_status,
+              image_path: deflectList[i].image_path,
+              position: positionSetup,
+            })
+            // eslint-disable-next-line no-unused-vars
+            boxCount++
+            if (boxCount === 7) boxCount = 1
+          }
+        }
+      })
+
+      newMockupSystem.forEach((box) => {
+        if (box.newPage) {
+          pdfDoc.addPage()
+          this.drawSection(pdfDoc, 15, 10, 180, 'System: ' + box.systemName)
+          this.drawFooterNote(pdfDoc)
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            topLeft[0],
+            topLeft[1]
+          )
+        } else if (box.position === 'top-right') {
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            topRight[0],
+            topRight[1]
+          )
+        } else if (box.position === 'center-left') {
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            centerLeft[0],
+            centerLeft[1]
+          )
+        } else if (box.position === 'center-right') {
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            centerRight[0],
+            centerRight[1]
+          )
+        } else if (box.position === 'bottom-left') {
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            bottomLeft[0],
+            bottomLeft[1]
+          )
+        } else if (box.position === 'bottom-right') {
+          this.deflectBox(
+            pdfDoc,
+            box.image_path,
+            box.deflect_status,
+            box.deflect_detail || '-',
+            bottomRight[0],
+            bottomRight[1]
+          )
+        }
+      })
+
+      this.downloadPDFLoading = false
+      const fileName = 'property-plus-report' + Date.now()
+      pdfDoc.save(`${fileName}.pdf`)
     },
   },
 }
@@ -1844,6 +2766,7 @@ export default {
   padding: 8px 0;
 }
 .detail-label .detail-key {
+  min-width: 100px;
   color: #676268;
   font-weight: 600;
 }
@@ -1894,10 +2817,6 @@ export default {
   font-size: 20px;
   font-weight: 600;
   color: #171a1c;
-  word-wrap: break-word;
-}
-.added-report-note .note-description {
-  padding: 8px 0;
   word-wrap: break-word;
 }
 .added-report-note .note-item-list {
