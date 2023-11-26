@@ -148,7 +148,11 @@
             </v-btn>
           </cp-col>
           <cp-col v-else min="80">
-            <v-icon v-if="item.report_status != 'in-progress'" disabled small>
+            <v-icon
+              v-if="item.report_status != 'in-progress' || role == 'Checker'"
+              disabled
+              small
+            >
               mdi-delete-off-outline
             </v-icon>
             <v-icon

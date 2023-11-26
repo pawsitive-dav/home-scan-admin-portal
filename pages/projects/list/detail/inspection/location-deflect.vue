@@ -5,7 +5,9 @@
         <cp-link> รายการโปรเจค </cp-link>
       </span>
       /
+      <span v-if="!locationDetail" class="mx-1 cp-text-disable">...</span>
       <span
+        v-else
         class="mx-1"
         @click="
           $router.push(`/projects/list/detail?id=${locationDetail.project_id}`)
@@ -16,7 +18,9 @@
         </cp-link>
       </span>
       /
+      <span v-if="!locationDetail" class="mx-1 cp-text-disable">...</span>
       <span
+        v-else
         class="mx-1"
         @click="
           $router.push(
@@ -30,7 +34,8 @@
         </cp-link>
       </span>
       /
-      <span class="mx-1 cp-text-disable">
+      <span v-if="!locationDetail" class="mx-1 cp-text-disable">...</span>
+      <span v-else class="mx-1 cp-text-disable">
         {{ locationDetail ? locationDetail.location_name : '' }}
       </span>
     </div>
@@ -42,6 +47,13 @@
       accept="image/*"
       @change="uploadImage"
     />
+
+    <v-row v-if="!locationDetail" class="mt-4">
+      <v-col cols="12">
+        <v-sheet color="grey lighten-2" width="300" height="30" />
+        <v-sheet color="grey lighten-2" width="500" height="20" class="mt-4" />
+      </v-col>
+    </v-row>
 
     <v-row class="mt-2">
       <v-col v-if="locationDetail" cols="12">
@@ -84,7 +96,16 @@
           </div>
           <v-divider class="my-4" />
 
-          <v-row v-if="locationDetail">
+          <v-row v-if="!locationDetail">
+            <v-col v-for="box in 3" :key="box" cols="12" md="4">
+              <div class="card-added-load">
+                <div class="image-box"></div>
+                <div class="text-box"></div>
+                <div class="text-box"></div>
+              </div>
+            </v-col>
+          </v-row>
+          <v-row v-else>
             <v-col
               v-for="(list, index) in deflectList"
               :key="index + 'deflectList'"
@@ -112,11 +133,14 @@
                     </v-btn>
                   </div>
                 </v-img>
-                <div v-if="list.deflect_status == null" class="box-status-wait">
-                  <v-icon class="wait-icon">mdi-home-search-outline</v-icon>
-                  รอเจ้าหน้าที่ตรวจสอบข้อมูล
-                </div>
-                <div v-else>
+
+                <div
+                  v-if="
+                    locationDetail.report_status == 'approval' ||
+                    locationDetail.report_status == 'approved' ||
+                    list.deflect_status != null
+                  "
+                >
                   <div v-if="list.deflect_status == 1" class="box-status-only">
                     <div class="status-pass">
                       <v-icon color="success" large>
@@ -144,6 +168,71 @@
                       </v-icon>
                       <span class="error--text"> ไม่ผ่าน </span>
                     </div>
+                  </div>
+                </div>
+                <div v-else-if="role == 'Checker'" class="box-status-wait">
+                  <v-icon class="wait-icon">mdi-home-search-outline</v-icon>
+                  รอแอดมินที่ตรวจสอบข้อมูล
+                </div>
+                <div v-else class="box-status">
+                  <div
+                    :class="
+                      list.deflect_status == 1 ? 'status-pass-active' : ''
+                    "
+                    class="status status-pass"
+                    @click="
+                      onUpdateDeflectStatus(
+                        list.image_id,
+                        1,
+                        list.deflect_status
+                      )
+                    "
+                  >
+                    <v-icon
+                      v-if="list.deflect_status == 1"
+                      color="success"
+                      class="status-icon"
+                      large
+                    >
+                      mdi-checkbox-outline
+                    </v-icon>
+                    <v-icon v-else large class="status-icon">
+                      mdi-checkbox-blank-outline
+                    </v-icon>
+                    <span v-if="list.deflect_status == 1" class="success--text">
+                      ผ่าน
+                    </span>
+                    <span v-else>ผ่าน</span>
+                  </div>
+
+                  <div
+                    :class="
+                      list.deflect_status == 0 ? 'status-not-pass-active' : ''
+                    "
+                    class="status status-not-pass"
+                    @click="
+                      onUpdateDeflectStatus(
+                        list.image_id,
+                        0,
+                        list.deflect_status
+                      )
+                    "
+                  >
+                    <v-icon
+                      v-if="list.deflect_status == 0"
+                      color="error"
+                      class="status-icon"
+                      large
+                    >
+                      mdi-close-box-outline
+                    </v-icon>
+                    <v-icon v-else large class="status-icon">
+                      mdi-checkbox-blank-outline
+                    </v-icon>
+                    <span v-if="list.deflect_status == 0" class="error--text">
+                      ไม่ผ่าน
+                    </span>
+                    <span v-else>ไม่ผ่าน</span>
                   </div>
                 </div>
 
@@ -450,6 +539,7 @@ export default {
         dialog: false,
         imageData: null,
       },
+      storageListLoading: false,
     }
   },
 
@@ -474,7 +564,7 @@ export default {
       if (newValue) {
         this.onGetStorageList()
       } else {
-        this.createDeflectByStorage.imageSelected = ''
+        this.createDeflectByStorage.imageSelected = []
         this.createDeflectByStorage.storageList.forEach((element) => {
           element.active = false
         })
@@ -594,6 +684,45 @@ export default {
       }
     },
 
+    async onUpdateDeflectStatus(imageId, status, statusNow) {
+      const accessToken = await this.getAccessToken()
+      if (accessToken && status !== statusNow) {
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/location/deflect/status`,
+            {
+              project_id: this.locationDetail.project_id,
+              inspection_id: this.locationDetail.inspection_id,
+              location_id: this.locationDetail.location_id,
+              image_id: imageId,
+              deflect_status: status,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            this.onNotify({
+              notifyValue: true,
+              type: 'success',
+              title: 'การดำเนินสำเร็จ',
+              message: 'สถานะของ Deflect ถูกเปลี่ยนแล้ว',
+            })
+            this.onGetDeflectList()
+          })
+          .catch((error) => {
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'ดำเนินการไม่สำเร็จ',
+              message: error,
+            })
+          })
+      }
+    },
+
     async onUploadNewDeflect(imageFile) {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
@@ -667,6 +796,7 @@ export default {
     async onGetStorageList() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
+        this.storageListLoading = true
         await this.$axios
           .post(
             `${process.env.API_ENDPOINT}/v1/project/inspection/location/deflect/storage-list`,
@@ -681,16 +811,17 @@ export default {
             }
           )
           .then(({ data }) => {
-            if (data.data) {
+            if (data.data !== 'No data found') {
               this.createDeflectByStorage.storageList = []
               data.data.forEach((element) => {
                 element.active = false
                 this.createDeflectByStorage.storageList.push(element)
               })
+              this.storageListLoading = false
             }
           })
           .catch((error) => {
-            this.imageUpload.loading = false
+            this.storageListLoading = false
             this.onNotify({
               notifyValue: true,
               type: 'error',
@@ -960,5 +1091,61 @@ export default {
   height: 50px;
   border-radius: 8px;
   background-color: var(--red-100);
+}
+.box-status {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.box-status .status {
+  font-size: 18px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  border-radius: 8px;
+  background-color: var(--gray-opacity-1);
+  cursor: pointer;
+  transition: all ease 0.3s;
+}
+
+.box-status .status-pass:hover {
+  background-color: var(--green-100);
+}
+.box-status .status-pass-active {
+  cursor: default;
+  background-color: var(--green-100);
+}
+.box-status .status-not-pass:hover {
+  background-color: var(--red-100);
+}
+.box-status .status-not-pass-active {
+  cursor: default;
+  background-color: var(--red-100);
+}
+.card-added-load {
+  width: 100%;
+  height: 350px;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: var(--gray-100);
+}
+.card-added-load .image-box {
+  background-color: var(--gray-opacity-2);
+  width: 100%;
+  height: 200px;
+  border-radius: 4px;
+}
+.card-added-load .text-box {
+  background-color: var(--gray-opacity-2);
+  width: 100%;
+  height: 40px;
+  border-radius: 4px;
+  margin-top: 16px;
 }
 </style>

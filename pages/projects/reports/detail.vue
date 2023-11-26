@@ -1,12 +1,55 @@
 <template>
-  <div v-if="reportDetail">
+  <div v-if="!reportDetail">
+    <div class="d-flex cp-text-description cp-subtitle cp-medium">
+      <span class="mr-1" @click="$router.push('/projects/reports')">
+        <cp-link> รายงานทั้งหมด </cp-link>
+      </span>
+      /
+      <span class="mx-1 cp-text-disable"> ... </span>
+    </div>
+
+    <!-- Page Loading -->
+    <v-row>
+      <v-col cols="12">
+        <div class="d-flex">
+          <v-sheet
+            width="300"
+            height="30"
+            color="grey lighten-3"
+            class="mt-6"
+          ></v-sheet>
+          <v-sheet
+            width="70"
+            height="30"
+            color="grey lighten-3"
+            class="mt-6 ml-4"
+          ></v-sheet>
+        </div>
+        <v-sheet
+          width="200"
+          height="30"
+          color="grey lighten-3"
+          class="mt-6"
+        ></v-sheet>
+        <v-sheet
+          width="100%"
+          height="400"
+          color="grey lighten-3"
+          class="mt-6"
+        ></v-sheet>
+      </v-col>
+    </v-row>
+  </div>
+
+  <div v-else>
     <div class="d-flex cp-text-description cp-subtitle cp-medium">
       <span class="mr-1" @click="$router.push('/projects/reports')">
         <cp-link> รายงานทั้งหมด </cp-link>
       </span>
       /
       <span class="mx-1 cp-text-disable">
-        {{ reportDetail.project_detail.project_name }}
+        รายงานของ รายการตรวจที่
+        {{ reportDetail.project_detail.inspection_no }}
       </span>
     </div>
 
@@ -18,19 +61,25 @@
             {{ reportDetail.project_detail.inspection_no }}
           </div>
           <div class="ml-4">
-            <v-btn
-              v-if="reportDetail.report_status == 'in-progress'"
-              :loading="approvalReport.checkLoading"
-              color="primary"
-              elevation="0"
-              @click="onBeforeApprovalReport()"
-            >
-              <v-icon left>mdi-file-sign</v-icon>
-              ขอการยืนยันรางงาน
-            </v-btn>
+            <div v-if="reportDetail.report_status == 'in-progress'">
+              <v-chip label color="warning" class="mr-4">กำลังดำเนินการ</v-chip>
+            </div>
             <div v-else-if="reportDetail.report_status == 'approval'">
               <div class="d-flex align-center">
                 <v-chip label color="info" class="mr-4">รอการยืนยัน</v-chip>
+
+                <v-btn
+                  v-if="role == 'Admin' || role == 'Project Manager'"
+                  outlined
+                  elevation="0"
+                  color="primary"
+                  class="mr-4"
+                  @click="cancelApproval.dialog = true"
+                >
+                  <v-icon left>mdi-file-document-refresh-outline</v-icon>
+                  ยกเลิก
+                </v-btn>
+
                 <v-avatar size="40" color="primary">
                   <v-img
                     v-if="reportDetail.checker_supervisor.avatar_path"
@@ -52,17 +101,6 @@
                     }}
                   </div>
                 </div>
-                <v-btn
-                  v-if="role == 'Admin' || role == 'Project Manager'"
-                  outlined
-                  elevation="0"
-                  color="primary"
-                  class="ml-4"
-                  @click="cancelApproval.dialog = true"
-                >
-                  <v-icon left>mdi-file-document-refresh-outline</v-icon>
-                  ยกเลิกการยืนยัน
-                </v-btn>
               </div>
             </div>
             <div v-else-if="reportDetail.report_status == 'approved'">
@@ -104,6 +142,18 @@
           <div>
             <v-btn
               v-if="
+                role != 'Checker' && reportDetail.report_status == 'in-progress'
+              "
+              :loading="approvalReport.checkLoading"
+              color="primary"
+              elevation="0"
+              @click="onBeforeApprovalReport()"
+            >
+              <v-icon left>mdi-file-sign</v-icon>
+              ขอการยืนยันรางงาน
+            </v-btn>
+            <v-btn
+              v-if="
                 (reportDetail.report_status == 'in-progress' &&
                   role == 'Admin') ||
                 (reportDetail.report_status == 'in-progress' &&
@@ -130,8 +180,7 @@
             </v-btn>
             <v-btn
               v-if="
-                reportDetail.report_status == 'approved' &&
-                !reportDetail.report_path
+                reportDetail.report_status == 'approved' && role != 'Checker'
               "
               :loading="downloadPDFLoading"
               color="primary"
@@ -142,11 +191,28 @@
               <v-icon class="mr-2">mdi-file-star-outline</v-icon>
               สร้างรายงาน (PDF)
             </v-btn>
-            <v-btn v-else color="primary" large>
-              <v-icon class="mr-2">mdi-file-download-outline</v-icon>
-              รายงาน (PDF)
-            </v-btn>
           </div>
+        </div>
+
+        <div class="d-flex align-center mb-6">
+          <b>โปรเจค:</b>
+          <cp-link>
+            <span
+              class="ml-1 primary--text cp-semibold cp-subtitle"
+              @click="
+                $router.push(
+                  `/projects/list/detail?id=${reportDetail.project_id}`
+                )
+              "
+            >
+              {{ reportDetail.project_detail.project_name }}
+            </span>
+          </cp-link>
+
+          <b class="ml-4">วันที่เข้าตรวจ:</b>
+          <span class="cp-text-description ml-1">
+            {{ formatDate(reportDetail.project_detail.working_date) }}
+          </span>
         </div>
       </v-col>
     </v-row>
@@ -342,22 +408,25 @@
               </div>
             </v-col>
           </v-row>
-          <div
-            v-if="reportDetail.report_status == 'in-progress'"
-            class="footer-action"
-          >
-            <v-btn icon @click="onEditNote(list)">
-              <v-icon>mdi-text-box-edit-outline</v-icon>
-            </v-btn>
-            <v-btn
-              icon
-              class="cp-icon-delete"
-              @click="
-                ;(deleteNoteGroup.dialog = true), (deleteNoteGroup.data = list)
-              "
+          <div v-if="role != 'Checker'">
+            <div
+              v-if="reportDetail.report_status == 'in-progress'"
+              class="footer-action"
             >
-              <v-icon>mdi-trash-can-outline</v-icon>
-            </v-btn>
+              <v-btn icon @click="onEditNote(list)">
+                <v-icon>mdi-text-box-edit-outline</v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                class="cp-icon-delete"
+                @click="
+                  ;(deleteNoteGroup.dialog = true),
+                    (deleteNoteGroup.data = list)
+                "
+              >
+                <v-icon>mdi-trash-can-outline</v-icon>
+              </v-btn>
+            </div>
           </div>
         </div>
 
@@ -442,82 +511,84 @@
         </div>
       </div>
 
-      <div class="my-4 text-center">
+      <div v-if="role != 'Checker'" class="my-4 text-center">
         <v-icon color="grey">mdi-dots-horizontal</v-icon>
       </div>
 
       <!-- Add Note -->
-      <div
-        v-if="reportDetail.report_status == 'in-progress'"
-        class="add-report-note"
-      >
-        <div class="cp-title cp-text-primary pb-4 error--text">
-          เพิ่มหมายเหตุใหม่
-        </div>
-        <v-form ref="formAddNote" v-model="addNote.valid" lazy-validation>
-          <div>
-            <v-text-field
-              v-model="addNote.title"
-              :rules="[(v) => !!v || 'ข้อมูลจำเป็น']"
-              :disabled="addNote.loading"
-              placeholder="หัวข้อหมายเหตุ"
-              maxlength="100"
-              counter="100"
-              outlined
-            />
+      <div v-if="role != 'Checker'">
+        <div
+          v-if="reportDetail.report_status == 'in-progress'"
+          class="add-report-note"
+        >
+          <div class="cp-title cp-text-primary pb-4 error--text">
+            เพิ่มหมายเหตุใหม่
           </div>
-          <v-row>
-            <v-col
-              v-for="(list, index) in addNote.noteList"
-              :key="index + 'noteList'"
-              :cols="addNote.noteList.length > 1 ? '6' : '12'"
-            >
+          <v-form ref="formAddNote" v-model="addNote.valid" lazy-validation>
+            <div>
               <v-text-field
-                v-model="list.noteListValue"
+                v-model="addNote.title"
                 :rules="[(v) => !!v || 'ข้อมูลจำเป็น']"
                 :disabled="addNote.loading"
-                append-icon="mdi-close"
-                placeholder="รายการเพิ่มเติม"
-                maxlength="120"
-                counter="120"
+                placeholder="หัวข้อหมายเหตุ"
+                maxlength="100"
+                counter="100"
                 outlined
-                @click:append="deleteNoteList(index)"
               />
-            </v-col>
-            <v-col cols="12">
-              <div v-if="addNote.noteList.length != 10">
-                <div
-                  v-if="!addNote.loading"
-                  class="add-note-list"
-                  @click="addNoteList()"
-                >
-                  <div>
-                    <v-icon class="add-icon">mdi-plus</v-icon>
-                    <span>เพิ่มรายการ</span>
+            </div>
+            <v-row>
+              <v-col
+                v-for="(list, index) in addNote.noteList"
+                :key="index + 'noteList'"
+                :cols="addNote.noteList.length > 1 ? '6' : '12'"
+              >
+                <v-text-field
+                  v-model="list.noteListValue"
+                  :rules="[(v) => !!v || 'ข้อมูลจำเป็น']"
+                  :disabled="addNote.loading"
+                  append-icon="mdi-close"
+                  placeholder="รายการเพิ่มเติม"
+                  maxlength="120"
+                  counter="120"
+                  outlined
+                  @click:append="deleteNoteList(index)"
+                />
+              </v-col>
+              <v-col cols="12">
+                <div v-if="addNote.noteList.length != 10">
+                  <div
+                    v-if="!addNote.loading"
+                    class="add-note-list"
+                    @click="addNoteList()"
+                  >
+                    <div>
+                      <v-icon class="add-icon">mdi-plus</v-icon>
+                      <span>เพิ่มรายการ</span>
+                    </div>
+                  </div>
+                  <div v-else class="add-note-list-disable">
+                    <div>
+                      <v-icon class="add-icon">mdi-plus</v-icon>
+                      <span>เพิ่มรายการ</span>
+                    </div>
                   </div>
                 </div>
-                <div v-else class="add-note-list-disable">
-                  <div>
-                    <v-icon class="add-icon">mdi-plus</v-icon>
-                    <span>เพิ่มรายการ</span>
-                  </div>
-                </div>
-              </div>
-            </v-col>
-          </v-row>
-          <div class="d-flex pt-6">
-            <v-spacer />
-            <v-btn
-              :loading="addNote.loading"
-              :disabled="!addNote.valid"
-              color="primary"
-              elevation="0"
-              @click="saveNoteList()"
-            >
-              บันทึก
-            </v-btn>
-          </div>
-        </v-form>
+              </v-col>
+            </v-row>
+            <div class="d-flex pt-6">
+              <v-spacer />
+              <v-btn
+                :loading="addNote.loading"
+                :disabled="!addNote.valid"
+                color="primary"
+                elevation="0"
+                @click="saveNoteList()"
+              >
+                บันทึก
+              </v-btn>
+            </div>
+          </v-form>
+        </div>
       </div>
     </cp-card>
 
@@ -550,80 +621,13 @@
                   style="border-radius: 12px; margin-bottom: 16px"
                 >
                 </v-img>
+
                 <div
-                  v-if="reportDetail.report_status == 'in-progress'"
-                  class="box-status"
+                  v-if="deflectItem.deflect_status == null"
+                  class="box-status-wait"
                 >
-                  <div
-                    :class="
-                      deflectItem.deflect_status == 1
-                        ? 'status-pass-active'
-                        : ''
-                    "
-                    class="status status-pass"
-                    @click="
-                      onUpdateDeflectStatus(
-                        deflectItem.image_id,
-                        list.location_id,
-                        1,
-                        deflectItem.deflect_status
-                      )
-                    "
-                  >
-                    <v-icon
-                      v-if="deflectItem.deflect_status == 1"
-                      color="success"
-                      class="status-icon"
-                      large
-                    >
-                      mdi-checkbox-outline
-                    </v-icon>
-                    <v-icon v-else large class="status-icon">
-                      mdi-checkbox-blank-outline
-                    </v-icon>
-                    <span
-                      v-if="deflectItem.deflect_status == 1"
-                      class="success--text"
-                    >
-                      ผ่าน
-                    </span>
-                    <span v-else>ผ่าน</span>
-                  </div>
-                  <div
-                    :class="
-                      deflectItem.deflect_status == 0
-                        ? 'status-not-pass-active'
-                        : ''
-                    "
-                    class="status status-not-pass"
-                    @click="
-                      onUpdateDeflectStatus(
-                        deflectItem.image_id,
-                        list.location_id,
-                        0,
-                        deflectItem.deflect_status
-                      )
-                    "
-                  >
-                    <v-icon
-                      v-if="deflectItem.deflect_status == 0"
-                      color="error"
-                      class="status-icon"
-                      large
-                    >
-                      mdi-close-box-outline
-                    </v-icon>
-                    <v-icon v-else large class="status-icon">
-                      mdi-checkbox-blank-outline
-                    </v-icon>
-                    <span
-                      v-if="deflectItem.deflect_status == 0"
-                      class="error--text"
-                    >
-                      ไม่ผ่าน
-                    </span>
-                    <span v-else>ไม่ผ่าน</span>
-                  </div>
+                  <v-icon class="wait-icon">mdi-home-search-outline</v-icon>
+                  รอแอดมินตรวจบันทึกสถานะ
                 </div>
                 <div v-else>
                   <div
@@ -1234,7 +1238,6 @@ export default {
               data.data.sort(
                 (a, b) => new Date(a.created_at) - new Date(b.created_at)
               )
-
               this.noteGroupList = data.data.map((item) => {
                 item.edit = false
                 item.editNote = {
@@ -1242,11 +1245,18 @@ export default {
                   valid: true,
                   title: item.report_title,
                   noteList: item.note_list.map((note) => ({
+                    id: note.id,
                     noteListValue: note.list_message,
                   })),
                 }
                 return item
               })
+              for (let i = 0; i < this.noteGroupList.length; i++) {
+                this.noteGroupList[i].note_list.sort((a, b) => a.id - b.id)
+                this.noteGroupList[i].editNote.noteList.sort(
+                  (a, b) => a.id - b.id
+                )
+              }
             }
           })
           .catch(({ response }) => {
@@ -1477,7 +1487,7 @@ export default {
               notifyValue: true,
               type: 'error',
               title: 'เกิดข้อผิดพลาด',
-              message: response.data.data,
+              message: response,
             })
           })
       }
@@ -1501,6 +1511,7 @@ export default {
             }
           )
           .then(({ data }) => {
+            // console.log(data.data)
             if (data.data) {
               for (let i = 0; i < data.data.length; i++) {
                 data.data[i].deflect_list.sort((a, b) => a.id - b.id)
@@ -2217,12 +2228,12 @@ export default {
       } else {
         pdfDoc.rect(x + 4, y + 4, 80, 50)
       }
-      if (status === 1) {
+      if (status === '1') {
         const statusPassActive = require('@/assets/images/pass-active.jpg')
         pdfDoc.addImage(statusPassActive, 'JPG', x + 4, y + 57, 37.5, 8)
         const statusNotPass = require('@/assets/images/not-pass.jpg')
         pdfDoc.addImage(statusNotPass, 'JPG', x + 46.5, y + 57, 37.5, 8)
-      } else if (status === 0) {
+      } else if (status === '0') {
         const statusPass = require('@/assets/images/pass.jpg')
         pdfDoc.addImage(statusPass, 'JPG', x + 4, y + 57, 37.5, 8)
         const statusNotPassActive = require('@/assets/images/not-pass-active.jpg')
@@ -2246,75 +2257,75 @@ export default {
       // ---> Main Image
       if (pdfPageDetail[0].mainImage) {
         const mainImage = pdfPageDetail[0].mainImage
-        pdfDoc.addImage(mainImage.image, 'JPEG', 15, 65, 180, 101.25)
+        pdfDoc.addImage(mainImage.image, 'JPEG', 15, 62, 180, 101.25)
       } else {
         pdfDoc.setFillColor('#F2F2F2')
-        pdfDoc.rect(15, 65, 180, 94, 'F')
+        pdfDoc.rect(15, 62, 180, 94, 'F')
       }
 
       const projectDetail = pdfPageDetail[0].projectDetail
-      this.drawSection(pdfDoc, 15, 165, 85, 'ข้อมูล โปรเจค')
-      this.drawLabel(pdfDoc, 15, 188, 'ชื่อโปรเจค')
-      this.drawValue(pdfDoc, 42, 188, projectDetail.project_name, 58)
-      this.drawLabel(pdfDoc, 15, 200, 'ตรวจรอบที่')
-      this.drawValue(pdfDoc, 42, 200, projectDetail.inspection_no, 58)
-      this.drawLabel(pdfDoc, 15, 212, 'วันที่เข้าตรวจ')
+      this.drawSection(pdfDoc, 15, 170, 85, 'ข้อมูล โปรเจค')
+      this.drawLabel(pdfDoc, 15, 193, 'ชื่อโปรเจค')
+      this.drawValue(pdfDoc, 42, 193, projectDetail.project_name, 58)
+      this.drawLabel(pdfDoc, 15, 205, 'ตรวจรอบที่')
+      this.drawValue(pdfDoc, 42, 205, projectDetail.inspection_no, 58)
+      this.drawLabel(pdfDoc, 15, 217, 'วันที่เข้าตรวจ')
       this.drawValue(
         pdfDoc,
         42,
-        212,
+        217,
         this.formatDatePDF(projectDetail.working_date),
         58
       )
 
       const customerDetail = pdfPageDetail[0].customerDetail
-      this.drawSection(pdfDoc, 115, 165, 80, 'ข้อมูล ลูกค้า')
-      this.drawLabel(pdfDoc, 115, 188, 'ชื่อ')
-      this.drawValue(pdfDoc, 135, 188, customerDetail.name, 60)
-      this.drawLabel(pdfDoc, 115, 200, 'เบอร์โทร')
+      this.drawSection(pdfDoc, 115, 170, 80, 'ข้อมูล ลูกค้า')
+      this.drawLabel(pdfDoc, 115, 193, 'ชื่อ')
+      this.drawValue(pdfDoc, 135, 193, customerDetail.name, 60)
+      this.drawLabel(pdfDoc, 115, 205, 'เบอร์โทร')
       this.drawValue(
         pdfDoc,
         135,
-        200,
+        205,
         customerDetail.phone
           ? this.formatPhoneNumber(customerDetail.phone)
           : '-',
         60
       )
-      this.drawLabel(pdfDoc, 115, 212, 'อีเมล')
-      this.drawValue(pdfDoc, 135, 212, customerDetail.email || '-', 60)
+      this.drawLabel(pdfDoc, 115, 217, 'อีเมล')
+      this.drawValue(pdfDoc, 135, 217, customerDetail.email || '-', 60)
 
       const typeDetail = pdfPageDetail[0].typeDetail
-      this.drawSection(pdfDoc, 15, 224, 85, 'ข้อมูล ' + typeDetail.project_type)
-      this.drawLabel(pdfDoc, 15, 246, 'ประเภท')
-      this.drawValue(pdfDoc, 42, 246, typeDetail.project_type, 58)
-      this.drawLabel(pdfDoc, 15, 258, 'เลขที่')
-      this.drawValue(pdfDoc, 42, 258, typeDetail.type_address || '-', 58)
-      this.drawLabel(pdfDoc, 15, 270, 'พื้นที่ใช้สอย')
+      this.drawSection(pdfDoc, 15, 229, 85, 'ข้อมูล ' + typeDetail.project_type)
+      this.drawLabel(pdfDoc, 15, 251, 'ประเภท')
+      this.drawValue(pdfDoc, 42, 251, typeDetail.project_type, 58)
+      this.drawLabel(pdfDoc, 15, 263, 'เลขที่')
+      this.drawValue(pdfDoc, 42, 263, typeDetail.type_address || '-', 58)
+      this.drawLabel(pdfDoc, 15, 275, 'พื้นที่ใช้สอย')
       this.drawValue(
         pdfDoc,
         42,
-        270,
+        275,
         `${typeDetail.type_usable_area} ตร.ม.`,
         58
       )
 
       const coordinatorDetail = pdfPageDetail[0].coordinatorDetail
-      this.drawSection(pdfDoc, 115, 224, 85, 'ข้อมูล เจ้าหน้าที่โครงการ')
-      this.drawLabel(pdfDoc, 115, 246, 'ชื่อ')
-      this.drawValue(pdfDoc, 135, 246, coordinatorDetail.name, 60)
-      this.drawLabel(pdfDoc, 115, 258, 'เบอร์โทร')
+      this.drawSection(pdfDoc, 115, 229, 85, 'ข้อมูล เจ้าหน้าที่โครงการ')
+      this.drawLabel(pdfDoc, 115, 251, 'ชื่อ')
+      this.drawValue(pdfDoc, 135, 251, coordinatorDetail.name, 60)
+      this.drawLabel(pdfDoc, 115, 263, 'เบอร์โทร')
       this.drawValue(
         pdfDoc,
         135,
-        258,
+        263,
         coordinatorDetail.phone
           ? this.formatPhoneNumber(coordinatorDetail.phone)
           : '-',
         60
       )
-      this.drawLabel(pdfDoc, 115, 270, 'อีเมล')
-      this.drawValue(pdfDoc, 135, 270, coordinatorDetail.email || '-', 60)
+      this.drawLabel(pdfDoc, 115, 275, 'อีเมล')
+      this.drawValue(pdfDoc, 135, 275, coordinatorDetail.email || '-', 60)
 
       // ---> Plan 1 Page
 

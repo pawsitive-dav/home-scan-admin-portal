@@ -26,7 +26,7 @@
     </v-list-item>
     <v-list-group :value="false" prepend-icon="mdi-cog-outline" color="primary">
       <template #activator>
-        <v-list-item-title class="ml-n4">ตั้งค่า</v-list-item-title>
+        <v-list-item-title class="ml-n4">ตั้งค่าข้อมูล</v-list-item-title>
       </template>
       <v-list-item
         v-for="(list, index) in appSetting"
@@ -64,6 +64,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   data: () => ({
     dashboard: [
@@ -100,11 +102,11 @@ export default {
         path: '/setting/location',
         show: true,
       },
-      {
-        title: 'Deflect',
-        path: '/setting/deflect',
-        show: true,
-      },
+      // {
+      //   title: 'Deflect',
+      //   path: '/setting/deflect',
+      //   show: true,
+      // },
       {
         title: 'System',
         path: '/setting/system',
@@ -125,6 +127,18 @@ export default {
       },
     ],
   }),
+
+  computed: {
+    ...mapState('user', ['role']),
+  },
+
+  watch: {
+    role(newValue) {
+      if (newValue === 'Checker' || newValue === '3') {
+        this.members.splice(1, 1)
+      }
+    },
+  },
 }
 </script>
 

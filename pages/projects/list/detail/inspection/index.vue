@@ -7,7 +7,9 @@
         <cp-link> รายการโปรเจค </cp-link>
       </span>
       /
+      <span v-if="!inspectionDetail" class="mx-1 cp-text-disable">...</span>
       <span
+        v-else
         class="mx-1"
         @click="
           $router.push(
@@ -20,12 +22,35 @@
         </cp-link>
       </span>
       /
-      <span class="mx-1 cp-text-disable">
+      <span v-if="!inspectionDetail" class="mx-1 cp-text-disable">...</span>
+      <span v-else class="mx-1 cp-text-disable">
         รายการตรวจที่
         {{ inspectionDetail ? inspectionDetail.inspection_no : '' }}
       </span>
     </div>
 
+    <v-row v-if="!inspectionDetail" class="mt-4">
+      <v-col cols="12">
+        <div class="d-flex">
+          <v-sheet color="grey lighten-2" width="300" height="30" />
+          <v-sheet
+            color="grey lighten-2"
+            width="100"
+            height="30"
+            class="ml-4"
+          />
+        </div>
+        <v-sheet color="grey lighten-2" width="500" height="20" class="mt-4" />
+        <v-card
+          flat
+          width="100%"
+          height="300"
+          color="grey lighten-2"
+          class="mt-6"
+        >
+        </v-card>
+      </v-col>
+    </v-row>
     <v-row class="mt-2">
       <v-col v-if="inspectionDetail" cols="12">
         <div class="d-flex align-center cp-header-2 cp-bold mb-2">
@@ -60,15 +85,30 @@
             </span>
           </cp-link>
 
-          <b class="ml-4">วันที่สร้างรายการตรวจ:</b>
-          <span class="cp-text-description ml-1">
-            {{ formatDateMax(inspectionDetail.created_at) }}
+          <b class="ml-4">รายงาน:</b>
+          <span
+            v-if="inspectionDetail.report_id == null"
+            class="ml-1 cp-text-description"
+          >
+            ยังไม่มีรายงาน
           </span>
+          <cp-link v-else>
+            <span
+              class="ml-1 primary--text cp-semibold"
+              @click="
+                $router.push(
+                  `/projects/reports/detail?id=${inspectionDetail.report_id}`
+                )
+              "
+            >
+              ดูรายงาน
+            </span>
+          </cp-link>
         </div>
       </v-col>
 
-      <v-col v-if="inspectionDetail" cols="12">
-        <cp-card class="pa-6">
+      <v-col cols="12">
+        <cp-card v-if="inspectionDetail" class="pa-6">
           <v-tabs v-model="tab">
             <v-tab v-for="item in tabList" :key="item">
               {{ item }}
@@ -392,10 +432,6 @@
                 </div>
                 <v-spacer />
                 <v-btn
-                  :disabled="
-                    inspectionDetail.report_status == 'approval' ||
-                    inspectionDetail.report_status == 'approved'
-                  "
                   elevation="0"
                   height="36"
                   color="primary"
@@ -414,6 +450,7 @@
                   รูปที่ใช้งานอยู่ใน Location และ System
                 </div>
               </div>
+
               <div
                 v-if="imageStorage.imageUsageList.length == 0"
                 class="cp-no-image"
@@ -560,10 +597,6 @@
                 </v-btn>
                 <v-switch
                   v-model="imageMultipleDelete.active"
-                  :disabled="
-                    inspectionDetail.report_status == 'approval' ||
-                    inspectionDetail.report_status == 'approved'
-                  "
                   label="ลบหลายรูป"
                   inset
                 ></v-switch>
@@ -663,11 +696,6 @@
                         </div>
                         <v-spacer />
                         <v-btn
-                          :disabled="
-                            imageMultipleDelete.active ||
-                            inspectionDetail.report_status == 'approval' ||
-                            inspectionDetail.report_status == 'approved'
-                          "
                           icon
                           small
                           @click="
@@ -676,23 +704,10 @@
                               (imageNameEdit.imageName = list.image_name)
                           "
                         >
-                          <v-icon
-                            v-if="
-                              inspectionDetail.report_status == 'approval' ||
-                              inspectionDetail.report_status == 'approved'
-                            "
-                            small
-                          >
-                            mdi-pencil-off-outline
-                          </v-icon>
-                          <v-icon v-else small> mdi-pencil-outline </v-icon>
+                          <v-icon small> mdi-pencil-outline </v-icon>
                         </v-btn>
                         <v-btn
-                          :disabled="
-                            imageMultipleDelete.active ||
-                            inspectionDetail.report_status == 'approval' ||
-                            inspectionDetail.report_status == 'approved'
-                          "
+                          :disabled="imageMultipleDelete.active"
                           icon
                           small
                           @click="
@@ -700,16 +715,7 @@
                               (imageDelete.imageData = list)
                           "
                         >
-                          <v-icon
-                            v-if="
-                              inspectionDetail.report_status == 'approval' ||
-                              inspectionDetail.report_status == 'approved'
-                            "
-                            small
-                          >
-                            mdi-delete-off-outline
-                          </v-icon>
-                          <v-icon v-else small> mdi-trash-can-outline </v-icon>
+                          <v-icon small> mdi-trash-can-outline </v-icon>
                         </v-btn>
                       </div>
                     </div>

@@ -1049,14 +1049,6 @@ export default {
               this.projectDetail.typeItems.push(obj)
             })
           })
-          .catch(({ response }) => {
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data.data,
-            })
-          })
       }
     },
 

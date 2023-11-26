@@ -14,7 +14,10 @@
     <v-app-bar elevation="0" color="transparent" fixed app>
       <div class="cp-appbar-container">
         <div class="cp-appbar">
-          <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+          <v-btn icon @click.stop="drawer = !drawer">
+            <v-icon v-if="drawer">mdi-menu-open</v-icon>
+            <v-icon v-else>mdi-menu-close</v-icon>
+          </v-btn>
 
           <v-spacer />
 
@@ -53,11 +56,13 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'DefaultLayout',
+
   data() {
     return {
       drawer: true,
     }
   },
+
   computed: {
     ...mapState('user', ['refreshToken']),
   },

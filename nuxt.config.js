@@ -18,6 +18,8 @@ export default {
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.png' }],
   },
 
+  loading: false,
+
   css: ['~/assets/main.css'],
 
   plugins: [],

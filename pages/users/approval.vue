@@ -2,6 +2,7 @@
 <template>
   <div class="shadow-sm">
     <v-data-table
+      :loading="tableLoading"
       :headers="headers"
       :items="desserts"
       :search="search"
@@ -11,15 +12,17 @@
         <v-toolbar flat>
           <v-toolbar-title>รายการอนุมัติ</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="ค้นหา"
-            single-line
-            hide-details
-            outlined
-            dense
-          />
+          <v-sheet width="300">
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="ค้นหา"
+              single-line
+              hide-details
+              outlined
+              dense
+            />
+          </v-sheet>
           <v-spacer />
         </v-toolbar>
       </template>
@@ -196,6 +199,7 @@ import moment from 'moment'
 
 export default {
   data: () => ({
+    tableLoading: false,
     search: '',
     headers: [
       {
@@ -255,6 +259,7 @@ export default {
     async getAccountApproval() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
+        this.tableLoading = true
         await this.$axios
           .get(`${process.env.API_ENDPOINT}/v1/auth/account/approval`, {
             headers: {
@@ -263,6 +268,7 @@ export default {
           })
           .then(({ data }) => {
             if (data) {
+              this.tableLoading = false
               this.dataTableMaping(data.data)
             }
           })

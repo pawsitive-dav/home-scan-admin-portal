@@ -5,7 +5,9 @@
         <cp-link> รายการโปรเจค </cp-link>
       </span>
       /
+      <span v-if="!systemDetail" class="mx-1 cp-text-disable">...</span>
       <span
+        v-else
         class="mx-1"
         @click="
           $router.push(`/projects/list/detail?id=${systemDetail.project_id}`)
@@ -16,7 +18,9 @@
         </cp-link>
       </span>
       /
+      <span v-if="!systemDetail" class="mx-1 cp-text-disable">...</span>
       <span
+        v-else
         class="mx-1"
         @click="
           $router.push(
@@ -30,7 +34,8 @@
         </cp-link>
       </span>
       /
-      <span class="mx-1 cp-text-disable">
+      <span v-if="!systemDetail" class="mx-1 cp-text-disable">...</span>
+      <span v-else class="mx-1 cp-text-disable">
         {{ systemDetail ? systemDetail.system_name : '' }}
       </span>
     </div>
@@ -42,6 +47,13 @@
       accept="image/*"
       @change="uploadImage"
     />
+
+    <v-row v-if="!systemDetail" class="mt-4">
+      <v-col cols="12">
+        <v-sheet color="grey lighten-2" width="300" height="30" />
+        <v-sheet color="grey lighten-2" width="500" height="20" class="mt-4" />
+      </v-col>
+    </v-row>
 
     <v-row class="mt-2">
       <v-col v-if="systemDetail" cols="12">
@@ -84,7 +96,17 @@
           </div>
           <v-divider class="my-4" />
 
-          <v-row v-if="systemDetail">
+          <v-row v-if="!systemDetail">
+            <v-col v-for="box in 3" :key="box" cols="12" md="4">
+              <div class="card-added-load">
+                <div class="image-box"></div>
+                <div class="text-box"></div>
+                <div class="text-box"></div>
+              </div>
+            </v-col>
+          </v-row>
+
+          <v-row v-else>
             <v-col
               v-for="(list, index) in deflectList"
               :key="index + 'deflectList'"
@@ -537,7 +559,7 @@ export default {
       if (newValue) {
         this.onGetStorageList()
       } else {
-        this.createDeflectByStorage.imageSelected = ''
+        this.createDeflectByStorage.imageSelected = []
         this.createDeflectByStorage.storageList.forEach((element) => {
           element.active = false
         })
@@ -1081,5 +1103,25 @@ export default {
   height: 50px;
   border-radius: 8px;
   background-color: var(--red-100);
+}
+.card-added-load {
+  width: 100%;
+  height: 350px;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: var(--gray-100);
+}
+.card-added-load .image-box {
+  background-color: var(--gray-opacity-2);
+  width: 100%;
+  height: 200px;
+  border-radius: 4px;
+}
+.card-added-load .text-box {
+  background-color: var(--gray-opacity-2);
+  width: 100%;
+  height: 40px;
+  border-radius: 4px;
+  margin-top: 16px;
 }
 </style>

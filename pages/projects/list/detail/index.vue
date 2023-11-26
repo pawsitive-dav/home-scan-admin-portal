@@ -7,46 +7,66 @@
         <cp-link> รายการโปรเจค </cp-link>
       </span>
       /
-      <span class="mx-1 cp-text-disable">
+      <span v-if="!projectDetail" class="mx-1 cp-text-disable">...</span>
+      <span v-else class="mx-1 cp-text-disable">
         {{ projectDetail ? projectDetail.project_name : '' }}
       </span>
     </div>
 
+    <v-row v-if="!projectDetail" class="mt-2">
+      <v-col cols="12">
+        <div class="d-flex">
+          <v-sheet color="grey lighten-2" width="300" height="30" />
+          <v-sheet
+            color="grey lighten-2"
+            width="100"
+            height="30"
+            class="ml-4"
+          />
+        </div>
+        <v-sheet color="grey lighten-2" width="500" height="20" class="mt-6" />
+      </v-col>
+    </v-row>
     <v-row v-if="projectDetail" class="mt-2">
       <v-col cols="12">
         <div class="d-flex align-center cp-header-2 cp-bold mb-2">
-          <div
-            v-if="editProjectName.oldData.length === 0"
-            class="box-edit-project-name mr-2"
-            @click="
-              ;(editProjectName.oldData = projectDetail.project_name),
-                (editProjectName.newData = projectDetail.project_name),
-                (editProjectName.focus = true)
-            "
-          >
+          <div v-if="role != 'Checker'">
+            <div
+              v-if="editProjectName.oldData.length === 0"
+              class="box-edit-project-name mr-2"
+              @click="
+                ;(editProjectName.oldData = projectDetail.project_name),
+                  (editProjectName.newData = projectDetail.project_name),
+                  (editProjectName.focus = true)
+              "
+            >
+              {{ projectDetail.project_name }}
+            </div>
+            <v-sheet v-else width="500" class="mr-2">
+              <v-text-field
+                v-model="editProjectName.newData"
+                :append-icon="
+                  editProjectName.status ? 'mdi-content-save-outline' : ''
+                "
+                :autofocus="editProjectName.focus"
+                :error="editProjectName.error"
+                dense
+                outlined
+                hide-details
+                @blur="
+                  ;(editProjectName.oldData = ''),
+                    (editProjectName.newData = ''),
+                    (editProjectName.status = false),
+                    (editProjectName.focus = false),
+                    (editProjectName.error = false)
+                "
+                @click:append="saveNewProjectName()"
+              />
+            </v-sheet>
+          </div>
+          <div v-else class="mr-4">
             {{ projectDetail.project_name }}
           </div>
-          <v-sheet v-else width="500" class="mr-2">
-            <v-text-field
-              v-model="editProjectName.newData"
-              :append-icon="
-                editProjectName.status ? 'mdi-content-save-outline' : ''
-              "
-              :autofocus="editProjectName.focus"
-              :error="editProjectName.error"
-              dense
-              outlined
-              hide-details
-              @blur="
-                ;(editProjectName.oldData = ''),
-                  (editProjectName.newData = ''),
-                  (editProjectName.status = false),
-                  (editProjectName.focus = false),
-                  (editProjectName.error = false)
-              "
-              @click:append="saveNewProjectName()"
-            />
-          </v-sheet>
 
           <v-chip v-if="projectDetail.project_status == 'to-do'" label>
             เตรียมดำเนินการ
@@ -103,127 +123,148 @@
                 <!-- หมายเหตุ: บอกทีมหน้างาน -->
                 <v-col cols="12">
                   <div class="cp-text-description">หมายเหตุ: บอกทีมหน้างาน</div>
-                  <div
-                    v-if="!editProjectNote.focus"
-                    class="box-edit"
-                    @click="
-                      ;(editProjectNote.oldData =
-                        projectDetail.project_note || ''),
-                        (editProjectNote.newData =
+                  <div v-if="role != 'Checker'">
+                    <div
+                      v-if="!editProjectNote.focus"
+                      class="box-edit"
+                      @click="
+                        ;(editProjectNote.oldData =
                           projectDetail.project_note || ''),
-                        (editProjectNote.focus = true)
-                    "
-                  >
+                          (editProjectNote.newData =
+                            projectDetail.project_note || ''),
+                          (editProjectNote.focus = true)
+                      "
+                    >
+                      {{ projectDetail.project_note || '-' }}
+                    </div>
+                    <v-textarea
+                      v-else
+                      v-model="editProjectNote.newData"
+                      :append-icon="
+                        editProjectNote.status ? 'mdi-content-save-outline' : ''
+                      "
+                      :autofocus="editProjectNote.focus"
+                      counter="250"
+                      maxlength="250"
+                      rows="3"
+                      outlined
+                      auto-grow
+                      @blur="
+                        ;(editProjectNote.oldData = ''),
+                          (editProjectNote.newData = ''),
+                          (editProjectNote.status = false),
+                          (editProjectNote.focus = false)
+                      "
+                      @click:append="saveNewProjectNote()"
+                    />
+                  </div>
+                  <div v-else class="box-no-edit">
                     {{ projectDetail.project_note || '-' }}
                   </div>
-                  <v-textarea
-                    v-else
-                    v-model="editProjectNote.newData"
-                    :append-icon="
-                      editProjectNote.status ? 'mdi-content-save-outline' : ''
-                    "
-                    :autofocus="editProjectNote.focus"
-                    counter="250"
-                    maxlength="250"
-                    rows="3"
-                    outlined
-                    auto-grow
-                    @blur="
-                      ;(editProjectNote.oldData = ''),
-                        (editProjectNote.newData = ''),
-                        (editProjectNote.status = false),
-                        (editProjectNote.focus = false)
-                    "
-                    @click:append="saveNewProjectNote()"
-                  />
                 </v-col>
 
                 <!-- เลขที่ -->
                 <v-col cols="12" md="4">
                   <div class="cp-text-description">เลขที่</div>
-                  <div
-                    v-if="!editTypeAddress.focus"
-                    class="box-edit"
-                    @click="
-                      ;(editTypeAddress.oldData = projectDetail.type_address),
-                        (editTypeAddress.newData = projectDetail.type_address),
-                        (editTypeAddress.focus = true)
-                    "
-                  >
+                  <div v-if="role != 'Checker'">
+                    <div
+                      v-if="!editTypeAddress.focus"
+                      class="box-edit"
+                      @click="
+                        ;(editTypeAddress.oldData = projectDetail.type_address),
+                          (editTypeAddress.newData =
+                            projectDetail.type_address),
+                          (editTypeAddress.focus = true)
+                      "
+                    >
+                      {{ projectDetail.type_address || '-' }}
+                    </div>
+                    <v-form
+                      v-else
+                      ref="formEditTypeAddress"
+                      v-model="editTypeAddress.valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="editTypeAddress.newData"
+                        :append-icon="
+                          editTypeAddress.status
+                            ? 'mdi-content-save-outline'
+                            : ''
+                        "
+                        :autofocus="editTypeAddress.focus"
+                        :rules="editTypeAddress.rules"
+                        dense
+                        outlined
+                        @blur="
+                          ;(editTypeAddress.oldData = ''),
+                            (editTypeAddress.newData = ''),
+                            (editTypeAddress.status = false),
+                            (editTypeAddress.focus = false)
+                        "
+                        @click:append="saveNewTypeAddress()"
+                      />
+                    </v-form>
+                  </div>
+                  <div v-else class="box-no-edit">
                     {{ projectDetail.type_address || '-' }}
                   </div>
-                  <v-form
-                    v-else
-                    ref="formEditTypeAddress"
-                    v-model="editTypeAddress.valid"
-                    lazy-validation
-                  >
-                    <v-text-field
-                      v-model="editTypeAddress.newData"
-                      :append-icon="
-                        editTypeAddress.status ? 'mdi-content-save-outline' : ''
-                      "
-                      :autofocus="editTypeAddress.focus"
-                      :rules="editTypeAddress.rules"
-                      dense
-                      outlined
-                      @blur="
-                        ;(editTypeAddress.oldData = ''),
-                          (editTypeAddress.newData = ''),
-                          (editTypeAddress.status = false),
-                          (editTypeAddress.focus = false)
-                      "
-                      @click:append="saveNewTypeAddress()"
-                    />
-                  </v-form>
                 </v-col>
 
                 <!-- พื้นที่ใช้สอย -->
                 <v-col cols="12" md="4">
                   <div class="cp-text-description">พื้นที่ใช้สอย</div>
-                  <div
-                    v-if="!editTypeUsableArea.focus"
-                    class="box-edit"
-                    @click="
-                      ;(editTypeUsableArea.oldData =
-                        projectDetail.type_usable_area || ''),
-                        (editTypeUsableArea.newData =
+                  <div v-if="role != 'Checker'">
+                    <div
+                      v-if="!editTypeUsableArea.focus"
+                      class="box-edit"
+                      @click="
+                        ;(editTypeUsableArea.oldData =
                           projectDetail.type_usable_area || ''),
-                        (editTypeUsableArea.focus = true)
-                    "
-                  >
+                          (editTypeUsableArea.newData =
+                            projectDetail.type_usable_area || ''),
+                          (editTypeUsableArea.focus = true)
+                      "
+                    >
+                      {{ projectDetail.type_usable_area || '-' }}
+                      <span v-if="projectDetail.type_usable_area" class="ml-2">
+                        ตร.ม.
+                      </span>
+                    </div>
+                    <v-form
+                      v-else
+                      ref="formEditTypeUsableArea"
+                      v-model="editTypeUsableArea.valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="editTypeUsableArea.newData"
+                        :append-icon="
+                          editTypeUsableArea.status
+                            ? 'mdi-content-save-outline'
+                            : ''
+                        "
+                        :autofocus="editTypeUsableArea.focus"
+                        :rules="editTypeUsableArea.rules"
+                        suffix="ตร.ม."
+                        dense
+                        outlined
+                        @blur="
+                          ;(editTypeUsableArea.oldData = ''),
+                            (editTypeUsableArea.newData = ''),
+                            (editTypeUsableArea.status = false),
+                            (editTypeUsableArea.focus = false)
+                        "
+                        @click:append="saveNewTypeUsableArea()"
+                      />
+                    </v-form>
+                  </div>
+                  <div v-else class="box-no-edit">
                     {{ projectDetail.type_usable_area || '-' }}
                     <span v-if="projectDetail.type_usable_area" class="ml-2">
                       ตร.ม.
                     </span>
                   </div>
-                  <v-form
-                    v-else
-                    ref="formEditTypeUsableArea"
-                    v-model="editTypeUsableArea.valid"
-                    lazy-validation
-                  >
-                    <v-text-field
-                      v-model="editTypeUsableArea.newData"
-                      :append-icon="
-                        editTypeUsableArea.status
-                          ? 'mdi-content-save-outline'
-                          : ''
-                      "
-                      :autofocus="editTypeUsableArea.focus"
-                      :rules="editTypeUsableArea.rules"
-                      suffix="ตร.ม."
-                      dense
-                      outlined
-                      @blur="
-                        ;(editTypeUsableArea.oldData = ''),
-                          (editTypeUsableArea.newData = ''),
-                          (editTypeUsableArea.status = false),
-                          (editTypeUsableArea.focus = false)
-                      "
-                      @click:append="saveNewTypeUsableArea()"
-                    />
-                  </v-form>
                 </v-col>
 
                 <v-col cols="12">
@@ -237,61 +278,105 @@
                     <!-- ชื่อ -->
                     <v-col cols="12" md="4">
                       <div class="cp-text-description">ชื่อ</div>
-                      <div
-                        v-if="!editCustomerName.focus"
-                        class="box-edit"
-                        @click="
-                          ;(editCustomerName.oldData =
-                            projectDetail.customer.customer_name),
-                            (editCustomerName.newData =
+                      <div v-if="role != 'Checker'">
+                        <div
+                          v-if="!editCustomerName.focus"
+                          class="box-edit"
+                          @click="
+                            ;(editCustomerName.oldData =
                               projectDetail.customer.customer_name),
-                            (editCustomerName.focus = true)
-                        "
-                      >
+                              (editCustomerName.newData =
+                                projectDetail.customer.customer_name),
+                              (editCustomerName.focus = true)
+                          "
+                        >
+                          {{ projectDetail.customer.customer_name }}
+                        </div>
+                        <v-form
+                          v-else
+                          ref="formEditCustomerName"
+                          v-model="editCustomerName.valid"
+                          lazy-validation
+                        >
+                          <v-text-field
+                            v-model="editCustomerName.newData"
+                            :append-icon="
+                              editCustomerName.status
+                                ? 'mdi-content-save-outline'
+                                : ''
+                            "
+                            :autofocus="editCustomerName.focus"
+                            :rules="editCustomerName.rules"
+                            dense
+                            outlined
+                            @blur="
+                              ;(editCustomerName.oldData = ''),
+                                (editCustomerName.newData = ''),
+                                (editCustomerName.status = false),
+                                (editCustomerName.focus = false)
+                            "
+                            @click:append="saveNewCustomerName()"
+                          />
+                        </v-form>
+                      </div>
+                      <div v-else class="box-no-edit">
                         {{ projectDetail.customer.customer_name }}
                       </div>
-                      <v-form
-                        v-else
-                        ref="formEditCustomerName"
-                        v-model="editCustomerName.valid"
-                        lazy-validation
-                      >
-                        <v-text-field
-                          v-model="editCustomerName.newData"
-                          :append-icon="
-                            editCustomerName.status
-                              ? 'mdi-content-save-outline'
-                              : ''
-                          "
-                          :autofocus="editCustomerName.focus"
-                          :rules="editCustomerName.rules"
-                          dense
-                          outlined
-                          @blur="
-                            ;(editCustomerName.oldData = ''),
-                              (editCustomerName.newData = ''),
-                              (editCustomerName.status = false),
-                              (editCustomerName.focus = false)
-                          "
-                          @click:append="saveNewCustomerName()"
-                        />
-                      </v-form>
                     </v-col>
 
                     <!-- เบอร์โทรศัพท์ -->
                     <v-col cols="12" md="3">
                       <div class="cp-text-description">เบอร์โทรศัพท์</div>
-                      <div
-                        v-if="!editCustomerPhone.focus"
-                        class="box-edit"
-                        @click="
-                          ;(editCustomerPhone.oldData =
-                            projectDetail.customer.customer_phone || ''),
-                            (editCustomerPhone.newData =
+                      <div v-if="role != 'Checker'">
+                        <div
+                          v-if="!editCustomerPhone.focus"
+                          class="box-edit"
+                          @click="
+                            ;(editCustomerPhone.oldData =
                               projectDetail.customer.customer_phone || ''),
-                            (editCustomerPhone.focus = true)
-                        "
-                      >
+                              (editCustomerPhone.newData =
+                                projectDetail.customer.customer_phone || ''),
+                              (editCustomerPhone.focus = true)
+                          "
+                        >
+                          {{
+                            projectDetail.customer.customer_phone
+                              ? formatPhoneNumber(
+                                  projectDetail.customer.customer_phone
+                                )
+                              : '-'
+                          }}
+                        </div>
+                        <v-form
+                          v-else
+                          ref="formEditCustomerPhone"
+                          v-model="editCustomerPhone.valid"
+                          lazy-validation
+                        >
+                          <v-text-field
+                            v-model="editCustomerPhone.newData"
+                            :append-icon="
+                              editCustomerPhone.status
+                                ? 'mdi-content-save-outline'
+                                : ''
+                            "
+                            :autofocus="editCustomerPhone.focus"
+                            :rules="editCustomerPhone.rules"
+                            maxlength="10"
+                            counter="10"
+                            dense
+                            outlined
+                            @blur="
+                              ;(editCustomerPhone.oldData = ''),
+                                (editCustomerPhone.newData = ''),
+                                (editCustomerPhone.status = false),
+                                (editCustomerPhone.focus = false)
+                            "
+                            @click:append="saveNewCustomerPhone()"
+                          />
+                        </v-form>
+                      </div>
+                      <div v-else class="box-no-edit">
                         {{
                           projectDetail.customer.customer_phone
                             ? formatPhoneNumber(
@@ -300,78 +385,55 @@
                             : '-'
                         }}
                       </div>
-                      <v-form
-                        v-else
-                        ref="formEditCustomerPhone"
-                        v-model="editCustomerPhone.valid"
-                        lazy-validation
-                      >
-                        <v-text-field
-                          v-model="editCustomerPhone.newData"
-                          :append-icon="
-                            editCustomerPhone.status
-                              ? 'mdi-content-save-outline'
-                              : ''
-                          "
-                          :autofocus="editCustomerPhone.focus"
-                          :rules="editCustomerPhone.rules"
-                          maxlength="10"
-                          counter="10"
-                          dense
-                          outlined
-                          @blur="
-                            ;(editCustomerPhone.oldData = ''),
-                              (editCustomerPhone.newData = ''),
-                              (editCustomerPhone.status = false),
-                              (editCustomerPhone.focus = false)
-                          "
-                          @click:append="saveNewCustomerPhone()"
-                        />
-                      </v-form>
                     </v-col>
 
                     <!-- อีเมล -->
                     <v-col cols="12" md="5">
                       <div class="cp-text-description">อีเมล</div>
-                      <div
-                        v-if="!editCustomerEmail.focus"
-                        class="box-edit"
-                        @click="
-                          ;(editCustomerEmail.oldData =
-                            projectDetail.customer.customer_email || ''),
-                            (editCustomerEmail.newData =
+                      <div v-if="role != 'Checker'">
+                        <div
+                          v-if="!editCustomerEmail.focus"
+                          class="box-edit"
+                          @click="
+                            ;(editCustomerEmail.oldData =
                               projectDetail.customer.customer_email || ''),
-                            (editCustomerEmail.focus = true)
-                        "
-                      >
+                              (editCustomerEmail.newData =
+                                projectDetail.customer.customer_email || ''),
+                              (editCustomerEmail.focus = true)
+                          "
+                        >
+                          {{ projectDetail.customer.customer_email || '-' }}
+                        </div>
+                        <v-form
+                          v-else
+                          ref="formEditCustomerEmail"
+                          v-model="editCustomerEmail.valid"
+                          lazy-validation
+                        >
+                          <v-text-field
+                            v-model="editCustomerEmail.newData"
+                            :append-icon="
+                              editCustomerEmail.status
+                                ? 'mdi-content-save-outline'
+                                : ''
+                            "
+                            :autofocus="editCustomerEmail.focus"
+                            :rules="editCustomerEmail.rules"
+                            dense
+                            outlined
+                            @blur="
+                              ;(editCustomerEmail.oldData = ''),
+                                (editCustomerEmail.newData = ''),
+                                (editCustomerEmail.status = false),
+                                (editCustomerEmail.focus = false)
+                            "
+                            @click:append="saveNewCustomerEmail()"
+                          />
+                        </v-form>
+                      </div>
+                      <div v-else class="box-no-edit">
                         {{ projectDetail.customer.customer_email || '-' }}
                       </div>
-                      <v-form
-                        v-else
-                        ref="formEditCustomerEmail"
-                        v-model="editCustomerEmail.valid"
-                        lazy-validation
-                      >
-                        <v-text-field
-                          v-model="editCustomerEmail.newData"
-                          :append-icon="
-                            editCustomerEmail.status
-                              ? 'mdi-content-save-outline'
-                              : ''
-                          "
-                          :autofocus="editCustomerEmail.focus"
-                          :rules="editCustomerEmail.rules"
-                          dense
-                          outlined
-                          @blur="
-                            ;(editCustomerEmail.oldData = ''),
-                              (editCustomerEmail.newData = ''),
-                              (editCustomerEmail.status = false),
-                              (editCustomerEmail.focus = false)
-                          "
-                          @click:append="saveNewCustomerEmail()"
-                        />
-                      </v-form>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -383,62 +445,110 @@
                     <!-- ชื่อ -->
                     <v-col cols="12" md="4">
                       <div class="cp-text-description">ชื่อ</div>
-                      <div
-                        v-if="!editCoordinatorName.focus"
-                        class="box-edit"
-                        @click="
-                          ;(editCoordinatorName.oldData =
-                            projectDetail.coordinator.coordinator_name || ''),
-                            (editCoordinatorName.newData =
+                      <div v-if="role != 'Checker'">
+                        <div
+                          v-if="!editCoordinatorName.focus"
+                          class="box-edit"
+                          @click="
+                            ;(editCoordinatorName.oldData =
                               projectDetail.coordinator.coordinator_name || ''),
-                            (editCoordinatorName.focus = true)
-                        "
-                      >
+                              (editCoordinatorName.newData =
+                                projectDetail.coordinator.coordinator_name ||
+                                ''),
+                              (editCoordinatorName.focus = true)
+                          "
+                        >
+                          {{
+                            projectDetail.coordinator.coordinator_name || '-'
+                          }}
+                        </div>
+                        <v-form
+                          v-else
+                          ref="formEditCoordinatorName"
+                          v-model="editCoordinatorName.valid"
+                          lazy-validation
+                        >
+                          <v-text-field
+                            v-model="editCoordinatorName.newData"
+                            :append-icon="
+                              editCoordinatorName.status
+                                ? 'mdi-content-save-outline'
+                                : ''
+                            "
+                            :autofocus="editCoordinatorName.focus"
+                            :rules="editCoordinatorName.rules"
+                            dense
+                            outlined
+                            @blur="
+                              ;(editCoordinatorName.oldData = ''),
+                                (editCoordinatorName.newData = ''),
+                                (editCoordinatorName.status = false),
+                                (editCoordinatorName.focus = false)
+                            "
+                            @click:append="saveNewCoordinatorName()"
+                          />
+                        </v-form>
+                      </div>
+                      <div v-else class="box-no-edit">
                         {{ projectDetail.coordinator.coordinator_name || '-' }}
                       </div>
-                      <v-form
-                        v-else
-                        ref="formEditCoordinatorName"
-                        v-model="editCoordinatorName.valid"
-                        lazy-validation
-                      >
-                        <v-text-field
-                          v-model="editCoordinatorName.newData"
-                          :append-icon="
-                            editCoordinatorName.status
-                              ? 'mdi-content-save-outline'
-                              : ''
-                          "
-                          :autofocus="editCoordinatorName.focus"
-                          :rules="editCoordinatorName.rules"
-                          dense
-                          outlined
-                          @blur="
-                            ;(editCoordinatorName.oldData = ''),
-                              (editCoordinatorName.newData = ''),
-                              (editCoordinatorName.status = false),
-                              (editCoordinatorName.focus = false)
-                          "
-                          @click:append="saveNewCoordinatorName()"
-                        />
-                      </v-form>
                     </v-col>
 
                     <!-- เบอร์โทรศัพท์ -->
                     <v-col cols="12" md="3">
                       <div class="cp-text-description">เบอร์โทรศัพท์</div>
-                      <div
-                        v-if="!editCoordinatorPhone.focus"
-                        class="box-edit"
-                        @click="
-                          ;(editCoordinatorPhone.oldData =
-                            projectDetail.coordinator.coordinator_phone || ''),
-                            (editCoordinatorPhone.newData =
+                      <div v-if="role != 'Checker'">
+                        <div
+                          v-if="!editCoordinatorPhone.focus"
+                          class="box-edit"
+                          @click="
+                            ;(editCoordinatorPhone.oldData =
                               projectDetail.coordinator.coordinator_phone ||
                               ''),
-                            (editCoordinatorPhone.focus = true)
-                        "
-                      >
+                              (editCoordinatorPhone.newData =
+                                projectDetail.coordinator.coordinator_phone ||
+                                ''),
+                              (editCoordinatorPhone.focus = true)
+                          "
+                        >
+                          {{
+                            projectDetail.coordinator.coordinator_phone
+                              ? formatPhoneNumber(
+                                  projectDetail.coordinator.coordinator_phone
+                                )
+                              : '-'
+                          }}
+                        </div>
+                        <v-form
+                          v-else
+                          ref="formEditCoordinatorPhone"
+                          v-model="editCoordinatorPhone.valid"
+                          lazy-validation
+                        >
+                          <v-text-field
+                            v-model="editCoordinatorPhone.newData"
+                            :append-icon="
+                              editCoordinatorPhone.status
+                                ? 'mdi-content-save-outline'
+                                : ''
+                            "
+                            :autofocus="editCoordinatorPhone.focus"
+                            :rules="editCoordinatorPhone.rules"
+                            maxlength="10"
+                            counter="10"
+                            dense
+                            outlined
+                            @blur="
+                              ;(editCoordinatorPhone.oldData = ''),
+                                (editCoordinatorPhone.newData = ''),
+                                (editCoordinatorPhone.status = false),
+                                (editCoordinatorPhone.focus = false)
+                            "
+                            @click:append="saveNewCoordinatorPhone()"
+                          />
+                        </v-form>
+                      </div>
+                      <div v-else class="box-no-edit">
                         {{
                           projectDetail.coordinator.coordinator_phone
                             ? formatPhoneNumber(
@@ -447,79 +557,59 @@
                             : '-'
                         }}
                       </div>
-                      <v-form
-                        v-else
-                        ref="formEditCoordinatorPhone"
-                        v-model="editCoordinatorPhone.valid"
-                        lazy-validation
-                      >
-                        <v-text-field
-                          v-model="editCoordinatorPhone.newData"
-                          :append-icon="
-                            editCoordinatorPhone.status
-                              ? 'mdi-content-save-outline'
-                              : ''
-                          "
-                          :autofocus="editCoordinatorPhone.focus"
-                          :rules="editCoordinatorPhone.rules"
-                          maxlength="10"
-                          counter="10"
-                          dense
-                          outlined
-                          @blur="
-                            ;(editCoordinatorPhone.oldData = ''),
-                              (editCoordinatorPhone.newData = ''),
-                              (editCoordinatorPhone.status = false),
-                              (editCoordinatorPhone.focus = false)
-                          "
-                          @click:append="saveNewCoordinatorPhone()"
-                        />
-                      </v-form>
                     </v-col>
 
                     <!-- อีเมล -->
                     <v-col cols="12" md="5">
                       <div class="cp-text-description">อีเมล</div>
-                      <div
-                        v-if="!editCoordinatorEmail.focus"
-                        class="box-edit"
-                        @click="
-                          ;(editCoordinatorEmail.oldData =
-                            projectDetail.coordinator.coordinator_email || ''),
-                            (editCoordinatorEmail.newData =
+                      <div v-if="role != 'Checker'">
+                        <div
+                          v-if="!editCoordinatorEmail.focus"
+                          class="box-edit"
+                          @click="
+                            ;(editCoordinatorEmail.oldData =
                               projectDetail.coordinator.coordinator_email ||
                               ''),
-                            (editCoordinatorEmail.focus = true)
-                        "
-                      >
+                              (editCoordinatorEmail.newData =
+                                projectDetail.coordinator.coordinator_email ||
+                                ''),
+                              (editCoordinatorEmail.focus = true)
+                          "
+                        >
+                          {{
+                            projectDetail.coordinator.coordinator_email || '-'
+                          }}
+                        </div>
+                        <v-form
+                          v-else
+                          ref="formEditCoordinatorEmail"
+                          v-model="editCoordinatorEmail.valid"
+                          lazy-validation
+                        >
+                          <v-text-field
+                            v-model="editCoordinatorEmail.newData"
+                            :append-icon="
+                              editCoordinatorEmail.status
+                                ? 'mdi-content-save-outline'
+                                : ''
+                            "
+                            :autofocus="editCoordinatorEmail.focus"
+                            :rules="editCoordinatorEmail.rules"
+                            dense
+                            outlined
+                            @blur="
+                              ;(editCoordinatorEmail.oldData = ''),
+                                (editCoordinatorEmail.newData = ''),
+                                (editCoordinatorEmail.status = false),
+                                (editCoordinatorEmail.focus = false)
+                            "
+                            @click:append="saveNewCoordinatorEmail()"
+                          />
+                        </v-form>
+                      </div>
+                      <div v-else class="box-no-edit">
                         {{ projectDetail.coordinator.coordinator_email || '-' }}
                       </div>
-                      <v-form
-                        v-else
-                        ref="formEditCoordinatorEmail"
-                        v-model="editCoordinatorEmail.valid"
-                        lazy-validation
-                      >
-                        <v-text-field
-                          v-model="editCoordinatorEmail.newData"
-                          :append-icon="
-                            editCoordinatorEmail.status
-                              ? 'mdi-content-save-outline'
-                              : ''
-                          "
-                          :autofocus="editCoordinatorEmail.focus"
-                          :rules="editCoordinatorEmail.rules"
-                          dense
-                          outlined
-                          @blur="
-                            ;(editCoordinatorEmail.oldData = ''),
-                              (editCoordinatorEmail.newData = ''),
-                              (editCoordinatorEmail.status = false),
-                              (editCoordinatorEmail.focus = false)
-                          "
-                          @click:append="saveNewCoordinatorEmail()"
-                        />
-                      </v-form>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -534,6 +624,7 @@
                 <div class="cp-subtitle pb-4">รายการตรวจ</div>
                 <v-spacer></v-spacer>
                 <v-btn
+                  v-if="role != 'Checker'"
                   :disabled="
                     projectDetail.project_status == 'in-progress' ||
                     projectDetail.project_status == 'report-approval' ||
@@ -633,39 +724,55 @@
                         >
                           ดูรายละเอียด
                         </v-list-item>
-                        <v-list-item
-                          v-if="!list.report_id"
-                          :disabled="projectDetail.project_status == 'to-do'"
-                          @click="onCreateReport(list)"
-                        >
-                          สร้างรายงาน
-                        </v-list-item>
-                        <v-list-item
-                          v-else
-                          @click="
-                            $router.push(
-                              `/projects/reports/detail?id=${list.report_id}`
-                            )
-                          "
-                        >
-                          ดูรายงาน
-                        </v-list-item>
-                        <div v-if="list.report_status != 'approved'">
-                          <div
-                            v-if="
-                              projectInspection.inspectionList.length ==
-                              list.inspection_no
-                            "
-                            class="delete-inspection"
+                        <div v-if="role != 'Checker'">
+                          <v-list-item
+                            v-if="!list.report_id"
+                            :disabled="projectDetail.project_status == 'to-do'"
+                            @click="onCreateReport(list)"
+                          >
+                            สร้างรายงาน
+                          </v-list-item>
+                          <v-list-item
+                            v-else
                             @click="
-                              ;(projectInspection.delete.dialog = true),
-                                (projectInspection.delete.inspectionId =
-                                  list.inspection_id),
-                                (projectInspection.delete.reportStatus =
-                                  list.report_status)
+                              $router.push(
+                                `/projects/reports/detail?id=${list.report_id}`
+                              )
                             "
                           >
-                            ลบรายการตรวจ
+                            ดูรายงาน
+                          </v-list-item>
+                        </div>
+                        <div v-else>
+                          <v-list-item
+                            v-if="list.report_id"
+                            @click="
+                              $router.push(
+                                `/projects/reports/detail?id=${list.report_id}`
+                              )
+                            "
+                          >
+                            ดูรายงาน
+                          </v-list-item>
+                        </div>
+                        <div v-if="role != 'Checker'">
+                          <div v-if="list.report_status != 'approved'">
+                            <div
+                              v-if="
+                                projectInspection.inspectionList.length ==
+                                list.inspection_no
+                              "
+                              class="delete-inspection"
+                              @click="
+                                ;(projectInspection.delete.dialog = true),
+                                  (projectInspection.delete.inspectionId =
+                                    list.inspection_id),
+                                  (projectInspection.delete.reportStatus =
+                                    list.report_status)
+                              "
+                            >
+                              ลบรายการตรวจ
+                            </div>
                           </div>
                         </div>
                       </v-list>
@@ -1143,6 +1250,7 @@
 
             <div class="ml-6">
               <v-btn
+                v-if="role != 'Checker'"
                 elevation="0"
                 height="32"
                 color="primary"
@@ -1170,6 +1278,7 @@
                 <v-toolbar-title>ทีม Checker</v-toolbar-title>
                 <v-spacer />
                 <v-btn
+                  v-if="role != 'Checker'"
                   elevation="0"
                   height="36"
                   color="primary"
@@ -1212,6 +1321,7 @@
             <template #item.actions="{ item }">
               <cp-col min="100">
                 <v-icon
+                  v-if="role != 'Checker'"
                   small
                   @click="
                     ;(deleteTeamChecker.dialog = true),
@@ -1220,6 +1330,7 @@
                 >
                   mdi-trash-can-outline
                 </v-icon>
+                <v-icon v-else disabled small> mdi-delete-off-outline </v-icon>
               </cp-col>
             </template>
 
@@ -1895,9 +2006,7 @@ export default {
     },
 
     mapRoleName(level) {
-      const role = this.appRoleList.find(
-        (role) => role.role_level === Number(level)
-      )
+      const role = this.appRoleList.find((role) => role.role_level === level)
       return role ? role.role_name : null
     },
 
@@ -1992,6 +2101,7 @@ export default {
               this.projectFile.plan2 = null
               this.projectFile.plan3 = null
               this.projectFile.plan4 = null
+              this.projectFile.items = []
               if (data.data) {
                 for (const item of data.data) {
                   const fileTypes = {
@@ -2009,7 +2119,16 @@ export default {
                       src: item.image_path,
                       type: item.file_type,
                     }
-                    this.projectFile.items.push({ src: item.image_path })
+                    this.projectFile.items.push({
+                      src: item.image_path,
+                      type: item.file_type,
+                    })
+                    this.projectFile.items.sort((a, b) => {
+                      const order = ['main', 'plan1', 'plan2', 'plan3', 'plan4']
+                      const indexA = order.indexOf(a.type)
+                      const indexB = order.indexOf(b.type)
+                      return indexA - indexB
+                    })
                   }
                 }
               }
@@ -2865,6 +2984,7 @@ export default {
             } else if (this.addTeams.teamSelectType === 'checker') {
               this.getCheckerTeam()
             }
+            this.getMemberList()
             this.addTeams.loading = false
             this.addTeams.dialog = false
           })
@@ -2963,6 +3083,13 @@ export default {
 .box-edit-project-name:hover {
   padding: 4px 8px;
   background-color: var(--gray-opacity-1);
+}
+.box-no-edit {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  border-radius: 4px;
+  padding: 4px 0;
 }
 .box-edit {
   display: flex;

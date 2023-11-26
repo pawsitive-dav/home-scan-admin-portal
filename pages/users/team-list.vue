@@ -2,6 +2,7 @@
 <template>
   <div class="shadow-sm">
     <v-data-table
+      :loading="tableLoading"
       :headers="headers"
       :items="desserts"
       :search="search"
@@ -11,15 +12,17 @@
         <v-toolbar flat>
           <v-toolbar-title>ผู้ใช้งานทั้งหมด</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="ค้นหา"
-            single-line
-            hide-details
-            outlined
-            dense
-          />
+          <v-sheet width="300">
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="ค้นหา"
+              single-line
+              hide-details
+              outlined
+              dense
+            />
+          </v-sheet>
           <v-spacer />
         </v-toolbar>
       </template>
@@ -91,7 +94,11 @@
         <v-menu offset-y left content-class="layout-menu">
           <template #activator="{ on, attrs }">
             <v-btn
-              :disabled="item.member_role === 'System Admin'"
+              :disabled="
+                role === 'Checker' ||
+                role === 'Admin' ||
+                accountId == item.account_id
+              "
               color="primary"
               elevation="0"
               v-bind="attrs"
@@ -265,6 +272,7 @@ import moment from 'moment'
 
 export default {
   data: () => ({
+    tableLoading: false,
     search: '',
     headers: [
       {
@@ -298,7 +306,12 @@ export default {
   },
 
   computed: {
-    ...mapState('user', ['appRoleListStatus', 'appRoleList', 'role']),
+    ...mapState('user', [
+      'appRoleListStatus',
+      'appRoleList',
+      'role',
+      'accountId',
+    ]),
   },
 
   watch: {
@@ -318,6 +331,7 @@ export default {
     async getTeamList() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
+        this.tableLoading = true
         await this.$axios
           .get(`${process.env.API_ENDPOINT}/v1/member/`, {
             headers: {
@@ -326,11 +340,18 @@ export default {
           })
           .then(({ data }) => {
             if (data) {
+              this.tableLoading = false
               this.dataTableMaping(data.data)
             }
           })
           .catch((error) => {
-            alert(error)
+            this.tableLoading = false
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              message: error,
+            })
           })
       }
     },
@@ -341,7 +362,7 @@ export default {
           data[i].username + '/' + data[i].first_name + '/' + data[i].last_name
 
         const getRole = this.appRoleList.find(
-          (role) => role.role_level === Number(data[i].member_role)
+          (role) => role.role_level === data[i].member_role
         )
         data[i].member_role = getRole.role_name ? getRole.role_name : '-'
       }
@@ -352,6 +373,14 @@ export default {
         if (accountStatusA > accountStatusB) return 1
         return 0
       })
+
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].member_role === 'System Admin') {
+          data.splice(i, 1)
+          break
+        }
+      }
+
       this.desserts = data
     },
 

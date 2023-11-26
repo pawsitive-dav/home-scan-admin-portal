@@ -20,6 +20,7 @@
       </v-sheet>
       <v-spacer />
       <v-btn
+        :disabled="role == 'Checker'"
         elevation="0"
         height="36"
         color="primary"
@@ -108,6 +109,7 @@
                     <span>ดูรายละเอียด</span>
                   </v-list-item>
                   <div
+                    v-if="role != 'Checker'"
                     class="delete-project"
                     @click="
                       ;(deleteProject.dialog = true),
@@ -402,14 +404,6 @@ export default {
     ]),
   },
 
-  watch: {
-    projectList(newValue) {
-      if (newValue.length !== 0) {
-        this.mapCheckerTeam()
-      }
-    },
-  },
-
   created() {
     this.getProjectList()
   },
@@ -428,16 +422,49 @@ export default {
               Authorization: `Bearer ${accessToken}`,
             },
           })
-          .then(({ data }) => {
+          .then(async ({ data }) => {
             if (!data.data) {
               this.projectList = []
+              this.filteredProjects = []
             } else {
-              this.projectLoading = false
               data.data.forEach((e) => {
                 e.checker_team = []
               })
+
               this.projectList = data.data
               this.filteredProjects = data.data
+              await this.mapCheckerTeam()
+
+              const x = setInterval(() => {
+                if (this.role) {
+                  if (this.role === 'Checker') {
+                    const afterData = this.filteredProjects.map((item) => {
+                      const allAccountIds = [
+                        item.checker_supervisor.account_id,
+                        ...item.checker_team.map((team) => team.account_id),
+                      ]
+                      return {
+                        ...item,
+                        allAccountId: allAccountIds,
+                      }
+                    })
+
+                    for (let i = afterData.length - 1; i >= 0; i--) {
+                      const checking = afterData[i].allAccountId.includes(
+                        this.accountId
+                      )
+                      if (!checking) {
+                        afterData.splice(i, 1)
+                      }
+                    }
+
+                    this.projectList = afterData
+                    this.filteredProjects = afterData
+                  }
+                  this.projectLoading = false
+                  clearInterval(x)
+                }
+              }, 1000)
             }
           })
           .catch(({ response }) => {
