@@ -62,6 +62,7 @@
           :key="index"
           cols="12"
           md="3"
+          sm="6"
         >
           <cp-card>
             <div class="d-flex align-center pt-4 pb-2 px-4">
@@ -129,7 +130,7 @@
                 <v-col cols="12">
                   <v-img
                     :src="list.project_image"
-                    height="125"
+                    aspect-ratio="1.4"
                     class="cp-image-card"
                   >
                     <template #placeholder>
@@ -245,7 +246,8 @@
                         v-for="(checker, index) in list.checker_team"
                         :key="index + 'checker_team'"
                         :style="{ zIndex: 1 + index }"
-                        class="avatar-action ml-n2"
+                        :class="index == 0 ? '' : 'ml-n2'"
+                        class="avatar-action"
                       >
                         <v-tooltip top>
                           <template #activator="{ on, attrs }">

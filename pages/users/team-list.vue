@@ -44,7 +44,21 @@
 
       <template #item.account_status="{ item }">
         <div class="cp-text-capitalize">
-          <div v-if="!item.reset_password_code">
+          <div v-if="item.reset_password_code && role == 'Project Manager'">
+            <div class="cp-semibold pb-1 warning--text">ขอเปลี่ยนรหัสผ่าน</div>
+            <div class="code-box">
+              <b>CODE: </b>{{ item.reset_password_code }}
+              <v-icon
+                small
+                color="primary"
+                class="ml-2"
+                @click="onCopyToClipboard(item.reset_password_code)"
+              >
+                mdi-content-copy
+              </v-icon>
+            </div>
+          </div>
+          <div v-else>
             <v-chip
               v-if="item.account_status === 'active'"
               label
@@ -65,20 +79,6 @@
               <v-icon size="18" class="mr-1"> mdi-cancel </v-icon>
               {{ item.account_status ? 'ระงับการใช้งาน' : '-' }}
             </v-chip>
-          </div>
-          <div v-else>
-            <div class="cp-semibold pb-1 warning--text">ขอเปลี่ยนรหัสผ่าน</div>
-            <div class="code-box">
-              <b>CODE: </b>{{ item.reset_password_code }}
-              <v-icon
-                small
-                color="primary"
-                class="ml-2"
-                @click="onCopyToClipboard(item.reset_password_code)"
-              >
-                mdi-content-copy
-              </v-icon>
-            </div>
           </div>
         </div>
       </template>

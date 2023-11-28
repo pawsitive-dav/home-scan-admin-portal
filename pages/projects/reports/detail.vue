@@ -226,8 +226,7 @@
           v-if="projectFile.main"
           :src="projectFile.main"
           width="100%"
-          height="600px"
-          style="border-radius: 12px"
+          aspect-ratio="1.4"
         />
         <v-card v-else flat color="grey lighten-4" width="100%" height="600px">
         </v-card>
@@ -346,37 +345,17 @@
           <div class="cp-title cp-text-description">ไม่มีข้อมูลแปลน</div>
         </div>
         <v-row v-else>
-          <v-col cols="6">
-            <v-img
-              :src="projectFile.plan1"
-              width="100%"
-              contain
-              style="border-radius: 12px"
-            />
+          <v-col v-if="projectFile.plan1" cols="6">
+            <v-img :src="projectFile.plan1" width="100%" contain />
           </v-col>
-          <v-col cols="6">
-            <v-img
-              :src="projectFile.plan2"
-              width="100%"
-              contain
-              style="border-radius: 12px"
-            />
+          <v-col v-if="projectFile.plan2" cols="6">
+            <v-img :src="projectFile.plan2" width="100%" contain />
           </v-col>
-          <v-col cols="6">
-            <v-img
-              :src="projectFile.plan3"
-              width="100%"
-              contain
-              style="border-radius: 12px"
-            />
+          <v-col v-if="projectFile.plan3" cols="6">
+            <v-img :src="projectFile.plan3" width="100%" contain />
           </v-col>
-          <v-col cols="6">
-            <v-img
-              :src="projectFile.plan4"
-              width="100%"
-              contain
-              style="border-radius: 12px"
-            />
+          <v-col v-if="projectFile.plan4" cols="6">
+            <v-img :src="projectFile.plan4" width="100%" contain />
           </v-col>
         </v-row>
       </div>
@@ -614,13 +593,14 @@
                 ไม่มี Deflect
               </div>
               <div v-else class="deflect-card">
-                <v-img
-                  :src="deflectItem.image_path"
-                  aspect-ratio="1.6"
-                  class="grey lighten-2"
-                  style="border-radius: 12px; margin-bottom: 16px"
-                >
-                </v-img>
+                <v-sheet width="100%" class="grey lighten-2 mb-4">
+                  <v-img
+                    :src="deflectItem.image_path"
+                    aspect-ratio="1.4"
+                    contain
+                  >
+                  </v-img>
+                </v-sheet>
 
                 <div
                   v-if="deflectItem.deflect_status == null"
@@ -735,13 +715,10 @@
                 ไม่มี Deflect
               </div>
               <div v-else class="deflect-card">
-                <v-img
-                  :src="deflectItem.image_path"
-                  aspect-ratio="1.6"
-                  class="grey lighten-2"
-                  style="border-radius: 12px; margin-bottom: 16px"
-                >
-                </v-img>
+                <v-sheet width="100%" class="grey lighten-2 mb-4">
+                  <v-img :src="deflectItem.image_path" aspect-ratio="1.4">
+                  </v-img>
+                </v-sheet>
                 <div
                   v-if="deflectItem.deflect_status == null"
                   class="box-status-wait"
@@ -2785,7 +2762,6 @@ export default {
   color: #676268;
 }
 .detail-plan {
-  border-radius: 12px;
   border: 1px solid #d9d9d9;
   padding: 30px;
   margin: 50px 0;
@@ -2801,7 +2777,6 @@ export default {
 .added-report-note {
   position: relative;
   width: 100%;
-  border-radius: 12px;
   border: 2px solid #ececec;
   padding: 24px;
   margin: 16px 0;
@@ -2843,7 +2818,6 @@ export default {
 /* Add */
 .add-report-note {
   width: 100%;
-  border-radius: 12px;
   border: 2px dashed #ececec;
   padding: 24px;
   margin: 16px 0;
@@ -2858,7 +2832,6 @@ export default {
   justify-content: center;
   width: 100%;
   height: 56px;
-  border-radius: 4px;
   cursor: default;
   color: var(--gray-300);
   border: 1px dashed var(--base-border);
@@ -2872,7 +2845,6 @@ export default {
   justify-content: center;
   width: 100%;
   height: 56px;
-  border-radius: 4px;
   cursor: pointer;
   color: var(--gray-300);
   border: 1px dashed var(--base-border);
@@ -2900,7 +2872,6 @@ export default {
   width: 100%;
   height: 300px;
   padding: 24px;
-  border-radius: 12px;
   color: var(--gray-400);
   font-size: 18px;
   font-weight: 600;
@@ -2909,7 +2880,6 @@ export default {
 }
 .deflect-card {
   padding: 24px;
-  border-radius: 12px;
   border: 1px solid var(--gray-100);
 }
 .box-status {
@@ -2928,7 +2898,6 @@ export default {
   justify-content: center;
   gap: 8px;
   height: 50px;
-  border-radius: 8px;
   background-color: var(--gray-opacity-1);
   cursor: pointer;
   transition: all ease 0.3s;
@@ -2964,7 +2933,6 @@ export default {
   justify-content: center;
   gap: 8px;
   height: 50px;
-  border-radius: 8px;
   background-color: var(--gray-opacity-1);
 }
 .box-status-only .status-pass {
@@ -2975,7 +2943,6 @@ export default {
   justify-content: center;
   gap: 8px;
   height: 50px;
-  border-radius: 8px;
   background-color: var(--green-100);
 }
 .box-status-only .status-not-pass {
@@ -2986,7 +2953,6 @@ export default {
   justify-content: center;
   gap: 8px;
   height: 50px;
-  border-radius: 8px;
   background-color: var(--red-100);
 }
 
@@ -2998,7 +2964,6 @@ export default {
   justify-content: center;
   gap: 8px;
   height: 50px;
-  border-radius: 8px;
   background-color: var(--orange-opacity-1);
   border: 1px solid var(--orange-500);
   color: var(--orange-600);
@@ -3016,7 +2981,6 @@ export default {
   font-weight: 600;
   width: 100%;
   height: 200px;
-  border-radius: 12px;
   border: 1px solid var(--gray-300);
   background-color: var(--gray-opacity-1);
 }

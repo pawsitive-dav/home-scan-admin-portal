@@ -116,7 +116,8 @@
                 <v-img
                   :src="list.image_path"
                   aspect-ratio="1.4"
-                  style="border-radius: 8px; margin-bottom: 16px"
+                  class="mb-4"
+                  contain
                 >
                   <div class="d-flex justify-end mt-1 mr-1">
                     <v-spacer />
@@ -387,7 +388,6 @@
                     :src="list.image_path"
                     aspect-ratio="1.4"
                     class="grey lighten-2"
-                    style="border-radius: 6px"
                   >
                     <div class="d-flex mt-1 mx-1">
                       <v-chip
@@ -505,7 +505,7 @@
             <v-img
               :src="imagePreview.imageData.image_path"
               width="100%"
-              height="500"
+              aspect-ratio="1.4"
               contain
             ></v-img>
           </v-sheet>

@@ -802,7 +802,7 @@
               <div v-if="projectFile.mainPreview" class="image-zone">
                 <v-img
                   :src="projectFile.mainPreview"
-                  aspect-ratio="1.6"
+                  aspect-ratio="1.4"
                   contain
                 >
                 </v-img>
@@ -822,7 +822,7 @@
               <div v-else class="image-zone">
                 <v-img
                   :src="projectFile.main.src"
-                  aspect-ratio="1.6"
+                  aspect-ratio="1.4"
                   contain
                   @click=";(projectFile.dialog = true), (projectFile.show = 0)"
                 >
@@ -877,7 +877,7 @@
               <div v-if="projectFile.plan1Preview" class="image-zone">
                 <v-img
                   :src="projectFile.plan1Preview"
-                  aspect-ratio="1.6"
+                  aspect-ratio="1.4"
                   contain
                 >
                 </v-img>
@@ -897,7 +897,7 @@
               <div v-else class="image-zone">
                 <v-img
                   :src="projectFile.plan1"
-                  aspect-ratio="1.6"
+                  aspect-ratio="1.4"
                   contain
                   @click=";(projectFile.dialog = true), (projectFile.show = 1)"
                 >
@@ -961,7 +961,7 @@
               <div v-else-if="projectFile.plan2Preview" class="image-zone">
                 <v-img
                   :src="projectFile.plan2Preview"
-                  aspect-ratio="1.6"
+                  aspect-ratio="1.4"
                   contain
                 >
                 </v-img>
@@ -981,7 +981,7 @@
               <div v-else class="image-zone">
                 <v-img
                   :src="projectFile.plan2"
-                  aspect-ratio="1.6"
+                  aspect-ratio="1.4"
                   contain
                   @click=";(projectFile.dialog = true), (projectFile.show = 2)"
                 >
@@ -1045,7 +1045,7 @@
               <div v-else-if="projectFile.plan3Preview" class="image-zone">
                 <v-img
                   :src="projectFile.plan3Preview"
-                  aspect-ratio="1.6"
+                  aspect-ratio="1.4"
                   contain
                 >
                 </v-img>
@@ -1065,7 +1065,7 @@
               <div v-else class="image-zone">
                 <v-img
                   :src="projectFile.plan3"
-                  aspect-ratio="1.6"
+                  aspect-ratio="1.4"
                   contain
                   @click=";(projectFile.dialog = true), (projectFile.show = 3)"
                 >
@@ -1129,7 +1129,7 @@
               <div v-else-if="projectFile.plan4Preview" class="image-zone">
                 <v-img
                   :src="projectFile.plan4Preview"
-                  aspect-ratio="1.6"
+                  aspect-ratio="1.4"
                   contain
                 >
                 </v-img>
@@ -1149,7 +1149,7 @@
               <div v-else class="image-zone">
                 <v-img
                   :src="projectFile.plan4"
-                  aspect-ratio="1.6"
+                  aspect-ratio="1.4"
                   contain
                   @click=";(projectFile.dialog = true), (projectFile.show = 4)"
                 >
@@ -1362,7 +1362,7 @@
           <v-carousel v-model="projectFile.show" hide-delimiters>
             <v-carousel-item v-for="(item, i) in projectFile.items" :key="i">
               <div class="image-zone">
-                <v-img :src="item.src" aspect-ratio="1.6" contain />
+                <v-img :src="item.src" aspect-ratio="1.4" contain />
               </div>
             </v-carousel-item>
           </v-carousel>

@@ -150,7 +150,7 @@
                       <div class="image-zone">
                         <v-img
                           :src="fileSelect.typeImagePreview"
-                          aspect-ratio="1.6"
+                          aspect-ratio="1.4"
                           contain
                         />
                       </div>
@@ -219,7 +219,7 @@
                       <div class="image-zone">
                         <v-img
                           :src="fileSelect.typePlan1Preview"
-                          aspect-ratio="1.6"
+                          aspect-ratio="1.4"
                           contain
                         />
                       </div>
@@ -303,7 +303,7 @@
                       <div class="image-zone">
                         <v-img
                           :src="fileSelect.typePlan2Preview"
-                          aspect-ratio="1.6"
+                          aspect-ratio="1.4"
                           contain
                         />
                       </div>
@@ -385,7 +385,7 @@
                       <div class="image-zone">
                         <v-img
                           :src="fileSelect.typePlan3Preview"
-                          aspect-ratio="1.6"
+                          aspect-ratio="1.4"
                           contain
                         />
                       </div>
@@ -465,7 +465,7 @@
                       <div class="image-zone">
                         <v-img
                           :src="fileSelect.typePlan4Preview"
-                          aspect-ratio="1.6"
+                          aspect-ratio="1.4"
                           contain
                         />
                       </div>

@@ -134,7 +134,7 @@ export default {
 
   watch: {
     role(newValue) {
-      if (newValue === 'Checker' || newValue === '3') {
+      if (newValue === 'Checker' || newValue === 'Admin') {
         this.members.splice(1, 1)
       }
     },

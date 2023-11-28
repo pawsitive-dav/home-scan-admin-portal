@@ -70,7 +70,6 @@ export default {
     refreshToken(newValue) {
       if (newValue) {
         this.getMyProfile()
-        this.getAppRole()
       }
     },
   },
@@ -81,34 +80,43 @@ export default {
       'setAppRole',
       'setAppRoleStatus',
     ]),
+
     async getMyProfile() {
-      const accessToken = await this.getAccessToken()
-      if (accessToken) {
-        await this.$axios
-          .get(`${process.env.API_ENDPOINT}/v1/member/my-information`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          })
-          .then(({ data }) => {
-            if (data) {
-              const res = data.data
-              const obj = {
-                accountId: res.account_id,
-                avatarPath: res.avatar_path,
-                firstName: res.first_name,
-                lastName: res.last_name,
-                codeName: res.code_name,
-                role: res.member_role,
-              }
-              this.setMemberInfo(obj)
+      try {
+        const accessToken = await this.getAccessToken()
+
+        if (accessToken) {
+          const response = await this.$axios.get(
+            `${process.env.API_ENDPOINT}/v1/member/my-information`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
             }
-          })
-          .catch((error) => {
-            alert(error)
-          })
+          )
+
+          const data = response.data
+
+          if (data) {
+            const res = data.data
+            const obj = {
+              accountId: res.account_id,
+              avatarPath: res.avatar_path,
+              firstName: res.first_name,
+              lastName: res.last_name,
+              codeName: res.code_name,
+              role: res.member_role,
+            }
+
+            await this.setMemberInfo(obj)
+            this.getAppRole()
+          }
+        }
+      } catch (error) {
+        console.error('Error in getMyProfile:', error)
       }
     },
+
     async getAppRole() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {

@@ -1355,7 +1355,7 @@
             <v-img
               :src="imagePreview.imageData.image_path"
               width="100%"
-              height="500"
+              aspect-ratio="1.4"
               contain
             ></v-img>
           </v-sheet>
