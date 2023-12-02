@@ -131,6 +131,7 @@ export default {
               (a, b) => b.role_level - a.role_level
             )
             for (let i = 0; i < setRole.length; i++) {
+              setRole[i].role_level = setRole[i].role_level.toString()
               this.setAppRole(setRole[i])
             }
             this.setAppRoleStatus()

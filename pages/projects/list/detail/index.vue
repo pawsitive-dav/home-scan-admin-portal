@@ -662,7 +662,7 @@
                     <cp-link-to-detail
                       @click="
                         $router.push(
-                          `detail/inspection?id=${list.inspection_id}`
+                          `/projects/list/detail/inspection?id=${list.inspection_id}`
                         )
                       "
                     >
@@ -718,7 +718,7 @@
                         <v-list-item
                           @click="
                             $router.push(
-                              `detail/inspection?id=${list.inspection_id}`
+                              `/projects/list/detail/inspection?id=${list.inspection_id}`
                             )
                           "
                         >
