@@ -48,6 +48,18 @@
       <v-spacer />
       <a class="mx-2">Version: 1.0.0</a>
     </v-footer>
+
+    <div v-if="displayBlock" class="cp-display-block">
+      <div class="text-center">
+        <v-img
+          :src="require('@/assets/images/logo-white.svg')"
+          width="200"
+          class="mx-auto"
+        />
+        <v-divider class="mt-6 mb-4 white" />
+        <div class="cp-title mt-4 white--text">ไม่รองรับขนาดหน้าจอนี้</div>
+      </div>
+    </div>
   </v-app>
 </template>
 
@@ -60,12 +72,15 @@ export default {
   data() {
     return {
       drawer: true,
+      windowWidth: 0,
+      displayBlock: false,
     }
   },
 
   computed: {
     ...mapState('user', ['refreshToken']),
   },
+
   watch: {
     refreshToken(newValue) {
       if (newValue) {
@@ -73,6 +88,17 @@ export default {
       }
     },
   },
+
+  mounted() {
+    // เพิ่ม event listener เพื่อตรวจสอบความกว้างของหน้าต่างเมื่อ component ถูก mount
+    this.getWindowWidth()
+    window.addEventListener('resize', this.getWindowWidth)
+  },
+  beforeDestroy() {
+    // ลบ event listener เมื่อ component ถูก destroy เพื่อป้องกันการหลุด memory
+    window.removeEventListener('resize', this.getWindowWidth)
+  },
+
   methods: {
     ...mapActions('user', [
       'getAccessToken',
@@ -80,6 +106,19 @@ export default {
       'setAppRole',
       'setAppRoleStatus',
     ]),
+
+    getWindowWidth() {
+      // ดึงค่าความกว้างของหน้าต่าง
+      this.windowWidth = window.innerWidth
+
+      if (this.windowWidth < 768) {
+        if (!this.displayBlock) {
+          this.displayBlock = true
+        }
+      } else if (this.displayBlock) {
+        this.displayBlock = false
+      }
+    },
 
     async getMyProfile() {
       try {
@@ -150,5 +189,15 @@ tbody {
   tr:hover {
     background-color: transparent !important;
   }
+}
+.cp-display-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 99;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--base-success);
 }
 </style>

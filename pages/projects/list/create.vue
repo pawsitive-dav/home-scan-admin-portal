@@ -151,7 +151,6 @@
                         <v-img
                           :src="fileSelect.typeImagePreview"
                           aspect-ratio="1.4"
-                          contain
                         />
                       </div>
                       <div class="pt-2 d-flex justify-end">

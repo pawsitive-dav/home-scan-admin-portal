@@ -20,7 +20,7 @@
       </v-sheet>
       <v-spacer />
       <v-btn
-        :disabled="role == 'Checker'"
+        v-if="role == 'Project Manager' || role == 'Admin'"
         elevation="0"
         height="36"
         color="primary"
@@ -61,7 +61,8 @@
           v-for="(list, index) in filteredProjects"
           :key="index"
           cols="12"
-          md="3"
+          lg="3"
+          md="4"
           sm="6"
         >
           <cp-card>
@@ -114,7 +115,7 @@
                     <span>ดูรายละเอียด</span>
                   </v-list-item>
                   <div
-                    v-if="role != 'Checker'"
+                    v-if="role == 'Project Manager' || role == 'Admin'"
                     class="delete-project"
                     @click="
                       ;(deleteProject.dialog = true),
@@ -164,7 +165,7 @@
                         )
                       "
                     >
-                      <cp-link>
+                      <cp-link class="truncate">
                         {{ list.project_name }}
                       </cp-link>
                     </div>
@@ -197,18 +198,18 @@
                 <v-col cols="6">
                   <div class="cp-caption mt-3">
                     <div class="cp-text-description">ลูกค้า</div>
-                    <span class="truncate-col cp-semibold">
+                    <div class="truncate-col cp-semibold">
                       {{ list.customer.customer_name }}
-                    </span>
+                    </div>
                   </div>
                 </v-col>
 
                 <v-col cols="6">
                   <div class="cp-caption mt-3">
                     <div class="cp-text-description">เจ้าหน้าที่โครงการ</div>
-                    <span class="truncate-col cp-semibold">
+                    <div class="truncate-col cp-semibold">
                       {{ list.coordinator.coordinator_name || '-' }}
-                    </span>
+                    </div>
                   </div>
                 </v-col>
 
@@ -444,37 +445,7 @@ export default {
               this.projectList = data.data
               this.filteredProjects = data.data
               await this.mapCheckerTeam()
-
-              const x = setInterval(() => {
-                if (this.role) {
-                  if (this.role === 'Checker') {
-                    const afterData = this.filteredProjects.map((item) => {
-                      const allAccountIds = [
-                        item.checker_supervisor.account_id,
-                        ...item.checker_team.map((team) => team.account_id),
-                      ]
-                      return {
-                        ...item,
-                        allAccountId: allAccountIds,
-                      }
-                    })
-
-                    for (let i = afterData.length - 1; i >= 0; i--) {
-                      const checking = afterData[i].allAccountId.includes(
-                        this.accountId
-                      )
-                      if (!checking) {
-                        afterData.splice(i, 1)
-                      }
-                    }
-
-                    this.projectList = afterData
-                    this.filteredProjects = afterData
-                  }
-                  this.projectLoading = false
-                  clearInterval(x)
-                }
-              }, 1000)
+              this.projectLoading = false
             }
           })
           .catch(({ response }) => {

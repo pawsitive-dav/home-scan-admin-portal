@@ -116,8 +116,8 @@
           </v-tabs>
           <v-divider class="mb-4" />
           <v-tabs-items v-model="tab" style="overflow: visible">
+            <!-- Location Data Table -->
             <v-tab-item>
-              <!-- Location Data Table -->
               <v-data-table
                 :headers="locationHeaders"
                 :items="locationDataList"
@@ -267,8 +267,9 @@
                 </template>
               </v-data-table>
             </v-tab-item>
+
+            <!-- Systen Data Table -->
             <v-tab-item>
-              <!-- Systen Data Table -->
               <v-data-table
                 :headers="systemHeaders"
                 :items="systemDataList"
@@ -417,8 +418,9 @@
                 </template>
               </v-data-table>
             </v-tab-item>
+
+            <!-- Image Storage -->
             <v-tab-item>
-              <!-- Image Storage -->
               <div class="d-flex align-center pb-6">
                 <div>
                   จำนวนรูปทั้งหมด:
@@ -761,7 +763,7 @@
               <span class="cp-body">สร้าง Location ใหม่</span>
             </v-sheet>
             <div v-if="!createLocation.createNew">
-              <cp-label> Location </cp-label>
+              <cp-label>เลือก Location </cp-label>
               <v-select
                 v-model="createLocation.locationSelect"
                 :items="createLocation.locationList"
@@ -776,7 +778,7 @@
               />
             </div>
             <div v-else>
-              <cp-label> ชื่อ Location </cp-label>
+              <cp-label> ตั้งชื่อ Location </cp-label>
               <v-text-field
                 v-model="createLocation.locationName"
                 :rules="createLocation.locationNameRules"
@@ -865,7 +867,7 @@
               <span class="cp-body">สร้าง Location ใหม่</span>
             </v-sheet>
             <div v-if="!editLocation.createNew">
-              <cp-label> Location </cp-label>
+              <cp-label> เลือก Location </cp-label>
               <v-select
                 v-model="editLocation.locationSelect"
                 :items="editLocation.locationList"
@@ -879,7 +881,7 @@
               />
             </div>
             <div v-else>
-              <cp-label> ชื่อ Location </cp-label>
+              <cp-label> ตั้งชื่อ Location </cp-label>
               <v-text-field
                 v-model="editLocation.locationName"
                 :rules="editLocation.locationNameRules"
@@ -949,16 +951,32 @@
             <v-card-text>
               Deflect ที่จะถูกลบไปด้วย:
               <b>
-                {{
-                  deleteLocation.data ? deleteLocation.data.deflect_count : '-'
-                }}
+                {{ deleteLocation.deflectList.length }}
               </b>
               รายการ
             </v-card-text>
           </v-card>
-          <div class="mt-6 d-flex flex-row-reverse">
+          <v-row v-if="deleteLocation.loading" class="mt-4">
+            <v-col cols="3"> ลบ Deflect </v-col>
+            <v-col cols="9">
+              <v-progress-linear
+                v-model="deleteLocation.deleteProgress"
+                color="primary"
+                height="20"
+                rounded
+              >
+                <strong class="white--text">
+                  {{ deleteLocation.deleteProgress }}%
+                </strong>
+              </v-progress-linear>
+            </v-col>
+          </v-row>
+          <div
+            v-if="!deleteLocation.loading"
+            class="mt-6 d-flex flex-row-reverse"
+          >
             <v-btn
-              :loading="deleteLocation.loading"
+              :disabled="deleteLocation.deflectLoading"
               elevation="0"
               height="36"
               color="error"
@@ -1003,7 +1021,7 @@
               <span class="cp-body">สร้าง System ใหม่</span>
             </v-sheet>
             <div v-if="!createSystem.createNew">
-              <cp-label> System </cp-label>
+              <cp-label>เลือก System </cp-label>
               <v-select
                 v-model="createSystem.systemSelect"
                 :items="createSystem.systemList"
@@ -1017,7 +1035,7 @@
               />
             </div>
             <div v-else>
-              <cp-label> ชื่อ System </cp-label>
+              <cp-label> ตั้งชื่อ System </cp-label>
               <v-text-field
                 v-model="createSystem.systemName"
                 :rules="createSystem.systemNameRules"
@@ -1104,7 +1122,7 @@
               <span class="cp-body">สร้าง System ใหม่</span>
             </v-sheet>
             <div v-if="!editSystem.createNew">
-              <cp-label> System </cp-label>
+              <cp-label> เลือก System </cp-label>
               <v-select
                 v-model="editSystem.systemSelect"
                 :items="editSystem.systemList"
@@ -1118,7 +1136,7 @@
               />
             </div>
             <div v-else>
-              <cp-label> ชื่อ System </cp-label>
+              <cp-label> ตั้งชื่อ System </cp-label>
               <v-text-field
                 v-model="editSystem.systemName"
                 :rules="editSystem.systemNameRules"
@@ -1185,14 +1203,33 @@
             <v-card-text>
               Deflect ที่จะถูกลบไปด้วย:
               <b>
-                {{ deleteSystem.data ? deleteSystem.data.deflect_count : '-' }}
+                {{ deleteSystem.deflectList.length }}
               </b>
               รายการ
             </v-card-text>
           </v-card>
-          <div class="mt-6 d-flex flex-row-reverse">
+          <v-row v-if="deleteSystem.loading" class="mt-4">
+            <v-col cols="3"> ลบ Deflect </v-col>
+            <v-col cols="9">
+              <v-progress-linear
+                v-model="deleteSystem.deleteProgress"
+                color="primary"
+                height="20"
+                rounded
+              >
+                <strong class="white--text">
+                  {{ deleteSystem.deleteProgress }}%
+                </strong>
+              </v-progress-linear>
+            </v-col>
+          </v-row>
+
+          <div
+            v-if="!deleteSystem.loading"
+            class="mt-6 d-flex flex-row-reverse"
+          >
             <v-btn
-              :loading="deleteSystem.loading"
+              :disabled="deleteSystem.deflectLoading"
               elevation="0"
               height="36"
               color="error"
@@ -1495,7 +1532,7 @@ export default {
   data() {
     return {
       tab: null,
-      tabList: ['Location', 'System', 'คลังรูปภาพ'],
+      tabList: ['Location', 'System'],
       inspectionDetail: null,
       // Location Value
       locationDataLoading: false,
@@ -1504,13 +1541,13 @@ export default {
         { text: 'ลำดับ', align: 'center', value: 'on', sortable: false },
         { text: 'Location', value: 'location_name', sortable: false },
         { text: 'Deflect', value: 'deflect_count', sortable: false },
-        { text: 'ผ่าน', value: 'deflect_status_1_count', sortable: false },
-        { text: 'ไม่ผ่าน', value: 'deflect_status_0_count', sortable: false },
         {
           text: 'ยังไม่ได้ตรวจ',
           value: 'deflect_status_null_count',
           sortable: false,
         },
+        { text: 'ผ่าน', value: 'deflect_status_1_count', sortable: false },
+        { text: 'ไม่ผ่าน', value: 'deflect_status_0_count', sortable: false },
         {
           text: 'การดำเนินการ',
           align: 'center',
@@ -1533,11 +1570,6 @@ export default {
           (v) => !/^\s+/.test(v) || 'ห้ามมีช่องว่างด้านหน้า',
         ],
       },
-      deleteLocation: {
-        loading: false,
-        dialog: false,
-        data: null,
-      },
       editLocation: {
         loading: false,
         dialog: false,
@@ -1555,6 +1587,14 @@ export default {
         ],
         locationId: '',
       },
+      deleteLocation: {
+        loading: false,
+        dialog: false,
+        data: null,
+        deflectLoading: false,
+        deflectList: [],
+        deleteProgress: 0,
+      },
 
       // System Value
       systemDataLoading: false,
@@ -1563,13 +1603,13 @@ export default {
         { text: 'ลำดับ', align: 'center', value: 'on', sortable: false },
         { text: 'System', value: 'system_name', sortable: false },
         { text: 'Deflect', value: 'deflect_count', sortable: false },
-        { text: 'ผ่าน', value: 'deflect_status_1_count', sortable: false },
-        { text: 'ไม่ผ่าน', value: 'deflect_status_0_count', sortable: false },
         {
           text: 'ยังไม่ได้ตรวจ',
           value: 'deflect_status_null_count',
           sortable: false,
         },
+        { text: 'ผ่าน', value: 'deflect_status_1_count', sortable: false },
+        { text: 'ไม่ผ่าน', value: 'deflect_status_0_count', sortable: false },
         {
           text: 'การดำเนินการ',
           align: 'center',
@@ -1592,11 +1632,6 @@ export default {
           (v) => !/^\s+/.test(v) || 'ห้ามมีช่องว่างด้านหน้า',
         ],
       },
-      deleteSystem: {
-        loading: false,
-        dialog: false,
-        data: null,
-      },
       editSystem: {
         loading: false,
         dialog: false,
@@ -1614,6 +1649,15 @@ export default {
         ],
         systemId: '',
       },
+      deleteSystem: {
+        loading: false,
+        dialog: false,
+        data: null,
+        deflectLoading: false,
+        deflectList: [],
+        deleteProgress: 0,
+      },
+      // Image Storage
       imageStorage: {
         imageListLoading: false,
         imageUsageList: [],
@@ -1695,10 +1739,10 @@ export default {
     },
 
     tab(newData) {
-      if (newData === 1 && this.systemDataList.length === 0) {
+      if (newData === 0) {
+        this.getLocationList()
+      } else if (newData === 1) {
         this.getSystemList()
-      } else if (newData === 2) {
-        this.getImageList()
       }
     },
 
@@ -1707,6 +1751,15 @@ export default {
         this.createLocation.createNew = false
         this.createLocation.locationName = ''
         this.createLocation.locationSelect = this.createLocation.locationList[0]
+      } else {
+        this.inspectionCheckHealthy()
+      }
+    },
+
+    'deleteLocation.dialog'(newValue) {
+      if (newValue) {
+        this.inspectionCheckHealthy()
+        this.getLocationDeflectList()
       }
     },
 
@@ -1716,6 +1769,8 @@ export default {
         this.editLocation.locationName = ''
         this.editLocation.locationSelect = this.editLocation.locationList[0]
         this.editLocation.locationSelectBeforeNo = false
+      } else {
+        this.inspectionCheckHealthy()
       }
     },
 
@@ -1724,6 +1779,15 @@ export default {
         this.createSystem.createNew = false
         this.createSystem.systemName = ''
         this.createSystem.systemSelect = this.createSystem.systemList[0]
+      } else {
+        this.inspectionCheckHealthy()
+      }
+    },
+
+    'deleteSystem.dialog'(newValue) {
+      if (newValue) {
+        this.inspectionCheckHealthy()
+        this.getSystemDeflectList()
       }
     },
 
@@ -1733,6 +1797,8 @@ export default {
         this.editSystem.systemName = ''
         this.editSystem.systemSelect = this.editSystem.systemList[0]
         this.editSystem.systemSelectBeforeNo = false
+      } else {
+        this.inspectionCheckHealthy()
       }
     },
 
@@ -1740,6 +1806,8 @@ export default {
       if (!newValue) {
         this.imageUpload.imageList = []
         this.imageUpload.uploadPersen = 0
+      } else {
+        this.inspectionCheckHealthy()
       }
     },
 
@@ -1789,6 +1857,45 @@ export default {
       )
     },
 
+    async inspectionCheckHealthy() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/check`,
+            {
+              inspection_id: this.$route.query.id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            if (!data.data) {
+              this.onNotify({
+                notifyValue: true,
+                type: 'warning',
+                title: 'แจ้งเตือนจากระบบ',
+                message: `รายการตรวจที่ ${this.inspectionDetail.inspection_no} ถูกผู้ใช้งานท่านอื่นลบแล้ว`,
+              })
+              this.$router.push(
+                `/projects/list/detail?id=${this.inspectionDetail.project_id}`
+              )
+            }
+          })
+          .catch(({ response }) => {
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              message: response,
+            })
+          })
+      }
+    },
+
     async getInspectionDetail() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
@@ -1813,7 +1920,8 @@ export default {
               notifyValue: true,
               type: 'error',
               title: 'เกิดข้อผิดพลาด',
-              message: response.data,
+              message:
+                'ไม่สามารถเข้าถึงข้อมูลของ รายการตรวจนี้ได้ กรุณาลองใหม่อีกครั้ง เป็นไปได้ว่ารายการตรวจนี้ถูกลบไปแล้ว',
             })
           })
       }
@@ -1839,6 +1947,7 @@ export default {
           )
           .then(({ data }) => {
             this.locationDataLoading = false
+            data.data.sort((a, b) => a.id - b.id)
             this.locationDataList = data.data
           })
           .catch(({ response }) => {
@@ -2018,10 +2127,57 @@ export default {
         })
     },
 
+    async getLocationDeflectList() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.deleteLocation.deflectLoading = true
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/location/deflect/list`,
+            {
+              project_id: this.deleteLocation.data.project_id,
+              inspection_id: this.deleteLocation.data.inspection_id,
+              location_id: this.deleteLocation.data.location_id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            if (data.data) {
+              this.deleteLocation.deflectLoading = false
+              this.deleteLocation.deflectList = data.data
+            }
+          })
+          .catch((error) => {
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'ดำเนินการไม่สำเร็จ',
+              message: error,
+            })
+          })
+      }
+    },
+
     async onDeleteLocation() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
         this.deleteLocation.loading = true
+
+        for (let i = 0; i < this.deleteLocation.deflectList.length; i++) {
+          const imageId = this.deleteLocation.deflectList[i].image_id
+          const imagePath = this.deleteLocation.deflectList[i].image_path
+          await this.runMultipleDeleteLocationDeflect(
+            accessToken,
+            imageId,
+            imagePath,
+            i
+          )
+        }
+
         this.$axios
           .post(
             `${process.env.API_ENDPOINT}/v1/project/inspection/location/delete`,
@@ -2056,6 +2212,36 @@ export default {
               message: response.data,
             })
           })
+      }
+    },
+
+    async runMultipleDeleteLocationDeflect(
+      accessToken,
+      imageId,
+      imagePath,
+      index
+    ) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/location/deflect/single-delete`,
+          {
+            project_id: this.deleteLocation.data.project_id,
+            inspection_id: this.deleteLocation.data.inspection_id,
+            location_id: this.deleteLocation.data.location_id,
+            image_id: imageId,
+            image_path: imagePath,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        const progress =
+          ((index + 1) / this.deleteLocation.deflectList.length) * 100
+        this.deleteLocation.deleteProgress = progress.toFixed(2)
+      } catch ({ response }) {
+        this.handleUploadError(response.data)
       }
     },
 
@@ -2227,6 +2413,7 @@ export default {
           )
           .then(({ data }) => {
             this.systemDataLoading = false
+            data.data.sort((a, b) => a.id - b.id)
             this.systemDataList = data.data
           })
           .catch(({ response }) => {
@@ -2402,10 +2589,57 @@ export default {
         })
     },
 
+    async getSystemDeflectList() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.deleteSystem.deflectLoading = true
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/system/deflect/list`,
+            {
+              project_id: this.deleteSystem.data.project_id,
+              inspection_id: this.deleteSystem.data.inspection_id,
+              system_id: this.deleteSystem.data.system_id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            if (data.data) {
+              this.deleteSystem.deflectLoading = false
+              this.deleteSystem.deflectList = data.data
+            }
+          })
+          .catch((error) => {
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'ดำเนินการไม่สำเร็จ',
+              message: error,
+            })
+          })
+      }
+    },
+
     async onDeleteSystem() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
         this.deleteSystem.loading = true
+
+        for (let i = 0; i < this.deleteSystem.deflectList.length; i++) {
+          const imageId = this.deleteSystem.deflectList[i].image_id
+          const imagePath = this.deleteSystem.deflectList[i].image_path
+          await this.runMultipleDeleteSystemDeflect(
+            accessToken,
+            imageId,
+            imagePath,
+            i
+          )
+        }
+
         this.$axios
           .post(
             `${process.env.API_ENDPOINT}/v1/project/inspection/system/delete`,
@@ -2440,6 +2674,36 @@ export default {
               message: response.data,
             })
           })
+      }
+    },
+
+    async runMultipleDeleteSystemDeflect(
+      accessToken,
+      imageId,
+      imagePath,
+      index
+    ) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/system/deflect/single-delete`,
+          {
+            project_id: this.deleteSystem.data.project_id,
+            inspection_id: this.deleteSystem.data.inspection_id,
+            system_id: this.deleteSystem.data.system_id,
+            image_id: imageId,
+            image_path: imagePath,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        const progress =
+          ((index + 1) / this.deleteSystem.deflectList.length) * 100
+        this.deleteSystem.deleteProgress = progress.toFixed(2)
+      } catch ({ response }) {
+        this.handleUploadError(response.data)
       }
     },
 
@@ -2909,6 +3173,16 @@ export default {
       data.checked = true
       this.imageMultipleDelete.active = true
       this.imageMultipleDelete.imageDataList.push(data)
+    },
+
+    handleUploadError(error) {
+      this.imageUpload.loading = false
+      this.onNotify({
+        notifyValue: true,
+        type: 'error',
+        title: 'ดำเนินการไม่สำเร็จ',
+        message: error,
+      })
     },
   },
 }

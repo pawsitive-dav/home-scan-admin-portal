@@ -51,7 +51,7 @@
         </template>
 
         <template #item.created_by="{ item }">
-          <div class="member-box">
+          <div v-if="JSON.parse(item.created_by).code_name" class="member-box">
             <v-avatar size="32" color="primary">
               <img
                 v-if="JSON.parse(item.created_by).avatar_path"
@@ -71,6 +71,12 @@
                 }}
               </div>
             </div>
+          </div>
+          <div v-else class="cp-text-disable">
+            <v-icon size="20" class="mr-1" color="grey">
+              mdi-account-alert-outline
+            </v-icon>
+            ผู้สร้างถูกลบ
           </div>
         </template>
 

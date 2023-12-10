@@ -45,6 +45,7 @@
       type="file"
       style="display: none"
       accept="image/*"
+      multiple
       @change="uploadImage"
     />
 
@@ -63,7 +64,7 @@
           </div>
         </div>
         <div class="d-flex align-center">
-          <b>รอบการตรวจที่ {{ systemDetail.inspection_no }} - </b>
+          <b>รายการตรวจที่ {{ systemDetail.inspection_no }} - </b>
           <b class="ml-2">ของโปรเจค:</b>
           <span class="ml-1 cp-semibold">
             {{ systemDetail.project_name }}
@@ -75,6 +76,7 @@
         <cp-card class="pa-6">
           <div class="d-flex">
             <v-btn
+              :disabled="!systemDetail"
               small
               outlined
               height="32"
@@ -89,6 +91,7 @@
               ย้อนกลับ
             </v-btn>
             <v-spacer />
+
             <div class="cp-subtitle">
               Deflect ทั้งหมด
               <b class="cp-title">{{ deflectList.length }}</b> รายการ
@@ -96,52 +99,169 @@
           </div>
           <v-divider class="my-4" />
 
-          <v-row v-if="!systemDetail">
-            <v-col v-for="box in 3" :key="box" cols="12" md="4">
-              <div class="card-added-load">
-                <div class="image-box"></div>
-                <div class="text-box"></div>
-                <div class="text-box"></div>
+          <div
+            v-if="
+              (systemDetail && systemDetail.report_status == 'in-progress') ||
+              (systemDetail && systemDetail.report_status == null)
+            "
+            class="d-flex align-center"
+          >
+            <v-spacer />
+            <v-btn
+              v-if="multipleDeleteDeflect.mode"
+              :disabled="multipleDeleteDeflect.deflectDataList.length < 1"
+              elevation="0"
+              height="36"
+              color="error"
+              class="mr-4"
+              @click="multipleDeleteDeflect.dialog = true"
+            >
+              <div class="cp-text-capitalize">
+                <v-icon left>mdi-trash-can-outline</v-icon>
+                เลือกลบ
+                {{ multipleDeleteDeflect.deflectDataList.length }} Deflect
               </div>
-            </v-col>
-          </v-row>
+            </v-btn>
+            <v-switch
+              v-model="multipleDeleteDeflect.mode"
+              label="ลบหลายรายการ"
+              inset
+              dense
+            />
+          </div>
 
-          <v-row v-else>
+          <v-row v-if="systemDetail">
             <v-col
               v-for="(list, index) in deflectList"
               :key="index + 'deflectList'"
               cols="12"
-              md="4"
+              lg="4"
+              md="6"
             >
-              <div class="card-added">
-                <v-img
-                  :src="list.image_path"
-                  aspect-ratio="1.4"
-                  class="mb-4"
-                  contain
+              <div
+                :class="list.deleteSelect ? 'card-added-select-delete' : ''"
+                class="card-added"
+              >
+                <v-sheet
+                  width="100%"
+                  color="grey lighten-2"
+                  @click="onSelectedDeleteDeflect(list)"
                 >
-                  <div class="d-flex justify-end mt-1 mr-1">
-                    <v-spacer />
-                    <v-btn
-                      icon
-                      small
-                      color="white"
-                      @click="
-                        ;(imagePreview.dialog = true),
-                          (imagePreview.imageData = list)
-                      "
-                    >
-                      <v-icon>mdi-arrow-expand-all</v-icon>
-                    </v-btn>
-                  </div>
-                </v-img>
+                  <v-img
+                    :src="list.image_path"
+                    aspect-ratio="1.4"
+                    class="mb-4"
+                    contain
+                  >
+                    <div class="image-toolbar">
+                      <v-spacer />
+                      <v-btn
+                        icon
+                        color="white"
+                        @click="
+                          onDonwloadImage(list.image_path, list.image_name)
+                        "
+                      >
+                        <v-icon>mdi-cloud-download-outline</v-icon>
+                      </v-btn>
+                      <v-btn
+                        icon
+                        color="white"
+                        @click="
+                          ;(imagePreview.dialog = true),
+                            (imagePreview.imageData = list)
+                        "
+                      >
+                        <v-icon>mdi-arrow-expand-all</v-icon>
+                      </v-btn>
+                    </div>
+                  </v-img>
+                </v-sheet>
+
                 <div
                   v-if="
-                    systemDetail.report_status == 'in-progress' ||
-                    systemDetail.report_status == null
+                    systemDetail.report_status == 'approval' ||
+                    systemDetail.report_status == 'approved'
                   "
-                  class="box-status"
                 >
+                  <div v-if="list.deflect_status == 1" class="box-status-only">
+                    <div class="status-pass">
+                      <v-icon color="success"> mdi-checkbox-outline </v-icon>
+                      <span class="success--text"> ผ่าน </span>
+                      <div class="cp-account-edit">
+                        <v-tooltip top>
+                          <template #activator="{ on, attrs }">
+                            <v-icon
+                              small
+                              color="primary"
+                              v-bind="attrs"
+                              v-on="on"
+                            >
+                              mdi-account-edit-outline
+                            </v-icon>
+                          </template>
+                          <div>
+                            <v-icon dark size="16">
+                              mdi-account-circle-outline
+                            </v-icon>
+                            <span class="ml-1">{{
+                              list.update_status_by.code_name || '-'
+                            }}</span>
+                          </div>
+                          <div>
+                            <v-icon dark size="16">mdi-calendar-clock</v-icon>
+                            <span class="ml-1">{{
+                              formatDateShot(list.update_status_at)
+                            }}</span>
+                          </div>
+                        </v-tooltip>
+                      </div>
+                    </div>
+                    <div class="status">
+                      <v-icon color="grey"> mdi-checkbox-blank-outline </v-icon>
+                      <span class="grey--text"> ไม่ผ่าน </span>
+                    </div>
+                  </div>
+                  <div v-if="list.deflect_status == 0" class="box-status-only">
+                    <div class="status">
+                      <v-icon color="grey"> mdi-checkbox-blank-outline </v-icon>
+                      <span class="grey--text"> ผ่าน </span>
+                    </div>
+                    <div class="status-not-pass">
+                      <v-icon color="error"> mdi-close-box-outline </v-icon>
+                      <span class="error--text"> ไม่ผ่าน </span>
+                      <div class="cp-account-edit">
+                        <v-tooltip top>
+                          <template #activator="{ on, attrs }">
+                            <v-icon
+                              small
+                              color="primary"
+                              v-bind="attrs"
+                              v-on="on"
+                            >
+                              mdi-account-edit-outline
+                            </v-icon>
+                          </template>
+                          <div>
+                            <v-icon dark size="16">
+                              mdi-account-circle-outline
+                            </v-icon>
+                            <span class="ml-1">{{
+                              list.update_status_by.code_name || '-'
+                            }}</span>
+                          </div>
+                          <div>
+                            <v-icon dark size="16">mdi-calendar-clock</v-icon>
+                            <span class="ml-1">{{
+                              formatDateShot(list.update_status_at)
+                            }}</span>
+                          </div>
+                        </v-tooltip>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div v-else class="box-status">
                   <div
                     :class="
                       list.deflect_status == 1 ? 'status-pass-active' : ''
@@ -159,17 +279,47 @@
                       v-if="list.deflect_status == 1"
                       color="success"
                       class="status-icon"
-                      large
                     >
                       mdi-checkbox-outline
                     </v-icon>
-                    <v-icon v-else large class="status-icon">
+                    <v-icon v-else class="status-icon">
                       mdi-checkbox-blank-outline
                     </v-icon>
                     <span v-if="list.deflect_status == 1" class="success--text">
                       ผ่าน
                     </span>
                     <span v-else>ผ่าน</span>
+                    <div
+                      v-if="list.deflect_status == 1"
+                      class="cp-account-edit"
+                    >
+                      <v-tooltip top>
+                        <template #activator="{ on, attrs }">
+                          <v-icon
+                            small
+                            color="primary"
+                            v-bind="attrs"
+                            v-on="on"
+                          >
+                            mdi-account-edit-outline
+                          </v-icon>
+                        </template>
+                        <div>
+                          <v-icon dark size="16">
+                            mdi-account-circle-outline
+                          </v-icon>
+                          <span class="ml-1">{{
+                            list.update_status_by.code_name || '-'
+                          }}</span>
+                        </div>
+                        <div>
+                          <v-icon dark size="16">mdi-calendar-clock</v-icon>
+                          <span class="ml-1">{{
+                            formatDateShot(list.update_status_at)
+                          }}</span>
+                        </div>
+                      </v-tooltip>
+                    </div>
                   </div>
 
                   <div
@@ -189,49 +339,50 @@
                       v-if="list.deflect_status == 0"
                       color="error"
                       class="status-icon"
-                      large
                     >
                       mdi-close-box-outline
                     </v-icon>
-                    <v-icon v-else large class="status-icon">
+                    <v-icon v-else class="status-icon">
                       mdi-checkbox-blank-outline
                     </v-icon>
                     <span v-if="list.deflect_status == 0" class="error--text">
                       ไม่ผ่าน
                     </span>
                     <span v-else>ไม่ผ่าน</span>
+                    <div
+                      v-if="list.deflect_status == 0"
+                      class="cp-account-edit"
+                    >
+                      <v-tooltip top>
+                        <template #activator="{ on, attrs }">
+                          <v-icon
+                            small
+                            color="primary"
+                            v-bind="attrs"
+                            v-on="on"
+                          >
+                            mdi-account-edit-outline
+                          </v-icon>
+                        </template>
+                        <div>
+                          <v-icon dark size="16">
+                            mdi-account-circle-outline
+                          </v-icon>
+                          <span class="ml-1">{{
+                            list.update_status_by.code_name || '-'
+                          }}</span>
+                        </div>
+                        <div>
+                          <v-icon dark size="16">mdi-calendar-clock</v-icon>
+                          <span class="ml-1">{{
+                            formatDateShot(list.update_status_at)
+                          }}</span>
+                        </div>
+                      </v-tooltip>
+                    </div>
                   </div>
                 </div>
-                <div v-else>
-                  <div v-if="list.deflect_status == 1" class="box-status-only">
-                    <div class="status-pass">
-                      <v-icon color="success" large>
-                        mdi-checkbox-outline
-                      </v-icon>
-                      <span class="success--text"> ผ่าน </span>
-                    </div>
-                    <div class="status">
-                      <v-icon large color="grey">
-                        mdi-checkbox-blank-outline
-                      </v-icon>
-                      <span class="grey--text"> ไม่ผ่าน </span>
-                    </div>
-                  </div>
-                  <div v-if="list.deflect_status == 0" class="box-status-only">
-                    <div class="status">
-                      <v-icon color="grey" large>
-                        mdi-checkbox-blank-outline
-                      </v-icon>
-                      <span class="grey--text"> ผ่าน </span>
-                    </div>
-                    <div class="status-not-pass">
-                      <v-icon large color="error">
-                        mdi-close-box-outline
-                      </v-icon>
-                      <span class="error--text"> ไม่ผ่าน </span>
-                    </div>
-                  </div>
-                </div>
+
                 <div class="d-flex align-center">
                   <v-text-field
                     v-if="
@@ -239,6 +390,7 @@
                       systemDetail.report_status == null
                     "
                     v-model="list.deflect_detail_new"
+                    :disabled="multipleDeleteDeflect.mode"
                     :append-icon="
                       list.deflect_detail !== list.deflect_detail_new
                         ? 'mdi-content-save-outline'
@@ -263,26 +415,50 @@
                       {{ list.deflect_detail || '-' }}
                     </div>
                   </div>
-                  <div
+                </div>
+                <v-divider class="my-4" />
+                <div class="d-flex align-end">
+                  <v-row no-gutters>
+                    <v-col cols="2">
+                      <v-icon size="18">mdi-account-circle-outline</v-icon>
+                    </v-col>
+                    <v-col cols="10" class="truncate">
+                      <span class="cp-caption">{{
+                        list.created_by.code_name
+                      }}</span>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-icon size="18">mdi-calendar-clock</v-icon>
+                    </v-col>
+                    <v-col cols="10">
+                      <span class="cp-caption">{{
+                        formatDateShot(list.created_at)
+                      }}</span>
+                    </v-col>
+                  </v-row>
+                  <v-spacer />
+                  <v-btn
                     v-if="
-                      systemDetail.report_status == 'in-progress' ||
-                      systemDetail.report_status == null
+                      (systemDetail &&
+                        systemDetail.report_status == 'in-progress') ||
+                      (systemDetail && systemDetail.report_status == null)
                     "
-                    class="px-4"
+                    small
+                    outlined
+                    elevation="0"
+                    class="cp-vbtn-error ml-4"
+                    @click="
+                      ;(deleteDeflect.dialog = true),
+                        (deleteDeflect.deflectData = list)
+                    "
                   >
-                    <v-icon
-                      class="cp-delete-icon"
-                      @click="
-                        ;(deleteDeflect.dialog = true),
-                          (deleteDeflect.imageId = list.image_id)
-                      "
-                    >
-                      mdi-trash-can-outline
-                    </v-icon>
-                  </div>
+                    <div class="cp-text-capitalize">ลบ Deflect</div>
+                  </v-btn>
                 </div>
               </div>
             </v-col>
+
+            <!-- Add New Deflect -->
             <v-col
               v-if="
                 systemDetail.report_status == 'in-progress' ||
@@ -299,20 +475,7 @@
                         mdi-file-image-plus-outline
                       </v-icon>
                     </div>
-                    <div class="pt-2">อัพโหลดใหม่</div>
-                  </div>
-                </div>
-                <div
-                  class="box-select"
-                  @click="createDeflectByStorage.dialog = true"
-                >
-                  <div class="text-center">
-                    <div>
-                      <v-icon class="box-icon" size="40">
-                        mdi-folder-file-outline
-                      </v-icon>
-                    </div>
-                    <div class="pt-2">คลังรูปภาพ</div>
+                    <div class="pt-2">สร้าง Deflect</div>
                   </div>
                 </div>
               </div>
@@ -379,17 +542,20 @@
                 @click="onSelectCardImage(list)"
               >
                 <div class="pa-2">
-                  <v-img :src="list.image_path" aspect-ratio="1.4">
+                  <v-img
+                    :src="list.image_path"
+                    aspect-ratio="1.4"
+                    class="grey lighten-2"
+                  >
                     <div class="d-flex mt-1 mx-1">
                       <v-chip
-                        v-if="list.location_usage"
-                        color="primary"
-                        class="mr-2"
+                        v-if="list.system_usage"
+                        color="success"
                         small
                         label
                       >
-                        <v-icon small left>mdi-home-map-marker</v-icon>
-                        LOCATION
+                        <v-icon small left>mdi-overscan</v-icon>
+                        SYSTEM
                       </v-chip>
                     </div>
                     <template #placeholder>
@@ -433,45 +599,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- Delete Deflect -->
-    <v-dialog
-      v-model="deleteDeflect.dialog"
-      :persistent="deleteDeflect.loading"
-      max-width="400px"
-      transition="dialog-transition"
-      content-class="elevation-0"
-      scrollable
-    >
-      <v-card>
-        <v-card-title>
-          ลบ Deflect
-          <v-spacer />
-          <v-btn
-            :disabled="deleteDeflect.loading"
-            icon
-            class="mt-n4 mr-n4"
-            @click="deleteDeflect.dialog = false"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-card-title>
-        <v-card-text>
-          คุณแน่ใจหรือไม่ที่คุณจะลบ Deflect นี้?
-          <div class="mt-6 d-flex flex-row-reverse">
-            <v-btn
-              :loading="deleteDeflect.loading"
-              elevation="0"
-              height="36"
-              color="error"
-              @click="onDeleteDeflect()"
-            >
-              <div class="cp-text-capitalize">ยืนยัน</div>
-            </v-btn>
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-
     <!-- Image Preview -->
     <v-dialog
       v-model="imagePreview.dialog"
@@ -504,6 +631,164 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+
+    <!-- Create Deflect Progress -->
+    <v-dialog
+      v-model="createDeflectProgress.dialog"
+      persistent
+      max-width="500px"
+      transition="dialog-transition"
+      content-class="elevation-0"
+    >
+      <v-card>
+        <v-card-title> ระบบกำลังดำเนินการ </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="3"> เตรียมข้อมูล </v-col>
+            <v-col cols="9">
+              <div v-if="!createDeflectProgress.preImageFalse">
+                <v-progress-circular
+                  :width="2"
+                  size="16"
+                  color="grey"
+                  class="mr-1"
+                  indeterminate
+                />
+                <span class="cp-text-disable">กำลังดำเนินการ...</span>
+              </div>
+              <div v-else>
+                <v-icon color="success" class="mr-1">mdi-check</v-icon>
+                <span>ดำเนินการเสร็จ</span>
+              </div>
+            </v-col>
+            <v-col cols="3"> อัพโหลดรูป </v-col>
+            <v-col cols="9">
+              <v-progress-linear
+                v-model="createDeflectProgress.uploadImage"
+                color="primary"
+                height="20"
+                rounded
+              >
+                <strong class="white--text">
+                  {{ createDeflectProgress.uploadImage }}%
+                </strong>
+              </v-progress-linear>
+            </v-col>
+            <v-col cols="3"> สร้าง Deflect </v-col>
+            <v-col cols="9">
+              <v-progress-linear
+                v-model="createDeflectProgress.createDeflect"
+                color="info"
+                height="20"
+                rounded
+              >
+                <strong>{{ createDeflectProgress.createDeflect }}%</strong>
+              </v-progress-linear>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete Single Deflect -->
+    <v-dialog
+      v-model="deleteDeflect.dialog"
+      :persistent="deleteDeflect.loading"
+      max-width="400px"
+      transition="dialog-transition"
+      content-class="elevation-0"
+      scrollable
+    >
+      <v-card>
+        <v-card-title>
+          ลบ Deflect
+          <v-spacer />
+          <v-btn
+            :disabled="deleteDeflect.loading"
+            icon
+            class="mt-n4 mr-n4"
+            @click="deleteDeflect.dialog = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text>
+          คุณแน่ใจหรือไม่ที่คุณจะลบ Deflect นี้?
+          <div class="mt-6 d-flex flex-row-reverse">
+            <v-btn
+              :loading="deleteDeflect.loading"
+              elevation="0"
+              height="36"
+              color="error"
+              @click="onSingleDeleteDeflect()"
+            >
+              <div class="cp-text-capitalize">ยืนยัน</div>
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete multiple Deflect -->
+    <v-dialog
+      v-model="multipleDeleteDeflect.dialog"
+      :persistent="multipleDeleteDeflect.loading"
+      max-width="450px"
+      transition="dialog-transition"
+      content-class="elevation-0"
+      scrollable
+    >
+      <v-card>
+        <v-card-title>
+          ลบ Deflect หลายรายการ
+          <v-spacer />
+          <v-btn
+            :disabled="multipleDeleteDeflect.loading"
+            icon
+            class="mt-n4 mr-n4"
+            @click="multipleDeleteDeflect.dialog = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text>
+          <div v-if="!multipleDeleteDeflect.loading">
+            ยืนยันการลบ Deflect
+            {{ multipleDeleteDeflect.deflectDataList.length }} รายการ
+          </div>
+          <v-row v-else>
+            <v-col cols="3"> ดำเนินการลบ </v-col>
+            <v-col cols="9">
+              <v-progress-linear
+                v-model="multipleDeleteDeflect.deleteProgress"
+                color="primary"
+                height="20"
+                rounded
+              >
+                <strong class="white--text">
+                  {{ multipleDeleteDeflect.deleteProgress }}%
+                </strong>
+              </v-progress-linear>
+            </v-col>
+          </v-row>
+
+          <div
+            v-if="!multipleDeleteDeflect.loading"
+            class="mt-6 d-flex flex-row-reverse"
+          >
+            <v-btn
+              :loading="multipleDeleteDeflect.loading"
+              elevation="0"
+              height="36"
+              color="error"
+              @click="onMultipleDeleteDeflect()"
+            >
+              <div class="cp-text-capitalize">ยืนยัน</div>
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -522,14 +807,31 @@ export default {
         storageList: [],
         imageSelected: [],
       },
-      deleteDeflect: {
-        loading: false,
-        dialog: false,
-        imageId: '',
-      },
       imagePreview: {
         dialog: false,
         imageData: null,
+      },
+      storageListLoading: false,
+      imageGroup: [],
+      deflectPreCreate: [],
+      createDeflectProgress: {
+        dialog: false,
+        preImageFalse: false,
+        uploadImage: 0,
+        createDeflect: 0,
+      },
+      deleteDeflect: {
+        mode: false,
+        loading: false,
+        dialog: false,
+        deflectData: null,
+      },
+      multipleDeleteDeflect: {
+        mode: false,
+        loading: false,
+        dialog: false,
+        deflectDataList: [],
+        deleteProgress: 0,
       },
     }
   },
@@ -561,10 +863,23 @@ export default {
         })
       }
     },
+    async 'multipleDeleteDeflect.mode'(newValue) {
+      if (!newValue) {
+        this.multipleDeleteDeflect.deflectDataList = []
+        this.deflectList.forEach((e) => {
+          e.deleteSelect = false
+        })
+      } else {
+        await this.onGetSystemDetail()
+        if (!this.systemDetail) {
+          this.multipleDeleteDeflect.mode = false
+        }
+      }
+    },
   },
 
   created() {
-    this.onGetsystemDetail()
+    this.onGetSystemDetail()
   },
 
   methods: {
@@ -577,22 +892,35 @@ export default {
     },
 
     formatDateMax(dateStr) {
-      const result = moment(dateStr)
-        .locale('th')
-        .format('DD/MMMM/yyyy เวลา HH:mm')
-      return result
+      if (dateStr) {
+        const result = moment(dateStr)
+          .locale('th')
+          .format('DD/MMMM/yyyy เวลา HH:mm')
+        return result
+      } else {
+        return '-'
+      }
     },
 
     formatDateShot(dateStr) {
-      const result = moment(dateStr).locale('th').format('DD/MMM/yyyy HH:mm')
-      return result
+      if (dateStr) {
+        const result = moment(dateStr).locale('th').format('DD MMM YY - HH:mm')
+        return result
+      } else {
+        return '-'
+      }
     },
 
-    async onGetsystemDetail() {
+    mapRoleName(level) {
+      const role = this.appRoleList.find((role) => role.role_level === level)
+      return role ? role.role_name : null
+    },
+
+    async onGetSystemDetail() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
-        this.$axios
-          .post(
+        try {
+          const { data } = await this.$axios.post(
             `${process.env.API_ENDPOINT}/v1/project/inspection/system/detail`,
             {
               system_id: this.$route.query.id,
@@ -603,18 +931,18 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
-            this.systemDetail = data.data
-            this.onGetDeflectList()
+          this.systemDetail = data.data
+          this.onGetDeflectList()
+        } catch ({ response }) {
+          this.systemDetail = false
+          this.onNotify({
+            notifyValue: true,
+            type: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            message:
+              'ไม่พบข้อมูล System กรุณาลองใหม่อีกครั้ง หรือรายการตรวจอาจถูกลบจากผู้ใช้งานท่านอื่น',
           })
-          .catch(({ response }) => {
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
-            })
-          })
+        }
       }
     },
 
@@ -641,6 +969,7 @@ export default {
               data.data.forEach((element) => {
                 element.deflect_detail = element.deflect_detail || ''
                 element.deflect_detail_new = element.deflect_detail
+                element.deleteSelect = false
                 this.deflectList.push(element)
               })
               this.deflectList.sort((a, b) => a.id - b.id)
@@ -657,22 +986,225 @@ export default {
       }
     },
 
-    openImageInput() {
-      this.$refs.imageInput.click()
+    async openImageInput() {
+      await this.onGetSystemDetail()
+      if (this.systemDetail) {
+        this.$refs.imageInput.click()
+      }
     },
 
-    uploadImage(event) {
-      const file = event.target.files[0]
-      if (file) {
+    async uploadImage(event) {
+      const files = event.target.files
+      if (files.length > 0) {
+        this.createDeflectProgress.dialog = true
+        this.imageGroup = await Promise.all(
+          Array.from(files).map(async (file) => {
+            const processedImage = await this.processImageFile(file)
+            const croppedImage = await this.cropImage(
+              processedImage.image,
+              2400,
+              1716
+            )
+            return {
+              image: croppedImage,
+              name: processedImage.name,
+              size: file.size,
+            }
+          })
+        )
+        this.$refs.imageInput.value = null
+        await this.uploadImages()
+      }
+    },
+
+    processImageFile(file) {
+      return new Promise((resolve) => {
         const reader = new FileReader()
         reader.onload = () => {
-          if (reader.result) {
-            this.onUploadNewDeflect(reader.result)
-          }
-          this.$refs.imageInput.value = null
+          const imageName = file.name.replace(/\s/g, '-').replace(/\..*$/, '')
+          resolve({
+            image: reader.result,
+            name: imageName,
+          })
         }
         reader.readAsDataURL(file)
+      })
+    },
+
+    cropImage(imageDataUrl, targetWidth, targetHeight) {
+      return new Promise((resolve) => {
+        const img = new Image()
+        img.onload = () => {
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
+          const aspectRatio = targetWidth / targetHeight
+
+          let newWidth, newHeight
+
+          if (img.width / img.height > aspectRatio) {
+            newHeight = img.height
+            newWidth = img.height * aspectRatio
+          } else {
+            newWidth = img.width
+            newHeight = img.width / aspectRatio
+          }
+
+          const startX = (img.width - newWidth) / 2
+          const startY = (img.height - newHeight) / 2
+
+          canvas.width = targetWidth
+          canvas.height = targetHeight
+
+          ctx.drawImage(
+            img,
+            startX,
+            startY,
+            newWidth,
+            newHeight,
+            0,
+            0,
+            targetWidth,
+            targetHeight
+          )
+
+          const croppedImageDataUrl = canvas.toDataURL('image/jpeg')
+          resolve(croppedImageDataUrl)
+        }
+
+        img.src = imageDataUrl
+      })
+    },
+
+    async uploadImages() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        let imageTotalSize = 0
+        for (let x = 0; x < this.imageGroup.length; x++) {
+          imageTotalSize = imageTotalSize + this.imageGroup[x].size
+        }
+        const storageFree = await this.checkFreeStorage()
+        if (imageTotalSize > storageFree) {
+          this.onNotify({
+            notifyValue: true,
+            type: 'error',
+            title: 'ดำเนินการไม่สำเร็จ',
+            message: 'พื้นที่จัดเก็บข้อมูลไม่เพียงพอ',
+          })
+          this.createDeflectProgress.dialog = false
+          this.createDeflectProgress.preImageFalse = false
+          this.createDeflectProgress.uploadImage = 0
+          this.createDeflectProgress.createDeflect = 0
+        } else {
+          this.createDeflectProgress.preImageFalse = true
+          for (let i = 0; i < this.imageGroup.length; i++) {
+            await this.uploadImageItem(accessToken, this.imageGroup[i], i)
+          }
+          this.runCreateDeflect()
+        }
       }
+    },
+
+    async checkFreeStorage() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        try {
+          const { data } = await this.$axios.get(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/storage/usage`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          return data.data.freeStorage
+        } catch (error) {
+          this.handleUploadError(error)
+        }
+      }
+    },
+
+    async uploadImageItem(accessToken, imageFile, index) {
+      await this.onUploadNewDeflect(
+        accessToken,
+        imageFile.image,
+        imageFile.name
+      )
+      const progress = ((index + 1) / this.imageGroup.length) * 100
+      this.createDeflectProgress.uploadImage = progress.toFixed(2)
+      // console.log(`Progress: ${this.createDeflectProgress.uploadImage}%`)
+    },
+
+    async onUploadNewDeflect(accessToken, imageFile, imageName) {
+      try {
+        const { data } = await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/storage/upload`,
+          {
+            project_id: this.systemDetail.project_id,
+            inspection_id: this.systemDetail.inspection_id,
+            image_name: imageName,
+            image: imageFile,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        this.deflectPreCreate.push(data.data.image_id)
+      } catch (error) {
+        this.handleUploadError(error)
+      }
+    },
+
+    async runCreateDeflect() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        for (let i = 0; i < this.deflectPreCreate.length; i++) {
+          await this.onCreateDeflect(accessToken, this.deflectPreCreate[i], i)
+        }
+      }
+      this.onGetDeflectList()
+      this.imageGroup = []
+      this.deflectPreCreate = []
+      setTimeout(() => {
+        this.createDeflectProgress.dialog = false
+        this.createDeflectProgress.preImageFalse = false
+        this.createDeflectProgress.uploadImage = 0
+        this.createDeflectProgress.createDeflect = 0
+      }, 1000)
+    },
+
+    async onCreateDeflect(accessToken, imageId, index) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/system/deflect/create`,
+          {
+            project_id: this.systemDetail.project_id,
+            inspection_id: this.systemDetail.inspection_id,
+            system_id: this.systemDetail.system_id,
+            image_id: imageId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        const progress = ((index + 1) / this.deflectPreCreate.length) * 100
+        this.createDeflectProgress.createDeflect = progress.toFixed(2)
+      } catch ({ response }) {
+        this.handleUploadError(response.data)
+      }
+    },
+
+    handleUploadError(error) {
+      this.imageUpload.loading = false
+      this.onNotify({
+        notifyValue: true,
+        type: 'error',
+        title: 'ดำเนินการไม่สำเร็จ',
+        message: error,
+      })
     },
 
     async onUpdateDeflectStatus(imageId, status, statusNow) {
@@ -703,82 +1235,13 @@ export default {
             })
             this.onGetDeflectList()
           })
-          .catch((error) => {
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'ดำเนินการไม่สำเร็จ',
-              message: error,
-            })
-          })
-      }
-    },
-
-    async onUploadNewDeflect(imageFile) {
-      const accessToken = await this.getAccessToken()
-      if (accessToken) {
-        await this.$axios
-          .post(
-            `${process.env.API_ENDPOINT}/v1/project/inspection/storage/upload`,
-            {
-              project_id: this.systemDetail.project_id,
-              inspection_id: this.systemDetail.inspection_id,
-              image_name: '',
-              image: imageFile,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          )
-          .then(({ data }) => {
-            this.onCreateDeflect(data.data.image_id, accessToken)
-          })
-          .catch((error) => {
-            this.imageUpload.loading = false
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'ดำเนินการไม่สำเร็จ',
-              message: error,
-            })
-          })
-      }
-    },
-
-    onCreateDeflect(imageId, accessToken) {
-      if (accessToken) {
-        this.$axios
-          .post(
-            `${process.env.API_ENDPOINT}/v1/project/inspection/system/deflect/create`,
-            {
-              project_id: this.systemDetail.project_id,
-              inspection_id: this.systemDetail.inspection_id,
-              system_id: this.systemDetail.system_id,
-              image_id: imageId,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          )
-          .then(({ data }) => {
-            this.onGetDeflectList()
-            this.onNotify({
-              notifyValue: true,
-              type: 'success',
-              title: 'ดำเนินการสำเร็จ',
-              message: 'Deflect ถูกสร้างสำเร็จแล้ว',
-            })
-          })
           .catch(({ response }) => {
             this.onNotify({
               notifyValue: true,
               type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
+              title: 'ดำเนินการไม่สำเร็จ',
+              message:
+                'ไม่สามารถบันทึกสาถานะได้กรุณาลองใหม่อีกครั้ง หรือมีผู้ใช้งานท่านอื่นลบ Deflect นี้แล้ว',
             })
           })
       }
@@ -787,6 +1250,7 @@ export default {
     async onGetStorageList() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
+        this.storageListLoading = true
         await this.$axios
           .post(
             `${process.env.API_ENDPOINT}/v1/project/inspection/system/deflect/storage-list`,
@@ -801,16 +1265,17 @@ export default {
             }
           )
           .then(({ data }) => {
-            if (data.data) {
+            if (data.data !== 'No data found') {
               this.createDeflectByStorage.storageList = []
               data.data.forEach((element) => {
                 element.active = false
                 this.createDeflectByStorage.storageList.push(element)
               })
+              this.storageListLoading = false
             }
           })
           .catch((error) => {
-            this.imageUpload.loading = false
+            this.storageListLoading = false
             this.onNotify({
               notifyValue: true,
               type: 'error',
@@ -877,48 +1342,6 @@ export default {
       }
     },
 
-    async onDeleteDeflect() {
-      const accessToken = await this.getAccessToken()
-      if (accessToken) {
-        this.deleteDeflect.loading = true
-        this.$axios
-          .post(
-            `${process.env.API_ENDPOINT}/v1/project/inspection/system/deflect/delete`,
-            {
-              project_id: this.systemDetail.project_id,
-              inspection_id: this.systemDetail.inspection_id,
-              system_id: this.systemDetail.system_id,
-              image_id: this.deleteDeflect.imageId,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          )
-          .then(({ data }) => {
-            this.deleteDeflect.loading = false
-            this.deleteDeflect.dialog = false
-            this.onGetDeflectList()
-            this.onNotify({
-              notifyValue: true,
-              type: 'success',
-              title: 'ดำเนินการสำเร็จ',
-              message: 'Deflect ถูกลบสำเร็จแล้ว',
-            })
-          })
-          .catch(({ response }) => {
-            this.deleteDeflect.loading = false
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
-            })
-          })
-      }
-    },
-
     async onSaveDeflectDetail(data) {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
@@ -952,9 +1375,172 @@ export default {
               notifyValue: true,
               type: 'error',
               title: 'เกิดข้อผิดพลาด',
-              message: response.data,
+              message:
+                'ไม่สามารถบันทึกรายละเอียดได้กรุณาลองใหม่อีกครั้ง หรือมีผู้ใช้งานท่านอื่นลบ Deflect นี้แล้ว',
             })
           })
+      }
+    },
+
+    async onDonwloadImage(imageUrl, fileName) {
+      const base64String = await this.getImageBase64(imageUrl)
+      if (base64String) {
+        const a = document.createElement('a')
+        a.href = base64String.image
+        a.download = fileName || 'no-name' + '.jpeg'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+      }
+    },
+
+    async getImageBase64(imagePath) {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        try {
+          const response = await this.$axios.post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/report/image-64`,
+            {
+              image_path: imagePath,
+              page_focus: 'inspection',
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          return response.data.data
+        } catch (error) {
+          this.onNotify({
+            notifyValue: true,
+            type: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            message:
+              'ไม่สามารถบันทึกรูปภาพได้กรุณาลองใหม่อีกครั้ง หรือมีผู้ใช้งานท่านอื่นลบรูปภาพนี้แล้ว',
+          })
+        }
+      }
+    },
+
+    async onSingleDeleteDeflect() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.deleteDeflect.loading = true
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/system/deflect/single-delete`,
+            {
+              project_id: this.systemDetail.project_id,
+              inspection_id: this.systemDetail.inspection_id,
+              system_id: this.systemDetail.system_id,
+              image_id: this.deleteDeflect.deflectData.image_id,
+              image_path: this.deleteDeflect.deflectData.image_path,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            this.deleteDeflect.loading = false
+            this.deleteDeflect.dialog = false
+            this.onGetDeflectList()
+            this.onNotify({
+              notifyValue: true,
+              type: 'success',
+              title: 'ดำเนินการสำเร็จ',
+              message: 'Deflect ถูกลบสำเร็จแล้ว',
+            })
+          })
+          .catch(({ response }) => {
+            this.deleteDeflect.loading = false
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              message:
+                'ไม่สามารถลบ Deflect นี้ได้กรุณาลองใหม่อีกครั้ง หรือมีผู้ใช้งานท่านอื่นลบ Deflect นี้แล้ว',
+            })
+          })
+      }
+    },
+
+    onSelectedDeleteDeflect(item) {
+      if (this.multipleDeleteDeflect.mode) {
+        item.deleteSelect = !item.deleteSelect
+
+        if (item.deleteSelect) {
+          this.multipleDeleteDeflect.deflectDataList.push(item)
+        } else {
+          this.multipleDeleteDeflect.deflectDataList =
+            this.multipleDeleteDeflect.deflectDataList.filter(
+              (key) => key.id !== item.id
+            )
+        }
+      }
+    },
+
+    async onMultipleDeleteDeflect() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.multipleDeleteDeflect.loading = true
+        for (
+          let i = 0;
+          i < this.multipleDeleteDeflect.deflectDataList.length;
+          i++
+        ) {
+          const imageId = this.multipleDeleteDeflect.deflectDataList[i].image_id
+          const imagePath =
+            this.multipleDeleteDeflect.deflectDataList[i].image_path
+          await this.runMultipleDeleteDeflect(
+            accessToken,
+            imageId,
+            imagePath,
+            i
+          )
+        }
+
+        setTimeout(() => {
+          this.multipleDeleteDeflect.loading = false
+          this.multipleDeleteDeflect.dialog = false
+          this.multipleDeleteDeflect.mode = false
+          this.multipleDeleteDeflect.deleteProgress = 0
+          this.onGetDeflectList()
+          this.onNotify({
+            notifyValue: true,
+            type: 'success',
+            title: 'ดำเนินการสำเร็จ',
+            message: 'รายการ Deflect ถูกลบสำเร็จแล้ว',
+          })
+        }, 1000)
+      }
+    },
+
+    async runMultipleDeleteDeflect(accessToken, imageId, imagePath, index) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/system/deflect/single-delete`,
+          {
+            project_id: this.systemDetail.project_id,
+            inspection_id: this.systemDetail.inspection_id,
+            system_id: this.systemDetail.system_id,
+            image_id: imageId,
+            image_path: imagePath,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        const progress =
+          ((index + 1) / this.multipleDeleteDeflect.deflectDataList.length) *
+          100
+        this.multipleDeleteDeflect.deleteProgress = progress.toFixed(2)
+      } catch ({ response }) {
+        this.handleUploadError(response.data)
       }
     },
   },
@@ -962,10 +1548,42 @@ export default {
 </script>
 
 <style scoped>
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+}
+.card-added-select-delete {
+  outline: 5px solid var(--red-400);
+}
 .card-added {
-  border-radius: 8px;
-  border: 2px solid var(--gray-100);
+  position: relative;
+  box-shadow: var(--box-shadow-sm);
   padding: 16px;
+  border-radius: 4px;
+  transition: all ease 0.3s;
+}
+.card-added:hover {
+  box-shadow: var(--box-shadow-lg);
+}
+.card-added .image-toolbar {
+  display: flex;
+  align-content: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: all ease 0.3s;
+}
+.card-added:hover .image-toolbar {
+  opacity: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 9.76%,
+    rgba(0, 0, 0, 0.56) 100%
+  );
 }
 .card-add {
   flex: 1;
@@ -975,9 +1593,13 @@ export default {
   align-items: center;
   justify-content: center;
   width: 100%;
-  border-radius: 8px;
   border: 2px dashed var(--gray-100);
   padding: 16px;
+  border-radius: 4px;
+  transition: all ease 0.3s;
+}
+.card-add:hover {
+  border: 2px dashed var(--deep-blue-200);
 }
 .card-add .box-select {
   flex: 1;
@@ -985,7 +1607,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
   cursor: pointer;
   padding: 16px;
   background-color: var(--deep-blue-opacity-1);
@@ -997,42 +1618,6 @@ export default {
 }
 .card-add .box-select:hover .box-icon {
   color: var(--base-primary);
-}
-.box-status {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.box-status .status {
-  font-size: 18px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 50px;
-  border-radius: 8px;
-  background-color: var(--gray-opacity-1);
-  cursor: pointer;
-  transition: all ease 0.3s;
-}
-
-.box-status .status-pass:hover {
-  background-color: var(--green-100);
-}
-.box-status .status-pass-active {
-  cursor: default;
-  background-color: var(--green-100);
-}
-.box-status .status-not-pass:hover {
-  background-color: var(--red-100);
-}
-.box-status .status-not-pass-active {
-  cursor: default;
-  background-color: var(--red-100);
 }
 .cp-card-image {
   cursor: pointer;
@@ -1056,9 +1641,24 @@ export default {
   justify-content: center;
   width: 100%;
   height: 300px;
-  border-radius: 4px;
   background-color: var(--gray-opacity-1);
   color: var(--gray-500);
+}
+.box-status-wait {
+  font-size: 18px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  background-color: var(--orange-opacity-1);
+  border: 1px solid var(--orange-500);
+  color: var(--orange-600);
+  margin-bottom: 16px;
+}
+.box-status-wait .wait-icon {
+  color: var(--orange-600);
 }
 .box-status-only {
   width: 100%;
@@ -1075,10 +1675,10 @@ export default {
   justify-content: center;
   gap: 8px;
   height: 50px;
-  border-radius: 8px;
   background-color: var(--gray-opacity-1);
 }
 .box-status-only .status-pass {
+  position: relative;
   font-size: 18px;
   width: 100%;
   display: flex;
@@ -1086,10 +1686,10 @@ export default {
   justify-content: center;
   gap: 8px;
   height: 50px;
-  border-radius: 8px;
   background-color: var(--green-100);
 }
 .box-status-only .status-not-pass {
+  position: relative;
   font-size: 18px;
   width: 100%;
   display: flex;
@@ -1097,27 +1697,80 @@ export default {
   justify-content: center;
   gap: 8px;
   height: 50px;
-  border-radius: 8px;
+  background-color: var(--red-100);
+}
+.box-status {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.box-status .status {
+  position: relative;
+  font-size: 18px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  background-color: var(--gray-opacity-1);
+  cursor: pointer;
+  transition: all ease 0.3s;
+}
+
+.cp-account-edit {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.box-status .status-pass:hover {
+  background-color: var(--green-100);
+}
+.box-status .status-pass-active {
+  cursor: default;
+  background-color: var(--green-100);
+}
+.box-status .status-not-pass:hover {
+  background-color: var(--red-100);
+}
+.box-status .status-not-pass-active {
+  cursor: default;
   background-color: var(--red-100);
 }
 .card-added-load {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  height: 350px;
-  border-radius: 8px;
+  height: 300px;
   padding: 16px;
-  background-color: var(--gray-100);
+  background-color: var(--gray-opacity-1);
 }
 .card-added-load .image-box {
   background-color: var(--gray-opacity-2);
   width: 100%;
   height: 200px;
-  border-radius: 4px;
 }
 .card-added-load .text-box {
   background-color: var(--gray-opacity-2);
   width: 100%;
   height: 40px;
-  border-radius: 4px;
   margin-top: 16px;
+}
+.cp-vbtn-error {
+  transition: all ease 0.3s;
+}
+.cp-vbtn-error:hover {
+  background-color: var(--red-opacity-1);
+  color: var(--base-error);
 }
 </style>

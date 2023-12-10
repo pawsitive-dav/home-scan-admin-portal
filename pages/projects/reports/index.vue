@@ -140,7 +140,7 @@
           </cp-col>
         </template>
 
-        <template #item.actions="{ item }">
+        <!-- <template #item.actions="{ item }">
           <cp-col v-if="item.report_path" min="80">
             <v-btn color="primary" outlined small @click="downloadPDF()">
               <v-icon left>mdi-file-download-outline</v-icon>
@@ -164,7 +164,7 @@
               mdi-trash-can-outline
             </v-icon>
           </cp-col>
-        </template>
+        </template> -->
 
         <template #no-data>
           <div class="my-6">ไม่มีข้อมูล</div>
@@ -236,12 +236,12 @@ export default {
         { text: 'วันที่สร้างรายงาน', value: 'created_at', sortable: false },
         { text: 'ยืนยันโดย', value: 'approved_by', sortable: false },
         { text: 'วันที่ยืนยันรายงาน', value: 'approved_at', sortable: false },
-        {
-          text: 'การดำเนินการ',
-          align: 'center',
-          value: 'actions',
-          sortable: false,
-        },
+        // {
+        //   text: 'การดำเนินการ',
+        //   align: 'center',
+        //   value: 'actions',
+        //   sortable: false,
+        // },
       ],
       desserts: [],
       deleteReport: {

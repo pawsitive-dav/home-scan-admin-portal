@@ -465,6 +465,7 @@ export default {
       this.dialogLogout = false
       this.$router.push('/auth/login')
     },
+
     onUploadAvatar() {
       const fileInput = document.createElement('input')
       fileInput.type = 'file'
@@ -495,6 +496,7 @@ export default {
         document.body.removeChild(fileInput)
       })
     },
+
     async uploadAvatar() {
       this.modalLoading = true
       const accessToken = await this.getAccessToken()

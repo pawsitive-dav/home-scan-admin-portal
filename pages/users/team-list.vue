@@ -93,11 +93,11 @@
       <template #item.actions="{ item }">
         <v-menu offset-y left content-class="layout-menu">
           <template #activator="{ on, attrs }">
+            <div v-if="accountId == item.account_id">คุณ</div>
             <v-btn
+              v-else
               :disabled="
-                role === 'Checker' ||
-                role === 'Admin' ||
-                accountId == item.account_id
+                role === 'Admin' || role === 'Checker' || role === 'Supervisor'
               "
               color="primary"
               elevation="0"
@@ -127,7 +127,10 @@
               </v-list-item-title>
             </v-list-item>
 
-            <v-hover v-if="role == 'System Admin'" v-slot="{ hover }">
+            <v-hover
+              v-if="role == 'System Admin' || role == 'Project Manager'"
+              v-slot="{ hover }"
+            >
               <v-list-item
                 :class="{ 'red lighten-5 error--text': hover }"
                 @click=";(dialogDelete = true), (deleteSelect = item)"

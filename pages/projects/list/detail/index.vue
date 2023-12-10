@@ -30,43 +30,32 @@
     <v-row v-if="projectDetail" class="mt-2">
       <v-col cols="12">
         <div class="d-flex align-center cp-header-2 cp-bold mb-2">
-          <div v-if="role != 'Checker'">
-            <div
-              v-if="editProjectName.oldData.length === 0"
-              class="box-edit-project-name mr-2"
-              @click="
-                ;(editProjectName.oldData = projectDetail.project_name),
-                  (editProjectName.newData = projectDetail.project_name),
-                  (editProjectName.focus = true)
-              "
-            >
-              {{ projectDetail.project_name }}
-            </div>
-            <v-sheet v-else width="500" class="mr-2">
-              <v-text-field
-                v-model="editProjectName.newData"
-                :append-icon="
-                  editProjectName.status ? 'mdi-content-save-outline' : ''
-                "
-                :autofocus="editProjectName.focus"
-                :error="editProjectName.error"
-                dense
-                outlined
-                hide-details
-                @blur="
-                  ;(editProjectName.oldData = ''),
-                    (editProjectName.newData = ''),
-                    (editProjectName.status = false),
-                    (editProjectName.focus = false),
-                    (editProjectName.error = false)
-                "
-                @click:append="saveNewProjectName()"
-              />
-            </v-sheet>
-          </div>
-          <div v-else class="mr-4">
+          <div
+            v-if="editProjectName.oldData.length === 0"
+            class="box-edit-project-name mr-2"
+            @click="
+              ;(editProjectName.oldData = projectDetail.project_name),
+                (editProjectName.newData = projectDetail.project_name),
+                (editProjectName.focus = true)
+            "
+          >
             {{ projectDetail.project_name }}
           </div>
+          <v-sheet v-else width="500" class="mr-2">
+            <v-text-field
+              v-model="editProjectName.newData"
+              :append-icon="
+                editProjectName.status ? 'mdi-content-save-outline' : ''
+              "
+              :autofocus="editProjectName.focus"
+              :error="editProjectName.error"
+              dense
+              outlined
+              hide-details
+              @blur="saveNewProjectName()"
+              @click:append="saveNewProjectName()"
+            />
+          </v-sheet>
 
           <v-chip v-if="projectDetail.project_status == 'to-do'" label>
             เตรียมดำเนินการ
@@ -93,12 +82,20 @@
             โปรเจคเสร็จสิ้น
           </v-chip>
         </div>
-        <div class="d-flex align-center">
+        <div class="mb-2 d-md-none">
           <b>ประเภท:</b>
-          <span class="ml-1 primary--text cp-semibold cp-subtitle">
+          <span class="primary--text cp-semibold cp-subtitle">
             {{ projectDetail.type_name }}
           </span>
-          <b class="ml-4">วันที่สร้าง:</b>
+        </div>
+        <div class="d-flex align-center">
+          <b class="hidden-sm-and-down">ประเภท:</b>
+          <span
+            class="ml-1 mr-4 primary--text cp-semibold cp-subtitle hidden-sm-and-down"
+          >
+            {{ projectDetail.type_name }}
+          </span>
+          <b>วันที่สร้าง:</b>
           <span class="cp-text-description ml-1">
             {{ formatDateMax(projectDetail.created_at) }}
           </span>
@@ -115,7 +112,7 @@
         </div>
       </v-col>
 
-      <v-col cols="12" sm="8" md="8" lg="8">
+      <v-col cols="12" sm="12" md="8" lg="8">
         <v-row>
           <v-col cols="12">
             <cp-card class="pa-6">
@@ -123,148 +120,112 @@
                 <!-- หมายเหตุ: บอกทีมหน้างาน -->
                 <v-col cols="12">
                   <div class="cp-text-description">หมายเหตุ: บอกทีมหน้างาน</div>
-                  <div v-if="role != 'Checker'">
-                    <div
-                      v-if="!editProjectNote.focus"
-                      class="box-edit"
-                      @click="
-                        ;(editProjectNote.oldData =
+                  <div
+                    v-if="!editProjectNote.focus"
+                    class="box-edit-note"
+                    @click="
+                      ;(editProjectNote.oldData =
+                        projectDetail.project_note || ''),
+                        (editProjectNote.newData =
                           projectDetail.project_note || ''),
-                          (editProjectNote.newData =
-                            projectDetail.project_note || ''),
-                          (editProjectNote.focus = true)
-                      "
-                    >
-                      {{ projectDetail.project_note || '-' }}
-                    </div>
-                    <v-textarea
-                      v-else
-                      v-model="editProjectNote.newData"
-                      :append-icon="
-                        editProjectNote.status ? 'mdi-content-save-outline' : ''
-                      "
-                      :autofocus="editProjectNote.focus"
-                      counter="250"
-                      maxlength="250"
-                      rows="3"
-                      outlined
-                      auto-grow
-                      @blur="
-                        ;(editProjectNote.oldData = ''),
-                          (editProjectNote.newData = ''),
-                          (editProjectNote.status = false),
-                          (editProjectNote.focus = false)
-                      "
-                      @click:append="saveNewProjectNote()"
-                    />
-                  </div>
-                  <div v-else class="box-no-edit">
+                        (editProjectNote.focus = true)
+                    "
+                  >
                     {{ projectDetail.project_note || '-' }}
                   </div>
+                  <v-textarea
+                    v-else
+                    v-model="editProjectNote.newData"
+                    :append-icon="
+                      editProjectNote.status ? 'mdi-content-save-outline' : ''
+                    "
+                    :autofocus="editProjectNote.focus"
+                    counter="250"
+                    maxlength="250"
+                    rows="3"
+                    outlined
+                    auto-grow
+                    @blur="saveNewProjectNote()"
+                    @click:append="saveNewProjectNote()"
+                  />
                 </v-col>
 
                 <!-- เลขที่ -->
-                <v-col cols="12" md="4">
+                <v-col cols="12" sm="6" md="4">
                   <div class="cp-text-description">เลขที่</div>
-                  <div v-if="role != 'Checker'">
-                    <div
-                      v-if="!editTypeAddress.focus"
-                      class="box-edit"
-                      @click="
-                        ;(editTypeAddress.oldData = projectDetail.type_address),
-                          (editTypeAddress.newData =
-                            projectDetail.type_address),
-                          (editTypeAddress.focus = true)
-                      "
-                    >
-                      {{ projectDetail.type_address || '-' }}
-                    </div>
-                    <v-form
-                      v-else
-                      ref="formEditTypeAddress"
-                      v-model="editTypeAddress.valid"
-                      lazy-validation
-                    >
-                      <v-text-field
-                        v-model="editTypeAddress.newData"
-                        :append-icon="
-                          editTypeAddress.status
-                            ? 'mdi-content-save-outline'
-                            : ''
-                        "
-                        :autofocus="editTypeAddress.focus"
-                        :rules="editTypeAddress.rules"
-                        dense
-                        outlined
-                        @blur="
-                          ;(editTypeAddress.oldData = ''),
-                            (editTypeAddress.newData = ''),
-                            (editTypeAddress.status = false),
-                            (editTypeAddress.focus = false)
-                        "
-                        @click:append="saveNewTypeAddress()"
-                      />
-                    </v-form>
-                  </div>
-                  <div v-else class="box-no-edit">
+                  <div
+                    v-if="!editTypeAddress.focus"
+                    class="box-edit"
+                    @click="
+                      ;(editTypeAddress.oldData = projectDetail.type_address),
+                        (editTypeAddress.newData = projectDetail.type_address),
+                        (editTypeAddress.focus = true)
+                    "
+                  >
                     {{ projectDetail.type_address || '-' }}
                   </div>
+                  <v-form
+                    v-else
+                    ref="formEditTypeAddress"
+                    v-model="editTypeAddress.valid"
+                    lazy-validation
+                  >
+                    <v-text-field
+                      v-model="editTypeAddress.newData"
+                      :append-icon="
+                        editTypeAddress.status ? 'mdi-content-save-outline' : ''
+                      "
+                      :autofocus="editTypeAddress.focus"
+                      :rules="editTypeAddress.rules"
+                      dense
+                      outlined
+                      @blur="saveNewTypeAddress()"
+                      @click:append="saveNewTypeAddress()"
+                    />
+                  </v-form>
                 </v-col>
 
                 <!-- พื้นที่ใช้สอย -->
-                <v-col cols="12" md="4">
+                <v-col cols="12" sm="6" md="4">
                   <div class="cp-text-description">พื้นที่ใช้สอย</div>
-                  <div v-if="role != 'Checker'">
-                    <div
-                      v-if="!editTypeUsableArea.focus"
-                      class="box-edit"
-                      @click="
-                        ;(editTypeUsableArea.oldData =
+                  <div
+                    v-if="!editTypeUsableArea.focus"
+                    class="box-edit"
+                    @click="
+                      ;(editTypeUsableArea.oldData =
+                        projectDetail.type_usable_area || ''),
+                        (editTypeUsableArea.newData =
                           projectDetail.type_usable_area || ''),
-                          (editTypeUsableArea.newData =
-                            projectDetail.type_usable_area || ''),
-                          (editTypeUsableArea.focus = true)
-                      "
-                    >
-                      {{ projectDetail.type_usable_area || '-' }}
-                      <span v-if="projectDetail.type_usable_area" class="ml-2">
-                        ตร.ม.
-                      </span>
-                    </div>
-                    <v-form
-                      v-else
-                      ref="formEditTypeUsableArea"
-                      v-model="editTypeUsableArea.valid"
-                      lazy-validation
-                    >
-                      <v-text-field
-                        v-model="editTypeUsableArea.newData"
-                        :append-icon="
-                          editTypeUsableArea.status
-                            ? 'mdi-content-save-outline'
-                            : ''
-                        "
-                        :autofocus="editTypeUsableArea.focus"
-                        :rules="editTypeUsableArea.rules"
-                        suffix="ตร.ม."
-                        dense
-                        outlined
-                        @blur="
-                          ;(editTypeUsableArea.oldData = ''),
-                            (editTypeUsableArea.newData = ''),
-                            (editTypeUsableArea.status = false),
-                            (editTypeUsableArea.focus = false)
-                        "
-                        @click:append="saveNewTypeUsableArea()"
-                      />
-                    </v-form>
-                  </div>
-                  <div v-else class="box-no-edit">
+                        (editTypeUsableArea.focus = true)
+                    "
+                  >
                     {{ projectDetail.type_usable_area || '-' }}
                     <span v-if="projectDetail.type_usable_area" class="ml-2">
                       ตร.ม.
                     </span>
                   </div>
+                  <v-form
+                    v-else
+                    ref="formEditTypeUsableArea"
+                    v-model="editTypeUsableArea.valid"
+                    lazy-validation
+                  >
+                    <v-text-field
+                      v-model="editTypeUsableArea.newData"
+                      :append-icon="
+                        editTypeUsableArea.status
+                          ? 'mdi-content-save-outline'
+                          : ''
+                      "
+                      :autofocus="editTypeUsableArea.focus"
+                      :rules="editTypeUsableArea.rules"
+                      suffix="ตร.ม."
+                      dense
+                      outlined
+                      @blur="saveNewTypeUsableArea()"
+                      @click:append="saveNewTypeUsableArea()"
+                    />
+                  </v-form>
                 </v-col>
 
                 <v-col cols="12">
@@ -276,107 +237,58 @@
                   <div class="cp-subtitle pb-4">ข้อมูลลูกค้า</div>
                   <v-row>
                     <!-- ชื่อ -->
-                    <v-col cols="12" md="4">
+                    <v-col cols="12" sm="6" md="4">
                       <div class="cp-text-description">ชื่อ</div>
-                      <div v-if="role != 'Checker'">
-                        <div
-                          v-if="!editCustomerName.focus"
-                          class="box-edit"
-                          @click="
-                            ;(editCustomerName.oldData =
+                      <div
+                        v-if="!editCustomerName.focus"
+                        class="box-edit"
+                        @click="
+                          ;(editCustomerName.oldData =
+                            projectDetail.customer.customer_name),
+                            (editCustomerName.newData =
                               projectDetail.customer.customer_name),
-                              (editCustomerName.newData =
-                                projectDetail.customer.customer_name),
-                              (editCustomerName.focus = true)
-                          "
-                        >
-                          {{ projectDetail.customer.customer_name }}
-                        </div>
-                        <v-form
-                          v-else
-                          ref="formEditCustomerName"
-                          v-model="editCustomerName.valid"
-                          lazy-validation
-                        >
-                          <v-text-field
-                            v-model="editCustomerName.newData"
-                            :append-icon="
-                              editCustomerName.status
-                                ? 'mdi-content-save-outline'
-                                : ''
-                            "
-                            :autofocus="editCustomerName.focus"
-                            :rules="editCustomerName.rules"
-                            dense
-                            outlined
-                            @blur="
-                              ;(editCustomerName.oldData = ''),
-                                (editCustomerName.newData = ''),
-                                (editCustomerName.status = false),
-                                (editCustomerName.focus = false)
-                            "
-                            @click:append="saveNewCustomerName()"
-                          />
-                        </v-form>
-                      </div>
-                      <div v-else class="box-no-edit">
+                            (editCustomerName.focus = true)
+                        "
+                      >
                         {{ projectDetail.customer.customer_name }}
                       </div>
+                      <v-form
+                        v-else
+                        ref="formEditCustomerName"
+                        v-model="editCustomerName.valid"
+                        lazy-validation
+                      >
+                        <v-text-field
+                          v-model="editCustomerName.newData"
+                          :append-icon="
+                            editCustomerName.status
+                              ? 'mdi-content-save-outline'
+                              : ''
+                          "
+                          :autofocus="editCustomerName.focus"
+                          :rules="editCustomerName.rules"
+                          dense
+                          outlined
+                          @blur="saveNewCustomerName()"
+                          @click:append="saveNewCustomerName()"
+                        />
+                      </v-form>
                     </v-col>
 
                     <!-- เบอร์โทรศัพท์ -->
-                    <v-col cols="12" md="3">
+                    <v-col cols="12" sm="6" md="3">
                       <div class="cp-text-description">เบอร์โทรศัพท์</div>
-                      <div v-if="role != 'Checker'">
-                        <div
-                          v-if="!editCustomerPhone.focus"
-                          class="box-edit"
-                          @click="
-                            ;(editCustomerPhone.oldData =
+                      <div
+                        v-if="!editCustomerPhone.focus"
+                        class="box-edit"
+                        @click="
+                          ;(editCustomerPhone.oldData =
+                            projectDetail.customer.customer_phone || ''),
+                            (editCustomerPhone.newData =
                               projectDetail.customer.customer_phone || ''),
-                              (editCustomerPhone.newData =
-                                projectDetail.customer.customer_phone || ''),
-                              (editCustomerPhone.focus = true)
-                          "
-                        >
-                          {{
-                            projectDetail.customer.customer_phone
-                              ? formatPhoneNumber(
-                                  projectDetail.customer.customer_phone
-                                )
-                              : '-'
-                          }}
-                        </div>
-                        <v-form
-                          v-else
-                          ref="formEditCustomerPhone"
-                          v-model="editCustomerPhone.valid"
-                          lazy-validation
-                        >
-                          <v-text-field
-                            v-model="editCustomerPhone.newData"
-                            :append-icon="
-                              editCustomerPhone.status
-                                ? 'mdi-content-save-outline'
-                                : ''
-                            "
-                            :autofocus="editCustomerPhone.focus"
-                            :rules="editCustomerPhone.rules"
-                            maxlength="10"
-                            counter="10"
-                            dense
-                            outlined
-                            @blur="
-                              ;(editCustomerPhone.oldData = ''),
-                                (editCustomerPhone.newData = ''),
-                                (editCustomerPhone.status = false),
-                                (editCustomerPhone.focus = false)
-                            "
-                            @click:append="saveNewCustomerPhone()"
-                          />
-                        </v-form>
-                      </div>
-                      <div v-else class="box-no-edit">
+                            (editCustomerPhone.focus = true)
+                        "
+                      >
                         {{
                           projectDetail.customer.customer_phone
                             ? formatPhoneNumber(
@@ -385,55 +297,68 @@
                             : '-'
                         }}
                       </div>
+                      <v-form
+                        v-else
+                        ref="formEditCustomerPhone"
+                        v-model="editCustomerPhone.valid"
+                        lazy-validation
+                      >
+                        <v-text-field
+                          v-model="editCustomerPhone.newData"
+                          :append-icon="
+                            editCustomerPhone.status
+                              ? 'mdi-content-save-outline'
+                              : ''
+                          "
+                          :autofocus="editCustomerPhone.focus"
+                          :rules="editCustomerPhone.rules"
+                          maxlength="10"
+                          counter="10"
+                          dense
+                          outlined
+                          @blur="saveNewCustomerPhone()"
+                          @click:append="saveNewCustomerPhone()"
+                        />
+                      </v-form>
                     </v-col>
 
                     <!-- อีเมล -->
-                    <v-col cols="12" md="5">
+                    <v-col cols="12" sm="6" md="5">
                       <div class="cp-text-description">อีเมล</div>
-                      <div v-if="role != 'Checker'">
-                        <div
-                          v-if="!editCustomerEmail.focus"
-                          class="box-edit"
-                          @click="
-                            ;(editCustomerEmail.oldData =
+                      <div
+                        v-if="!editCustomerEmail.focus"
+                        class="box-edit truncate"
+                        @click="
+                          ;(editCustomerEmail.oldData =
+                            projectDetail.customer.customer_email || ''),
+                            (editCustomerEmail.newData =
                               projectDetail.customer.customer_email || ''),
-                              (editCustomerEmail.newData =
-                                projectDetail.customer.customer_email || ''),
-                              (editCustomerEmail.focus = true)
-                          "
-                        >
-                          {{ projectDetail.customer.customer_email || '-' }}
-                        </div>
-                        <v-form
-                          v-else
-                          ref="formEditCustomerEmail"
-                          v-model="editCustomerEmail.valid"
-                          lazy-validation
-                        >
-                          <v-text-field
-                            v-model="editCustomerEmail.newData"
-                            :append-icon="
-                              editCustomerEmail.status
-                                ? 'mdi-content-save-outline'
-                                : ''
-                            "
-                            :autofocus="editCustomerEmail.focus"
-                            :rules="editCustomerEmail.rules"
-                            dense
-                            outlined
-                            @blur="
-                              ;(editCustomerEmail.oldData = ''),
-                                (editCustomerEmail.newData = ''),
-                                (editCustomerEmail.status = false),
-                                (editCustomerEmail.focus = false)
-                            "
-                            @click:append="saveNewCustomerEmail()"
-                          />
-                        </v-form>
-                      </div>
-                      <div v-else class="box-no-edit">
+                            (editCustomerEmail.focus = true)
+                        "
+                      >
                         {{ projectDetail.customer.customer_email || '-' }}
                       </div>
+                      <v-form
+                        v-else
+                        ref="formEditCustomerEmail"
+                        v-model="editCustomerEmail.valid"
+                        lazy-validation
+                      >
+                        <v-text-field
+                          v-model="editCustomerEmail.newData"
+                          :append-icon="
+                            editCustomerEmail.status
+                              ? 'mdi-content-save-outline'
+                              : ''
+                          "
+                          :autofocus="editCustomerEmail.focus"
+                          :rules="editCustomerEmail.rules"
+                          dense
+                          outlined
+                          @blur="saveNewCustomerEmail()"
+                          @click:append="saveNewCustomerEmail()"
+                        />
+                      </v-form>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -443,112 +368,59 @@
                   <div class="cp-subtitle pb-4">ข้อมูลเจ้าหน้าที่โครงการ</div>
                   <v-row>
                     <!-- ชื่อ -->
-                    <v-col cols="12" md="4">
+                    <v-col cols="12" sm="6" md="4">
                       <div class="cp-text-description">ชื่อ</div>
-                      <div v-if="role != 'Checker'">
-                        <div
-                          v-if="!editCoordinatorName.focus"
-                          class="box-edit"
-                          @click="
-                            ;(editCoordinatorName.oldData =
+                      <div
+                        v-if="!editCoordinatorName.focus"
+                        class="box-edit"
+                        @click="
+                          ;(editCoordinatorName.oldData =
+                            projectDetail.coordinator.coordinator_name || ''),
+                            (editCoordinatorName.newData =
                               projectDetail.coordinator.coordinator_name || ''),
-                              (editCoordinatorName.newData =
-                                projectDetail.coordinator.coordinator_name ||
-                                ''),
-                              (editCoordinatorName.focus = true)
-                          "
-                        >
-                          {{
-                            projectDetail.coordinator.coordinator_name || '-'
-                          }}
-                        </div>
-                        <v-form
-                          v-else
-                          ref="formEditCoordinatorName"
-                          v-model="editCoordinatorName.valid"
-                          lazy-validation
-                        >
-                          <v-text-field
-                            v-model="editCoordinatorName.newData"
-                            :append-icon="
-                              editCoordinatorName.status
-                                ? 'mdi-content-save-outline'
-                                : ''
-                            "
-                            :autofocus="editCoordinatorName.focus"
-                            :rules="editCoordinatorName.rules"
-                            dense
-                            outlined
-                            @blur="
-                              ;(editCoordinatorName.oldData = ''),
-                                (editCoordinatorName.newData = ''),
-                                (editCoordinatorName.status = false),
-                                (editCoordinatorName.focus = false)
-                            "
-                            @click:append="saveNewCoordinatorName()"
-                          />
-                        </v-form>
-                      </div>
-                      <div v-else class="box-no-edit">
+                            (editCoordinatorName.focus = true)
+                        "
+                      >
                         {{ projectDetail.coordinator.coordinator_name || '-' }}
                       </div>
+                      <v-form
+                        v-else
+                        ref="formEditCoordinatorName"
+                        v-model="editCoordinatorName.valid"
+                        lazy-validation
+                      >
+                        <v-text-field
+                          v-model="editCoordinatorName.newData"
+                          :append-icon="
+                            editCoordinatorName.status
+                              ? 'mdi-content-save-outline'
+                              : ''
+                          "
+                          :autofocus="editCoordinatorName.focus"
+                          :rules="editCoordinatorName.rules"
+                          dense
+                          outlined
+                          @blur="saveNewCoordinatorName()"
+                          @click:append="saveNewCoordinatorName()"
+                        />
+                      </v-form>
                     </v-col>
 
                     <!-- เบอร์โทรศัพท์ -->
-                    <v-col cols="12" md="3">
+                    <v-col cols="12" sm="6" md="3">
                       <div class="cp-text-description">เบอร์โทรศัพท์</div>
-                      <div v-if="role != 'Checker'">
-                        <div
-                          v-if="!editCoordinatorPhone.focus"
-                          class="box-edit"
-                          @click="
-                            ;(editCoordinatorPhone.oldData =
+                      <div
+                        v-if="!editCoordinatorPhone.focus"
+                        class="box-edit"
+                        @click="
+                          ;(editCoordinatorPhone.oldData =
+                            projectDetail.coordinator.coordinator_phone || ''),
+                            (editCoordinatorPhone.newData =
                               projectDetail.coordinator.coordinator_phone ||
                               ''),
-                              (editCoordinatorPhone.newData =
-                                projectDetail.coordinator.coordinator_phone ||
-                                ''),
-                              (editCoordinatorPhone.focus = true)
-                          "
-                        >
-                          {{
-                            projectDetail.coordinator.coordinator_phone
-                              ? formatPhoneNumber(
-                                  projectDetail.coordinator.coordinator_phone
-                                )
-                              : '-'
-                          }}
-                        </div>
-                        <v-form
-                          v-else
-                          ref="formEditCoordinatorPhone"
-                          v-model="editCoordinatorPhone.valid"
-                          lazy-validation
-                        >
-                          <v-text-field
-                            v-model="editCoordinatorPhone.newData"
-                            :append-icon="
-                              editCoordinatorPhone.status
-                                ? 'mdi-content-save-outline'
-                                : ''
-                            "
-                            :autofocus="editCoordinatorPhone.focus"
-                            :rules="editCoordinatorPhone.rules"
-                            maxlength="10"
-                            counter="10"
-                            dense
-                            outlined
-                            @blur="
-                              ;(editCoordinatorPhone.oldData = ''),
-                                (editCoordinatorPhone.newData = ''),
-                                (editCoordinatorPhone.status = false),
-                                (editCoordinatorPhone.focus = false)
-                            "
-                            @click:append="saveNewCoordinatorPhone()"
-                          />
-                        </v-form>
-                      </div>
-                      <div v-else class="box-no-edit">
+                            (editCoordinatorPhone.focus = true)
+                        "
+                      >
                         {{
                           projectDetail.coordinator.coordinator_phone
                             ? formatPhoneNumber(
@@ -557,59 +429,69 @@
                             : '-'
                         }}
                       </div>
+                      <v-form
+                        v-else
+                        ref="formEditCoordinatorPhone"
+                        v-model="editCoordinatorPhone.valid"
+                        lazy-validation
+                      >
+                        <v-text-field
+                          v-model="editCoordinatorPhone.newData"
+                          :append-icon="
+                            editCoordinatorPhone.status
+                              ? 'mdi-content-save-outline'
+                              : ''
+                          "
+                          :autofocus="editCoordinatorPhone.focus"
+                          :rules="editCoordinatorPhone.rules"
+                          maxlength="10"
+                          counter="10"
+                          dense
+                          outlined
+                          @blur="saveNewCoordinatorPhone()"
+                          @click:append="saveNewCoordinatorPhone()"
+                        />
+                      </v-form>
                     </v-col>
 
                     <!-- อีเมล -->
-                    <v-col cols="12" md="5">
+                    <v-col cols="12" sm="6" md="5">
                       <div class="cp-text-description">อีเมล</div>
-                      <div v-if="role != 'Checker'">
-                        <div
-                          v-if="!editCoordinatorEmail.focus"
-                          class="box-edit"
-                          @click="
-                            ;(editCoordinatorEmail.oldData =
+                      <div
+                        v-if="!editCoordinatorEmail.focus"
+                        class="box-edit truncate"
+                        @click="
+                          ;(editCoordinatorEmail.oldData =
+                            projectDetail.coordinator.coordinator_email || ''),
+                            (editCoordinatorEmail.newData =
                               projectDetail.coordinator.coordinator_email ||
                               ''),
-                              (editCoordinatorEmail.newData =
-                                projectDetail.coordinator.coordinator_email ||
-                                ''),
-                              (editCoordinatorEmail.focus = true)
-                          "
-                        >
-                          {{
-                            projectDetail.coordinator.coordinator_email || '-'
-                          }}
-                        </div>
-                        <v-form
-                          v-else
-                          ref="formEditCoordinatorEmail"
-                          v-model="editCoordinatorEmail.valid"
-                          lazy-validation
-                        >
-                          <v-text-field
-                            v-model="editCoordinatorEmail.newData"
-                            :append-icon="
-                              editCoordinatorEmail.status
-                                ? 'mdi-content-save-outline'
-                                : ''
-                            "
-                            :autofocus="editCoordinatorEmail.focus"
-                            :rules="editCoordinatorEmail.rules"
-                            dense
-                            outlined
-                            @blur="
-                              ;(editCoordinatorEmail.oldData = ''),
-                                (editCoordinatorEmail.newData = ''),
-                                (editCoordinatorEmail.status = false),
-                                (editCoordinatorEmail.focus = false)
-                            "
-                            @click:append="saveNewCoordinatorEmail()"
-                          />
-                        </v-form>
-                      </div>
-                      <div v-else class="box-no-edit">
+                            (editCoordinatorEmail.focus = true)
+                        "
+                      >
                         {{ projectDetail.coordinator.coordinator_email || '-' }}
                       </div>
+                      <v-form
+                        v-else
+                        ref="formEditCoordinatorEmail"
+                        v-model="editCoordinatorEmail.valid"
+                        lazy-validation
+                      >
+                        <v-text-field
+                          v-model="editCoordinatorEmail.newData"
+                          :append-icon="
+                            editCoordinatorEmail.status
+                              ? 'mdi-content-save-outline'
+                              : ''
+                          "
+                          :autofocus="editCoordinatorEmail.focus"
+                          :rules="editCoordinatorEmail.rules"
+                          dense
+                          outlined
+                          @blur="saveNewCoordinatorEmail()"
+                          @click:append="saveNewCoordinatorEmail()"
+                        />
+                      </v-form>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -619,7 +501,7 @@
 
           <v-col cols="12">
             <!-- รายการตรวจ -->
-            <cp-card class="pa-6">
+            <cp-card class="pa-6" style="height: 100%">
               <div class="d-flex pb-4">
                 <div class="cp-subtitle pb-4">รายการตรวจ</div>
                 <v-spacer></v-spacer>
@@ -724,28 +606,17 @@
                         >
                           ดูรายละเอียด
                         </v-list-item>
-                        <div v-if="role != 'Checker'">
+                        <div v-if="!list.report_id">
                           <v-list-item
-                            v-if="!list.report_id"
+                            v-if="role == 'Project Manager' || role == 'Admin'"
                             :disabled="projectDetail.project_status == 'to-do'"
                             @click="onCreateReport(list)"
                           >
                             สร้างรายงาน
                           </v-list-item>
-                          <v-list-item
-                            v-else
-                            @click="
-                              $router.push(
-                                `/projects/reports/detail?id=${list.report_id}`
-                              )
-                            "
-                          >
-                            ดูรายงาน
-                          </v-list-item>
                         </div>
                         <div v-else>
                           <v-list-item
-                            v-if="list.report_id"
                             @click="
                               $router.push(
                                 `/projects/reports/detail?id=${list.report_id}`
@@ -755,24 +626,22 @@
                             ดูรายงาน
                           </v-list-item>
                         </div>
-                        <div v-if="role != 'Checker'">
-                          <div v-if="list.report_status != 'approved'">
-                            <div
-                              v-if="
-                                projectInspection.inspectionList.length ==
-                                list.inspection_no
-                              "
-                              class="delete-inspection"
-                              @click="
-                                ;(projectInspection.delete.dialog = true),
-                                  (projectInspection.delete.inspectionId =
-                                    list.inspection_id),
-                                  (projectInspection.delete.reportStatus =
-                                    list.report_status)
-                              "
-                            >
-                              ลบรายการตรวจ
-                            </div>
+
+                        <div
+                          v-if="role == 'Project Manager' || role == 'Admin'"
+                        >
+                          <div
+                            v-if="
+                              projectInspection.inspectionList.length ==
+                              list.inspection_no
+                            "
+                            class="delete-inspection"
+                            @click="
+                              ;(deleteInspection.dialog = true),
+                                (deleteInspection.inspectionData = list)
+                            "
+                          >
+                            ลบรายการตรวจ
                           </div>
                         </div>
                       </v-list>
@@ -785,7 +654,7 @@
         </v-row>
       </v-col>
 
-      <v-col cols="12" sm="4" md="4" lg="4">
+      <v-col cols="12" sm="12" md="4" lg="4">
         <!-- ไฟล์ภาพของโปรเจค -->
         <cp-card-max class="pa-6">
           <div class="cp-subtitle pb-4">ไฟล์ภาพของโปรเจค</div>
@@ -800,11 +669,7 @@
               />
               <cp-label> รูปโปรเจค </cp-label>
               <div v-if="projectFile.mainPreview" class="image-zone">
-                <v-img
-                  :src="projectFile.mainPreview"
-                  aspect-ratio="1.4"
-                  contain
-                >
+                <v-img :src="projectFile.mainPreview" aspect-ratio="1.6">
                 </v-img>
               </div>
               <div
@@ -822,8 +687,7 @@
               <div v-else class="image-zone">
                 <v-img
                   :src="projectFile.main.src"
-                  aspect-ratio="1.4"
-                  contain
+                  aspect-ratio="1.6"
                   @click=";(projectFile.dialog = true), (projectFile.show = 0)"
                 >
                   <div class="cp-img">
@@ -831,19 +695,22 @@
                   </div>
                 </v-img>
               </div>
-              <div v-if="projectFile.main" class="pt-2 d-flex justify-end">
+              <div v-if="projectFile.main" class="pt-2 d-flex">
+                <v-spacer />
                 <v-btn
-                  small
-                  outlined
-                  elevation="0"
-                  color="error"
-                  class="ml-2"
+                  icon
+                  @click="onDonwloadImage(projectFile.main.src, 'รูปโปรเจค')"
+                >
+                  <v-icon>mdi-cloud-download-outline</v-icon>
+                </v-btn>
+                <v-btn
+                  icon
                   @click="
                     ;(projectFile.delete.dialog = true),
                       (projectFile.delete.fileData = projectFile.main)
                   "
                 >
-                  ลบ
+                  <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </div>
               <div
@@ -877,7 +744,7 @@
               <div v-if="projectFile.plan1Preview" class="image-zone">
                 <v-img
                   :src="projectFile.plan1Preview"
-                  aspect-ratio="1.4"
+                  aspect-ratio="1.6"
                   contain
                 >
                 </v-img>
@@ -897,7 +764,7 @@
               <div v-else class="image-zone">
                 <v-img
                   :src="projectFile.plan1"
-                  aspect-ratio="1.4"
+                  aspect-ratio="1.6"
                   contain
                   @click=";(projectFile.dialog = true), (projectFile.show = 1)"
                 >
@@ -908,18 +775,20 @@
               </div>
               <div v-if="projectFile.plan1" class="pt-2 d-flex justify-end">
                 <v-btn
+                  icon
+                  @click="onDonwloadImage(projectFile.plan1.src, 'รูปแปลน-1')"
+                >
+                  <v-icon>mdi-cloud-download-outline</v-icon>
+                </v-btn>
+                <v-btn
                   v-if="!projectFile.plan2"
-                  small
-                  outlined
-                  elevation="0"
-                  color="error"
-                  class="ml-2"
+                  icon
                   @click="
                     ;(projectFile.delete.dialog = true),
                       (projectFile.delete.fileData = projectFile.plan1)
                   "
                 >
-                  ลบ
+                  <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </div>
               <div
@@ -961,7 +830,7 @@
               <div v-else-if="projectFile.plan2Preview" class="image-zone">
                 <v-img
                   :src="projectFile.plan2Preview"
-                  aspect-ratio="1.4"
+                  aspect-ratio="1.6"
                   contain
                 >
                 </v-img>
@@ -981,7 +850,7 @@
               <div v-else class="image-zone">
                 <v-img
                   :src="projectFile.plan2"
-                  aspect-ratio="1.4"
+                  aspect-ratio="1.6"
                   contain
                   @click=";(projectFile.dialog = true), (projectFile.show = 2)"
                 >
@@ -992,18 +861,20 @@
               </div>
               <div v-if="projectFile.plan2" class="pt-2 d-flex justify-end">
                 <v-btn
+                  icon
+                  @click="onDonwloadImage(projectFile.plan2.src, 'รูปแปลน-2')"
+                >
+                  <v-icon>mdi-cloud-download-outline</v-icon>
+                </v-btn>
+                <v-btn
                   v-if="!projectFile.plan3"
-                  small
-                  outlined
-                  elevation="0"
-                  color="error"
-                  class="ml-2"
+                  icon
                   @click="
                     ;(projectFile.delete.dialog = true),
                       (projectFile.delete.fileData = projectFile.plan2)
                   "
                 >
-                  ลบ
+                  <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </div>
               <div
@@ -1045,7 +916,7 @@
               <div v-else-if="projectFile.plan3Preview" class="image-zone">
                 <v-img
                   :src="projectFile.plan3Preview"
-                  aspect-ratio="1.4"
+                  aspect-ratio="1.6"
                   contain
                 >
                 </v-img>
@@ -1065,7 +936,7 @@
               <div v-else class="image-zone">
                 <v-img
                   :src="projectFile.plan3"
-                  aspect-ratio="1.4"
+                  aspect-ratio="1.6"
                   contain
                   @click=";(projectFile.dialog = true), (projectFile.show = 3)"
                 >
@@ -1076,18 +947,20 @@
               </div>
               <div v-if="projectFile.plan3" class="pt-2 d-flex justify-end">
                 <v-btn
+                  icon
+                  @click="onDonwloadImage(projectFile.plan3.src, 'รูปแปลน-3')"
+                >
+                  <v-icon>mdi-cloud-download-outline</v-icon>
+                </v-btn>
+                <v-btn
                   v-if="!projectFile.plan4"
-                  small
-                  outlined
-                  elevation="0"
-                  color="error"
-                  class="ml-2"
+                  icon
                   @click="
                     ;(projectFile.delete.dialog = true),
                       (projectFile.delete.fileData = projectFile.plan3)
                   "
                 >
-                  ลบ
+                  <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </div>
               <div
@@ -1129,7 +1002,7 @@
               <div v-else-if="projectFile.plan4Preview" class="image-zone">
                 <v-img
                   :src="projectFile.plan4Preview"
-                  aspect-ratio="1.4"
+                  aspect-ratio="1.6"
                   contain
                 >
                 </v-img>
@@ -1149,7 +1022,7 @@
               <div v-else class="image-zone">
                 <v-img
                   :src="projectFile.plan4"
-                  aspect-ratio="1.4"
+                  aspect-ratio="1.6"
                   contain
                   @click=";(projectFile.dialog = true), (projectFile.show = 4)"
                 >
@@ -1160,17 +1033,19 @@
               </div>
               <div v-if="projectFile.plan4" class="pt-2 d-flex justify-end">
                 <v-btn
-                  small
-                  outlined
-                  elevation="0"
-                  color="error"
-                  class="ml-2"
+                  icon
+                  @click="onDonwloadImage(projectFile.plan4.src, 'รูปแปลน-4')"
+                >
+                  <v-icon>mdi-cloud-download-outline</v-icon>
+                </v-btn>
+                <v-btn
+                  icon
                   @click="
                     ;(projectFile.delete.dialog = true),
                       (projectFile.delete.fileData = projectFile.plan4)
                   "
                 >
-                  ลบ
+                  <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </div>
               <div
@@ -1209,59 +1084,67 @@
         <cp-card class="pa-6">
           <div class="cp-title pl-4">หัวหน้าทีม</div>
           <div
-            v-if="projectTeams.supervisor.length === 0"
-            class="cp-no-team"
-            @click="
-              ;(addTeams.dialog = true),
-                (addTeams.teamSelectType = 'supervisor')
-            "
+            v-if="projectTeams.supervisor.length === 0 && role == 'Checker'"
+            class="cp-no-team-no-action"
           >
-            <span class="ml-2">เพิ่มหัวหน้าทีม</span>
+            ยังไม่มีหัวหน้าทีม
           </div>
-          <div v-else class="pa-4 d-flex align-center">
-            <v-avatar size="55" color="primary">
-              <v-img
-                v-if="projectTeams.supervisor[0].avatar_path"
-                :src="projectTeams.supervisor[0].avatar_path"
-              />
-              <v-img v-else :src="require('@/assets/images/no-avatar.png')" />
-            </v-avatar>
-
-            <div class="ml-4 cp-subtitle">
-              <div>
-                <span>
-                  <b>({{ projectTeams.supervisor[0].code_name }})</b>
-                </span>
-                <span class="ml-1">
-                  {{
-                    projectTeams.supervisor[0].first_name +
-                    ' ' +
-                    projectTeams.supervisor[0].last_name
-                  }}</span
-                >
-              </div>
-
-              <div class="green--text">
-                <b>
-                  {{ mapRoleName(projectTeams.supervisor[0].member_role) }}
-                </b>
-              </div>
+          <div v-else>
+            <div
+              v-if="projectTeams.supervisor.length === 0"
+              class="cp-no-team"
+              @click="
+                ;(addTeams.dialog = true),
+                  (addTeams.teamSelectType = 'supervisor')
+              "
+            >
+              <span class="ml-2">เพิ่มหัวหน้าทีม</span>
             </div>
+            <div v-else class="pa-4 d-flex align-center">
+              <v-avatar size="55" color="primary">
+                <v-img
+                  v-if="projectTeams.supervisor[0].avatar_path"
+                  :src="projectTeams.supervisor[0].avatar_path"
+                />
+                <v-img v-else :src="require('@/assets/images/no-avatar.png')" />
+              </v-avatar>
 
-            <div class="ml-6">
-              <v-btn
-                v-if="role != 'Checker'"
-                elevation="0"
-                height="32"
-                color="primary"
-                outlined
-                @click="
-                  ;(addTeams.dialog = true),
-                    (addTeams.teamSelectType = 'supervisor')
-                "
-              >
-                เปลี่ยน
-              </v-btn>
+              <div class="ml-4 cp-subtitle">
+                <div>
+                  <span>
+                    <b>({{ projectTeams.supervisor[0].code_name }})</b>
+                  </span>
+                  <span class="ml-1">
+                    {{
+                      projectTeams.supervisor[0].first_name +
+                      ' ' +
+                      projectTeams.supervisor[0].last_name
+                    }}</span
+                  >
+                </div>
+
+                <div class="green--text">
+                  <b>
+                    {{ mapRoleName(projectTeams.supervisor[0].member_role) }}
+                  </b>
+                </div>
+              </div>
+
+              <div class="ml-6">
+                <v-btn
+                  v-if="role != 'Checker'"
+                  elevation="0"
+                  height="32"
+                  color="primary"
+                  outlined
+                  @click="
+                    ;(addTeams.dialog = true),
+                      (addTeams.teamSelectType = 'supervisor')
+                  "
+                >
+                  เปลี่ยน
+                </v-btn>
+              </div>
             </div>
           </div>
 
@@ -1362,7 +1245,7 @@
           <v-carousel v-model="projectFile.show" hide-delimiters>
             <v-carousel-item v-for="(item, i) in projectFile.items" :key="i">
               <div class="image-zone">
-                <v-img :src="item.src" aspect-ratio="1.4" contain />
+                <v-img :src="item.src" aspect-ratio="1.6" contain />
               </div>
             </v-carousel-item>
           </v-carousel>
@@ -1475,96 +1358,202 @@
 
     <!-- Delete inspection -->
     <v-dialog
-      v-model="projectInspection.delete.dialog"
-      :persistent="projectInspection.delete.loading"
-      max-width="500px"
+      v-model="deleteInspection.dialog"
+      :persistent="deleteInspection.loading"
+      max-width="450px"
       transition="dialog-transition"
       content-class="elevation-0"
       scrollable
     >
-      <v-card>
+      <v-card v-if="deleteInspection.inspectionData">
         <v-card-title>
-          ลบรายการตรวจ
+          ลบ รายการตรวจที่
+          {{ deleteInspection.inspectionData.inspection_no }}
           <v-spacer />
           <v-btn
-            :disabled="projectInspection.delete.loading"
+            :disabled="deleteInspection.loading"
             icon
             class="mt-n4 mr-n4"
-            @click="projectInspection.delete.dialog = false"
+            @click="deleteInspection.dialog = false"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
         <v-card-text>
-          <div class="mb-4">คุณแน่ใจหรือไม่ที่คุณจะลบรายการตรวจนี้?</div>
-          <v-alert text outlined color="blue" icon="mdi-information-outline">
-            รายการตรวจนี้อาจจะมีข้อมูล Location, System หรือรายการ Deflect อยู่
-            โปรดตรวจสอบให้แน่ใจก่อนลบ เพราะการลบนี้จะทำให้ข้อมูลทั้งหมดหายไป
-          </v-alert>
-          <v-alert
-            v-if="
-              projectInspection.delete.reportStatus == 'approval' ||
-              projectInspection.delete.reportStatus == 'approved'
-            "
-            text
-            outlined
-            color="warning"
-            icon="mdi-alert-outline"
-          >
-            รายการตรวจนี้มีรายงานที่รอการยืนยันอยู่ไม่สามารถลบได้
-          </v-alert>
+          <div class="mb-4">รายการที่จะถูกลบมีดังนี้</div>
 
-          <v-card v-if="projectInspection.delete.loading" outlined>
-            <v-card-text>
-              <div class="d-flex align-cente justify-space-between cp-body">
-                <div>
-                  ลบรายการรูปภาพ ทั้งหมด
-                  <b class="primary--text">
-                    {{
-                      projectInspection.delete.beforeStorageList
-                        ? projectInspection.delete.beforeStorageList.length
-                        : '-'
-                    }}
-                  </b>
-                  ลบไปแล้ว
-                  <b class="error--text">{{ deletedStorageCount }}</b>
+          <v-row no-gutters>
+            <v-col cols="4"> รายงาน </v-col>
+            <v-col cols="8">
+              <div v-if="deleteInspection.reportDeleteDone">
+                <b class="success--text">ถูกลบแล้ว</b>
+              </div>
+              <div v-else>
+                <div
+                  v-if="
+                    deleteInspection.loading &&
+                    deleteInspection.inspectionData.report_id
+                  "
+                >
+                  <v-progress-circular
+                    :width="2"
+                    size="16"
+                    color="grey"
+                    class="mr-1"
+                    indeterminate
+                  />
+                  <span class="cp-text-disable">ดำเนินการลบ...</span>
                 </div>
-                <v-progress-circular
-                  v-if="!projectInspection.delete.deletedStorage"
-                  size="24"
-                  indeterminate
-                  color="primary"
-                />
                 <div v-else>
-                  <v-icon color="success">mdi-check</v-icon>
+                  <span v-if="!deleteInspection.inspectionData.report_id">
+                    ไม่มีรายงาน
+                  </span>
+                  <span v-else><b>1</b> รายการ</span>
                 </div>
               </div>
-              <div
-                class="mt-4 d-flex align-center justify-space-between cp-body"
-              >
-                <div>ลบรายการ Location และ System</div>
-                <v-progress-circular
-                  v-if="!projectInspection.delete.deletedData"
-                  size="24"
-                  indeterminate
-                  color="primary"
-                />
+            </v-col>
+
+            <v-col cols="4" class="mt-2"> Location </v-col>
+            <v-col cols="8" class="mt-2">
+              <div v-if="deleteInspection.locationDeleteDone">
+                <b class="success--text">ถูกลบแล้ว</b>
+              </div>
+              <div v-else>
+                <div v-if="deleteInspection.loading">
+                  <v-progress-circular
+                    :width="2"
+                    size="16"
+                    color="grey"
+                    class="mr-1"
+                    indeterminate
+                  />
+                  <span class="cp-text-disable">ดำเนินการลบ...</span>
+                </div>
                 <div v-else>
-                  <v-icon color="success">mdi-check</v-icon>
+                  <div v-if="deleteInspection.beforeDataLoading">
+                    <v-progress-circular
+                      :width="2"
+                      size="16"
+                      color="grey"
+                      class="mr-1"
+                      indeterminate
+                    />
+                    <span class="cp-text-disable">กำลังตรวจสอบข้อมูล...</span>
+                  </div>
+                  <div v-else>
+                    <b>{{ deleteInspection.location.length }}</b>
+                    รายการ
+                  </div>
                 </div>
               </div>
-            </v-card-text>
-          </v-card>
+            </v-col>
+
+            <v-col cols="4" class="mt-2"> System </v-col>
+            <v-col cols="8" class="mt-2">
+              <div v-if="deleteInspection.systemDeleteDone">
+                <b class="success--text">ถูกลบแล้ว</b>
+              </div>
+              <div v-else>
+                <div v-if="deleteInspection.loading">
+                  <v-progress-circular
+                    :width="2"
+                    size="16"
+                    color="grey"
+                    class="mr-1"
+                    indeterminate
+                  />
+                  <span class="cp-text-disable">ดำเนินการลบ...</span>
+                </div>
+                <div v-else>
+                  <div v-if="deleteInspection.beforeDataLoading">
+                    <v-progress-circular
+                      :width="2"
+                      size="16"
+                      color="grey"
+                      class="mr-1"
+                      indeterminate
+                    />
+                    <span class="cp-text-disable">กำลังตรวจสอบข้อมูล...</span>
+                  </div>
+                  <div v-else>
+                    <b>{{ deleteInspection.system.length }}</b>
+                    รายการ
+                  </div>
+                </div>
+              </div>
+            </v-col>
+
+            <v-col cols="4" class="mt-2"> Location Deflect </v-col>
+            <v-col cols="8" class="mt-2">
+              <div v-if="deleteInspection.loading">
+                <v-progress-linear
+                  v-model="deleteInspection.locationProgress"
+                  color="info"
+                  height="20"
+                  rounded
+                >
+                  <strong class="white--text">
+                    {{ deleteInspection.locationProgress }}%
+                  </strong>
+                </v-progress-linear>
+              </div>
+              <div v-else>
+                <div v-if="deleteInspection.beforeDataLoading">
+                  <v-progress-circular
+                    :width="2"
+                    size="16"
+                    color="grey"
+                    class="mr-1"
+                    indeterminate
+                  />
+                  <span class="cp-text-disable">กำลังตรวจสอบข้อมูล...</span>
+                </div>
+                <div v-else>
+                  <b>{{ deleteInspection.locationDeflect.length }}</b>
+                  รายการ
+                </div>
+              </div>
+            </v-col>
+
+            <v-col cols="4" class="mt-2"> System Deflect </v-col>
+            <v-col cols="8" class="mt-2">
+              <div v-if="deleteInspection.loading">
+                <v-progress-linear
+                  v-model="deleteInspection.systemProgress"
+                  color="info"
+                  height="20"
+                  rounded
+                >
+                  <strong class="white--text">
+                    {{ deleteInspection.systemProgress }}%
+                  </strong>
+                </v-progress-linear>
+              </div>
+              <div v-else>
+                <div v-if="deleteInspection.beforeDataLoading">
+                  <v-progress-circular
+                    :width="2"
+                    size="16"
+                    color="grey"
+                    class="mr-1"
+                    indeterminate
+                  />
+                  <span class="cp-text-disable">กำลังตรวจสอบข้อมูล...</span>
+                </div>
+                <div v-else>
+                  <b>{{ deleteInspection.systemDeflect.length }}</b>
+                  รายการ
+                </div>
+              </div>
+            </v-col>
+          </v-row>
+
           <div
-            v-if="!projectInspection.delete.loading"
+            v-if="!deleteInspection.loading"
             class="mt-6 d-flex flex-row-reverse"
           >
             <v-btn
-              :loading="projectInspection.delete.loading"
-              :disabled="
-                projectInspection.delete.reportStatus == 'approval' ||
-                projectInspection.delete.reportStatus == 'approved'
-              "
+              :disabled="deleteInspection.beforeDataLoading"
               elevation="0"
               height="36"
               color="error"
@@ -1710,6 +1699,7 @@ export default {
     return {
       projectDetail: null,
       projectFile: {
+        loading: false,
         uploadType: '',
         main: null,
         mainPreview: null,
@@ -1743,8 +1733,8 @@ export default {
             sortable: false,
             value: 'first_name',
           },
-          { text: 'Code Name', value: 'code_name' },
-          { text: 'บทบาท', value: 'member_role' },
+          { text: 'Code Name', value: 'code_name', sortable: false },
+          { text: 'บทบาท', value: 'member_role', sortable: false },
           {
             text: 'การดำเนินการ',
             align: 'center',
@@ -1765,17 +1755,7 @@ export default {
           .toISOString()
           .substr(0, 10),
         inspectionList: [],
-        delete: {
-          loading: false,
-          dialog: false,
-          inspectionId: '',
-          reportStatus: '',
-          beforeStorageList: null,
-          deletedStorage: false,
-          deletedData: false,
-        },
       },
-      deletedStorageCount: 0,
       editProjectName: {
         oldData: '',
         newData: '',
@@ -1891,6 +1871,21 @@ export default {
         dialog: false,
         data: null,
       },
+      deleteInspection: {
+        loading: false,
+        dialog: false,
+        inspectionData: null,
+        beforeDataLoading: false,
+        location: [],
+        locationDeflect: [],
+        locationProgress: 0,
+        system: [],
+        systemDeflect: [],
+        systemProgress: 0,
+        reportDeleteDone: false,
+        locationDeleteDone: false,
+        systemDeleteDone: false,
+      },
     }
   },
 
@@ -1964,14 +1959,83 @@ export default {
       this.editCoordinatorEmail.status =
         newValue !== this.editCoordinatorEmail.oldData
     },
-    'projectInspection.delete.beforeStorageList'(newValue) {
+    async 'addTeams.dialog'(newValue) {
       if (newValue) {
-        this.onDeleteInspectionStorageCheck()
+        await this.getProjectDetail()
+        await this.getCheckerTeam()
+        this.getMemberList()
+        this.getInspectionList()
       }
     },
-    'addTeams.dialog'(newValue) {
+    async 'projectFile.delete.dialog'(newValue) {
       if (newValue) {
-        this.getMemberList()
+        await this.getProjectFile()
+        const x = setInterval(() => {
+          if (!this.projectFile.loading) {
+            if (
+              this.projectFile.delete.fileData.type === 'main' &&
+              this.projectFile.main === null
+            ) {
+              this.projectFile.delete.dialog = false
+              this.onNotify({
+                notifyValue: true,
+                type: 'info',
+                title: 'ข้อความจากระบบ',
+                message: 'รูปภาพถูกลบจากผู้ใช้งานท่านอื่น',
+              })
+            } else if (
+              this.projectFile.delete.fileData.type === 'plan1' &&
+              this.projectFile.plan1 === null
+            ) {
+              this.projectFile.delete.dialog = false
+              this.onNotify({
+                notifyValue: true,
+                type: 'info',
+                title: 'ข้อความจากระบบ',
+                message: 'รูปภาพถูกลบจากผู้ใช้งานท่านอื่น',
+              })
+            } else if (
+              this.projectFile.delete.fileData.type === 'plan2' &&
+              this.projectFile.plan2 === null
+            ) {
+              this.projectFile.delete.dialog = false
+              this.onNotify({
+                notifyValue: true,
+                type: 'info',
+                title: 'ข้อความจากระบบ',
+                message: 'รูปภาพถูกลบจากผู้ใช้งานท่านอื่น',
+              })
+            } else if (
+              this.projectFile.delete.fileData.type === 'plan3' &&
+              this.projectFile.plan3 === null
+            ) {
+              this.projectFile.delete.dialog = false
+              this.onNotify({
+                notifyValue: true,
+                type: 'info',
+                title: 'ข้อความจากระบบ',
+                message: 'รูปภาพถูกลบจากผู้ใช้งานท่านอื่น',
+              })
+            } else if (
+              this.projectFile.delete.fileData.type === 'plan4' &&
+              this.projectFile.plan4 === null
+            ) {
+              this.projectFile.delete.dialog = false
+              this.onNotify({
+                notifyValue: true,
+                type: 'info',
+                title: 'ข้อความจากระบบ',
+                message: 'รูปภาพถูกลบจากผู้ใช้งานท่านอื่น',
+              })
+            }
+            clearInterval(x)
+          }
+        }, 300)
+      }
+    },
+    'deleteInspection.dialog'(newValue) {
+      if (newValue) {
+        this.onBeforeDeleteInspection()
       }
     },
   },
@@ -2040,12 +2104,22 @@ export default {
             }
           })
           .catch(({ response }) => {
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
-            })
+            if (response.data.statusCode === 404) {
+              this.onNotify({
+                notifyValue: true,
+                type: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                message: 'ผู้ใช้งานท่านอื่นลบโปรเจคนี้แล้ว',
+              })
+              this.$router.push('/projects/list')
+            } else {
+              this.onNotify({
+                notifyValue: true,
+                type: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                message: response.data,
+              })
+            }
           })
       }
     },
@@ -2085,63 +2159,66 @@ export default {
     async getProjectFile() {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
-        if (accessToken) {
-          this.$axios
-            .get(
-              `${process.env.API_ENDPOINT}/v1/project/file/${this.$route.query.id}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                },
-              }
-            )
-            .then(({ data }) => {
-              this.projectFile.main = null
-              this.projectFile.plan1 = null
-              this.projectFile.plan2 = null
-              this.projectFile.plan3 = null
-              this.projectFile.plan4 = null
-              this.projectFile.items = []
-              if (data.data) {
-                for (const item of data.data) {
-                  const fileTypes = {
-                    main: 'main',
-                    plan1: 'plan1',
-                    plan2: 'plan2',
-                    plan3: 'plan3',
-                    plan4: 'plan4',
-                  }
+        this.projectFile.loading = true
+        this.$axios
+          .get(
+            `${process.env.API_ENDPOINT}/v1/project/file/${this.$route.query.id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            this.projectFile.main = null
+            this.projectFile.plan1 = null
+            this.projectFile.plan2 = null
+            this.projectFile.plan3 = null
+            this.projectFile.plan4 = null
+            this.projectFile.items = []
+            if (data.data) {
+              for (const item of data.data) {
+                const fileTypes = {
+                  main: 'main',
+                  plan1: 'plan1',
+                  plan2: 'plan2',
+                  plan3: 'plan3',
+                  plan4: 'plan4',
+                }
 
-                  const fileType = fileTypes[item.file_type]
+                const fileType = fileTypes[item.file_type]
 
-                  if (fileType) {
-                    this.projectFile[fileType] = {
-                      src: item.image_path,
-                      type: item.file_type,
-                    }
-                    this.projectFile.items.push({
-                      src: item.image_path,
-                      type: item.file_type,
-                    })
-                    this.projectFile.items.sort((a, b) => {
-                      const order = ['main', 'plan1', 'plan2', 'plan3', 'plan4']
-                      const indexA = order.indexOf(a.type)
-                      const indexB = order.indexOf(b.type)
-                      return indexA - indexB
-                    })
+                if (fileType) {
+                  this.projectFile[fileType] = {
+                    src: item.image_path,
+                    type: item.file_type,
                   }
+                  this.projectFile.items.push({
+                    src: item.image_path,
+                    type: item.file_type,
+                  })
+                  this.projectFile.items.sort((a, b) => {
+                    const order = ['main', 'plan1', 'plan2', 'plan3', 'plan4']
+                    const indexA = order.indexOf(a.type)
+                    const indexB = order.indexOf(b.type)
+                    return indexA - indexB
+                  })
                 }
               }
+              this.projectFile.loading = false
+            } else {
+              this.projectFile.loading = false
+            }
+          })
+          .catch(({ response }) => {
+            this.projectFile.loading = false
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              message: response.data,
             })
-            .catch(({ response }) => {
-              this.onNotify({
-                notifyValue: true,
-                type: 'error',
-                title: 'เกิดข้อผิดพลาด',
-                message: response.data,
-              })
-            })
-        }
+          })
       }
     },
 
@@ -2167,7 +2244,9 @@ export default {
       } else if (/^\s+/.test(newData)) {
         this.handleValidationError('ห้ามมีช่องว่างด้านหน้า')
         this.editProjectName.error = true
-      } else {
+      } else if (
+        this.editProjectName.oldData !== this.editProjectName.newData
+      ) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
           this.$axios
@@ -2200,46 +2279,60 @@ export default {
               })
             })
         }
+      } else {
+        this.projectDetail.project_name = this.editProjectName.newData.trim()
+        this.editProjectName.oldData = ''
+        this.editProjectName.newData = ''
+        this.editProjectName.status = false
+        this.editProjectName.focus = false
       }
     },
 
     async saveNewProjectNote() {
-      const accessToken = await this.getAccessToken()
-      if (accessToken) {
-        this.$axios
-          .post(
-            `${process.env.API_ENDPOINT}/v1/project/edit/project-note`,
-            {
-              project_id: this.$route.query.id,
-              project_note: this.editProjectNote.newData.trim(),
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
+      if (this.editProjectNote.oldData !== this.editProjectNote.newData) {
+        const accessToken = await this.getAccessToken()
+        if (accessToken) {
+          this.$axios
+            .post(
+              `${process.env.API_ENDPOINT}/v1/project/edit/project-note`,
+              {
+                project_id: this.$route.query.id,
+                project_note: this.editProjectNote.newData.trim(),
               },
-            }
-          )
-          .then(({ data }) => {
-            this.projectDetail.project_note =
-              this.editProjectNote.newData.trim()
-            this.editProjectNote.oldData = ''
-            this.editProjectNote.newData = ''
-            this.editProjectNote.status = false
-            this.editProjectNote.focus = false
-          })
-          .catch(({ response }) => {
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
+              {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              }
+            )
+            .then(({ data }) => {
+              this.projectDetail.project_note =
+                this.editProjectNote.newData.trim()
+              this.editProjectNote.oldData = ''
+              this.editProjectNote.newData = ''
+              this.editProjectNote.status = false
+              this.editProjectNote.focus = false
             })
-          })
+            .catch(({ response }) => {
+              this.onNotify({
+                notifyValue: true,
+                type: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                message: response.data,
+              })
+            })
+        }
+      } else {
+        this.projectDetail.project_note = this.editProjectNote.newData.trim()
+        this.editProjectNote.oldData = ''
+        this.editProjectNote.newData = ''
+        this.editProjectNote.status = false
+        this.editProjectNote.focus = false
       }
     },
 
     async saveNewTypeAddress() {
-      if (this.editTypeAddress.valid) {
+      if (this.editTypeAddress.valid && this.editTypeAddress.status) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
           this.$axios
@@ -2272,11 +2365,17 @@ export default {
               })
             })
         }
+      } else {
+        this.projectDetail.type_address = this.editTypeAddress.newData.trim()
+        this.editTypeAddress.oldData = ''
+        this.editTypeAddress.newData = ''
+        this.editTypeAddress.status = false
+        this.editTypeAddress.focus = false
       }
     },
 
     async saveNewTypeUsableArea() {
-      if (this.editTypeUsableArea.valid) {
+      if (this.editTypeUsableArea.valid && this.editTypeUsableArea.status) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
           this.$axios
@@ -2311,11 +2410,20 @@ export default {
               })
             })
         }
+      } else {
+        this.projectDetail.type_usable_area = parseInt(
+          this.editTypeUsableArea.newData,
+          10
+        )
+        this.editTypeUsableArea.oldData = ''
+        this.editTypeUsableArea.newData = ''
+        this.editTypeUsableArea.status = false
+        this.editTypeUsableArea.focus = false
       }
     },
 
     async saveNewCustomerName() {
-      if (this.editCustomerName.valid) {
+      if (this.editCustomerName.valid && this.editCustomerName.status) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
           this.$axios
@@ -2348,11 +2456,16 @@ export default {
               })
             })
         }
+      } else {
+        this.editCustomerName.oldData = ''
+        this.editCustomerName.newData = ''
+        this.editCustomerName.status = false
+        this.editCustomerName.focus = false
       }
     },
 
     async saveNewCustomerPhone() {
-      if (this.editCustomerPhone.valid) {
+      if (this.editCustomerPhone.valid && this.editCustomerPhone.status) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
           this.$axios
@@ -2385,11 +2498,16 @@ export default {
               })
             })
         }
+      } else {
+        this.editCustomerPhone.oldData = ''
+        this.editCustomerPhone.newData = ''
+        this.editCustomerPhone.status = false
+        this.editCustomerPhone.focus = false
       }
     },
 
     async saveNewCustomerEmail() {
-      if (this.editCustomerEmail.valid) {
+      if (this.editCustomerEmail.valid && this.editCustomerEmail.status) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
           this.$axios
@@ -2422,11 +2540,16 @@ export default {
               })
             })
         }
+      } else {
+        this.editCustomerEmail.oldData = ''
+        this.editCustomerEmail.newData = ''
+        this.editCustomerEmail.status = false
+        this.editCustomerEmail.focus = false
       }
     },
 
     async saveNewCoordinatorName() {
-      if (this.editCoordinatorName.valid) {
+      if (this.editCoordinatorName.valid && this.editCoordinatorName.status) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
           this.$axios
@@ -2459,11 +2582,16 @@ export default {
               })
             })
         }
+      } else {
+        this.editCoordinatorName.oldData = ''
+        this.editCoordinatorName.newData = ''
+        this.editCoordinatorName.status = false
+        this.editCoordinatorName.focus = false
       }
     },
 
     async saveNewCoordinatorPhone() {
-      if (this.editCoordinatorPhone.valid) {
+      if (this.editCoordinatorPhone.valid && this.editCoordinatorPhone.status) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
           this.$axios
@@ -2496,11 +2624,16 @@ export default {
               })
             })
         }
+      } else {
+        this.editCoordinatorPhone.oldData = ''
+        this.editCoordinatorPhone.newData = ''
+        this.editCoordinatorPhone.status = false
+        this.editCoordinatorPhone.focus = false
       }
     },
 
     async saveNewCoordinatorEmail() {
-      if (this.editCoordinatorEmail.valid) {
+      if (this.editCoordinatorEmail.valid && this.editCoordinatorEmail.status) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
           this.$axios
@@ -2533,11 +2666,58 @@ export default {
               })
             })
         }
+      } else {
+        this.editCoordinatorEmail.oldData = ''
+        this.editCoordinatorEmail.newData = ''
+        this.editCoordinatorEmail.status = false
+        this.editCoordinatorEmail.focus = false
       }
     },
 
-    openImageInput() {
-      this.$refs.imageInput.click()
+    async openImageInput() {
+      await this.getProjectFile()
+      const x = setInterval(() => {
+        if (!this.projectFile.loading) {
+          if (
+            this.projectFile.uploadType === 'main' &&
+            this.projectFile.main === null
+          ) {
+            this.$refs.imageInput.click()
+          } else if (
+            this.projectFile.uploadType === 'plan1' &&
+            this.projectFile.plan1 === null
+          ) {
+            this.$refs.imageInput.click()
+          } else if (
+            this.projectFile.uploadType === 'plan2' &&
+            this.projectFile.plan2 === null &&
+            this.projectFile.plan1 !== null
+          ) {
+            this.$refs.imageInput.click()
+          } else if (
+            this.projectFile.uploadType === 'plan3' &&
+            this.projectFile.plan3 === null &&
+            this.projectFile.plan2 !== null
+          ) {
+            this.$refs.imageInput.click()
+          } else if (
+            this.projectFile.uploadType === 'plan4' &&
+            this.projectFile.plan4 === null &&
+            this.projectFile.plan3 !== null
+          ) {
+            this.$refs.imageInput.click()
+          } else {
+            this.onNotify({
+              notifyValue: true,
+              type: 'info',
+              title: 'ข้อความจากระบบ',
+              message: 'รูปภาพถูกแก้ไขจากผู้ใช้งานท่านอื่น',
+            })
+          }
+
+          clearInterval(x)
+        }
+      }, 500)
     },
 
     uploadImage(event) {
@@ -2618,22 +2798,49 @@ export default {
             this.getProjectFile()
           })
           .catch(({ response }) => {
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
-            })
-            if (fileType === 'main') {
-              this.projectFile.mainLoading = false
-            } else if (fileType === 'plan1') {
-              this.projectFile.plan1Loading = false
-            } else if (fileType === 'plan2') {
-              this.projectFile.plan2Loading = false
-            } else if (fileType === 'plan3') {
-              this.projectFile.plan3Loading = false
-            } else if (fileType === 'plan4') {
-              this.projectFile.plan4Loading = false
+            if (response.data.statusCode === 409) {
+              this.onNotify({
+                notifyValue: true,
+                type: 'info',
+                title: 'ข้อความจากระบบ',
+                message:
+                  'มีผู้ใช้งานท่านอื่นอัพโหลดรูปไว้แล้ว ระบบได้ดำเนินการโหลดข้อมูลให้ใหม่เรียบร้อยแล้ว',
+              })
+              this.getProjectFile()
+              if (fileType === 'main') {
+                this.projectFile.mainLoading = false
+                this.projectFile.mainPreview = null
+              } else if (fileType === 'plan1') {
+                this.projectFile.plan1Loading = false
+                this.projectFile.plan1Preview = null
+              } else if (fileType === 'plan2') {
+                this.projectFile.plan2Loading = false
+                this.projectFile.plan2Preview = null
+              } else if (fileType === 'plan3') {
+                this.projectFile.plan3Loading = false
+                this.projectFile.plan3Preview = null
+              } else if (fileType === 'plan4') {
+                this.projectFile.plan4Loading = false
+                this.projectFile.plan4Preview = null
+              }
+            } else {
+              this.onNotify({
+                notifyValue: true,
+                type: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                message: response.data,
+              })
+              if (fileType === 'main') {
+                this.projectFile.mainLoading = false
+              } else if (fileType === 'plan1') {
+                this.projectFile.plan1Loading = false
+              } else if (fileType === 'plan2') {
+                this.projectFile.plan2Loading = false
+              } else if (fileType === 'plan3') {
+                this.projectFile.plan3Loading = false
+              } else if (fileType === 'plan4') {
+                this.projectFile.plan4Loading = false
+              }
             }
           })
       }
@@ -2733,180 +2940,27 @@ export default {
             }
           })
           .catch(({ response }) => {
-            this.projectInspection.loading = false
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
-            })
-          })
-      }
-    },
-
-    async onDeleteInspection() {
-      const accessToken = await this.getAccessToken()
-      if (accessToken) {
-        this.projectInspection.delete.loading = true
-        this.$axios
-          .post(
-            `${process.env.API_ENDPOINT}/v1/project/inspection/before-storage`,
-            {
-              project_id: this.$route.query.id,
-              inspection_id: this.projectInspection.delete.inspectionId,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          )
-          .then(({ data }) => {
-            if (data.data) {
-              this.projectInspection.delete.beforeStorageList = data.data
-            }
-          })
-          .catch(({ response }) => {
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
-            })
-          })
-      }
-    },
-
-    async onDeleteInspectionStorageCheck() {
-      if (this.projectInspection.delete.beforeStorageList.length <= 15) {
-        if (this.projectInspection.delete.beforeStorageList.length === 0) {
-          this.projectInspection.delete.deletedStorage = true
-          this.deletedStorageCount = 0
-          this.onDeleteInspectionData()
-        } else {
-          this.onDeleteInspectionStorage()
-        }
-      } else {
-        const getArray = this.projectInspection.delete.beforeStorageList.map(
-          (item) => item.image_id
-        )
-        const chunkedArray = this.chunkArray(getArray, 15)
-
-        for (let i = 0; i < chunkedArray.length; i++) {
-          await this.delayedDeleteInspectionStorageGroup(chunkedArray[i])
-        }
-
-        this.projectInspection.delete.deletedStorage = true
-        this.onDeleteInspectionData()
-      }
-    },
-
-    async delayedDeleteInspectionStorageGroup(chunk) {
-      this.onDeleteInspectionStorageGroup(chunk)
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-    },
-
-    async onDeleteInspectionStorage() {
-      const accessToken = await this.getAccessToken()
-      if (accessToken) {
-        this.$axios
-          .post(
-            `${process.env.API_ENDPOINT}/v1/project/inspection/delete-storage`,
-            {
-              project_id: this.$route.query.id,
-              inspection_id: this.projectInspection.delete.inspectionId,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          )
-          .then(({ data }) => {
-            this.projectInspection.delete.deletedStorage = true
-            this.deletedStorageCount = data.data
-            this.onDeleteInspectionData()
-          })
-          .catch(({ response }) => {
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
-            })
-          })
-      }
-    },
-
-    async onDeleteInspectionData() {
-      const accessToken = await this.getAccessToken()
-      if (accessToken) {
-        this.projectInspection.delete.loading = true
-        await this.$axios
-          .post(
-            `${process.env.API_ENDPOINT}/v1/project/inspection/delete`,
-            {
-              project_id: this.$route.query.id,
-              inspection_id: this.projectInspection.delete.inspectionId,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          )
-          .then(({ data }) => {
-            this.getInspectionList()
-            this.projectInspection.delete.deletedData = true
-            setTimeout(() => {
-              this.projectInspection.delete.dialog = false
-            }, 500)
-            setTimeout(() => {
-              this.projectInspection.delete.loading = false
-              this.projectInspection.delete.deletedData = false
-              this.projectInspection.delete.deletedStorage = false
+            if (response.data.statusCode === 409) {
+              this.onNotify({
+                notifyValue: true,
+                type: 'info',
+                title: 'ข้อความจากระบบ',
+                message: `มีรายการตรวจที่ ${
+                  this.projectInspection.inspectionList.length + 1
+                } ในระบบแล้ว ระบบได้ดำเนินการโหลดข้อมูลให้ใหม่สำเร็จ`,
+              })
+              this.projectInspection.loading = false
+              this.projectInspection.dialog = false
+              this.getInspectionList()
               this.getProjectDetail()
-            }, 1000)
-          })
-          .catch(({ response }) => {
-            this.projectInspection.delete.loading = false
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
-            })
-          })
-      }
-    },
-
-    async onDeleteInspectionStorageGroup(imageIdGroup) {
-      const accessToken = await this.getAccessToken()
-      if (accessToken) {
-        this.$axios
-          .post(
-            `${process.env.API_ENDPOINT}/v1/project/inspection/delete-storage-group`,
-            {
-              project_id: this.$route.query.id,
-              inspection_id: this.projectInspection.delete.inspectionId,
-              image_id_group: imageIdGroup.toString(),
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
+            } else {
+              this.onNotify({
+                notifyValue: true,
+                type: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                message: response,
+              })
             }
-          )
-          .then(({ data }) => {
-            this.deletedStorageCount = this.deletedStorageCount + data.data
-          })
-          .catch(({ response }) => {
-            this.onNotify({
-              notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data,
-            })
           })
       }
     },
@@ -3024,12 +3078,14 @@ export default {
           })
           .catch(({ response }) => {
             this.deleteTeamChecker.loading = false
+            this.deleteTeamChecker.dialog = false
             this.onNotify({
               notifyValue: true,
-              type: 'error',
-              title: 'เกิดข้อผิดพลาด',
-              message: response.data.data,
+              type: 'warning',
+              title: 'แจ้งเตือนจากระบบ',
+              message: 'Checker ถูกผู้ใช้งานท่านอื่นลบแล้ว',
             })
+            this.getCheckerTeam()
           })
       }
     },
@@ -3037,7 +3093,6 @@ export default {
     async onCreateReport(data) {
       const accessToken = await this.getAccessToken()
       if (accessToken) {
-        this.$router.push('/projects/reports/')
         this.$axios
           .post(
             `${process.env.API_ENDPOINT}/v1/project/inspection/report/create`,
@@ -3052,16 +3107,379 @@ export default {
             }
           )
           .then(({ data }) => {
-            this.$router.push(`/projects/reports/detail?id=${data.data}`)
+            if (data) {
+              this.$router.push(`/projects/reports/detail?id=${data.data}`)
+            }
+          })
+          .catch(({ response }) => {
+            if (response.data.statusCode === 404) {
+              this.onNotify({
+                notifyValue: true,
+                type: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                message: 'รายการตรวจนี้ถูกลบจากผู้ใช้งานท่านอื่นแล้ว',
+              })
+              this.getProjectDetail()
+              this.getInspectionList()
+            } else if (response.data.statusCode === 409) {
+              this.onNotify({
+                notifyValue: true,
+                type: 'info',
+                title: 'ข้อความจากระบบ',
+                message: 'รายงานถูกผู้ใช้งานท่านอื่นสร้างไว้แล้ว',
+              })
+              this.getProjectDetail()
+              this.getInspectionList()
+            } else {
+              this.onNotify({
+                notifyValue: true,
+                type: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                message: response,
+              })
+            }
+          })
+      }
+    },
+
+    async onDonwloadImage(imageUrl, fileName) {
+      const base64String = await this.getImageBase64(imageUrl)
+      if (base64String) {
+        const a = document.createElement('a')
+        a.href = base64String.image
+        a.download = fileName || 'no-name' + '.jpeg'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+      }
+    },
+
+    async getImageBase64(imagePath) {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        try {
+          const response = await this.$axios.post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/report/image-64`,
+            {
+              image_path: imagePath,
+              page_focus: 'project',
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          return response.data.data
+        } catch (error) {
+          this.onNotify({
+            notifyValue: true,
+            type: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            message:
+              'ไม่สามารถบันทึกรูปภาพได้กรุณาลองใหม่อีกครั้ง หรือมีผู้ใช้งานท่านอื่นลบรูปภาพนี้แล้ว',
+          })
+        }
+      }
+    },
+
+    handleUploadError(error) {
+      this.imageUpload.loading = false
+      this.onNotify({
+        notifyValue: true,
+        type: 'error',
+        title: 'ดำเนินการไม่สำเร็จ',
+        message: error,
+      })
+    },
+
+    async onBeforeDeleteInspection() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.deleteInspection.beforeDataLoading = true
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/before-delete`,
+            {
+              project_id: this.$route.query.id,
+              inspection_id: this.deleteInspection.inspectionData.inspection_id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            if (data.data) {
+              this.deleteInspection.location = data.data.location
+              this.deleteInspection.locationDeflect = data.data.location_deflect
+              this.deleteInspection.system = data.data.system
+              this.deleteInspection.systemDeflect = data.data.system_deflect
+              this.deleteInspection.beforeDataLoading = false
+            }
           })
           .catch(({ response }) => {
             this.onNotify({
               notifyValue: true,
               type: 'error',
               title: 'เกิดข้อผิดพลาด',
-              message: response.data.data,
+              message: response.data,
             })
           })
+      }
+    },
+
+    async onDeleteInspection() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.deleteInspection.loading = true
+        const projectId = this.$route.query.id
+        const inspectionId = this.deleteInspection.inspectionData.inspection_id
+
+        // Delete Report
+        if (this.deleteInspection.inspectionData.report_id) {
+          await this.runDeleteInspectionReport(
+            accessToken,
+            projectId,
+            inspectionId
+          )
+        }
+
+        // Delete Location Deflect
+        if (this.deleteInspection.locationDeflect.length === 0) {
+          this.deleteInspection.locationProgress = 100
+        } else {
+          for (
+            let i = 0;
+            i < this.deleteInspection.locationDeflect.length;
+            i++
+          ) {
+            const locationId =
+              this.deleteInspection.locationDeflect[i].location_id
+            const imageId = this.deleteInspection.locationDeflect[i].image_id
+            const imagePath =
+              this.deleteInspection.locationDeflect[i].image_path
+            await this.runMultipleDeleteLocationDeflect(
+              accessToken,
+              projectId,
+              inspectionId,
+              locationId,
+              imageId,
+              imagePath,
+              i
+            )
+          }
+        }
+
+        // Delete System Deflect
+        if (this.deleteInspection.systemDeflect.length === 0) {
+          this.deleteInspection.systemProgress = 100
+        } else {
+          for (let i = 0; i < this.deleteInspection.systemDeflect.length; i++) {
+            const systemId = this.deleteInspection.systemDeflect[i].system_id
+            const imageId = this.deleteInspection.systemDeflect[i].image_id
+            const imagePath = this.deleteInspection.systemDeflect[i].image_path
+            await this.runMultipleDeleteSystemDeflect(
+              accessToken,
+              projectId,
+              inspectionId,
+              systemId,
+              imageId,
+              imagePath,
+              i
+            )
+          }
+        }
+
+        // Delete Location
+        await this.runDeleteInspectionLocations(
+          accessToken,
+          projectId,
+          inspectionId
+        )
+
+        // Delete System
+        await this.runDeleteInspectionSystems(
+          accessToken,
+          projectId,
+          inspectionId
+        )
+
+        // Update Project Status
+        await this.runDeleteInspectionUpdateStatus(
+          accessToken,
+          projectId,
+          inspectionId
+        )
+
+        setTimeout(() => {
+          this.getProjectDetail()
+          this.getInspectionList()
+          this.deleteInspection.dialog = false
+          this.deleteInspection.loading = false
+          this.deleteInspection.inspectionData = null
+          this.deleteInspection.beforeDataLoading = false
+          this.deleteInspection.location = []
+          this.deleteInspection.locationDeflect = []
+          this.deleteInspection.locationProgress = 0
+          this.deleteInspection.system = []
+          this.deleteInspection.systemDeflect = []
+          this.deleteInspection.systemProgress = 0
+          this.deleteInspection.reportDeleteDone = false
+          this.deleteInspection.locationDeleteDone = false
+          this.deleteInspection.systemDeleteDone = false
+        }, 1000)
+      }
+    },
+
+    async runDeleteInspectionReport(accessToken, projectId, inspectionId) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/delete-report`,
+          {
+            project_id: projectId,
+            inspection_id: inspectionId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        this.deleteInspection.reportDeleteDone = true
+      } catch ({ response }) {
+        this.handleUploadError(response.data)
+      }
+    },
+
+    async runMultipleDeleteLocationDeflect(
+      accessToken,
+      projectId,
+      inspectionId,
+      locationId,
+      imageId,
+      imagePath,
+      index
+    ) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/location/deflect/single-delete`,
+          {
+            project_id: projectId,
+            inspection_id: inspectionId,
+            location_id: locationId,
+            image_id: imageId,
+            image_path: imagePath,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        const progress =
+          ((index + 1) / this.deleteInspection.locationDeflect.length) * 100
+        this.deleteInspection.locationProgress = progress.toFixed(2)
+      } catch ({ response }) {
+        this.handleUploadError(response.data)
+      }
+    },
+
+    async runMultipleDeleteSystemDeflect(
+      accessToken,
+      projectId,
+      inspectionId,
+      systemId,
+      imageId,
+      imagePath,
+      index
+    ) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/system/deflect/single-delete`,
+          {
+            project_id: projectId,
+            inspection_id: inspectionId,
+            system_id: systemId,
+            image_id: imageId,
+            image_path: imagePath,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        const progress =
+          ((index + 1) / this.deleteInspection.systemDeflect.length) * 100
+        this.deleteInspection.systemProgress = progress.toFixed(2)
+      } catch ({ response }) {
+        this.handleUploadError(response.data)
+      }
+    },
+
+    async runDeleteInspectionLocations(accessToken, projectId, inspectionId) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/delete-locations`,
+          {
+            project_id: projectId,
+            inspection_id: inspectionId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        this.deleteInspection.locationDeleteDone = true
+      } catch ({ response }) {
+        this.handleUploadError(response.data)
+      }
+    },
+
+    async runDeleteInspectionSystems(accessToken, projectId, inspectionId) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/delete-systems`,
+          {
+            project_id: projectId,
+            inspection_id: inspectionId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        this.deleteInspection.systemDeleteDone = true
+      } catch ({ response }) {
+        this.handleUploadError(response.data)
+      }
+    },
+
+    async runDeleteInspectionUpdateStatus(
+      accessToken,
+      projectId,
+      inspectionId
+    ) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/delete-update-status`,
+          {
+            project_id: projectId,
+            inspection_id: inspectionId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        return true
+      } catch ({ response }) {
+        this.handleUploadError(response.data)
       }
     },
   },
@@ -3100,6 +3518,18 @@ export default {
   transition: all ease 0.3s;
 }
 .box-edit:hover {
+  padding: 4px 8px;
+  background-color: var(--gray-opacity-1);
+}
+.box-edit-note {
+  display: flex;
+  align-items: center;
+  height: fit-content;
+  border-radius: 4px;
+  padding: 4px 0;
+  transition: all ease 0.3s;
+}
+.box-edit-note:hover {
   padding: 4px 8px;
   background-color: var(--gray-opacity-1);
 }
@@ -3160,6 +3590,19 @@ export default {
 .file-card-upload:hover .upload-icon {
   color: var(--base-primary);
 }
+.cp-no-team-no-action {
+  width: 300px;
+  height: 55px;
+  padding: 16px;
+  margin: 16px;
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  cursor: default;
+  color: var(--gray-500);
+  border: 1px solid var(--gray-200);
+  background-color: var(--gray-opacity-1);
+}
 .cp-no-team {
   width: 300px;
   height: 55px;
@@ -3211,9 +3654,6 @@ export default {
   gap: 16px;
   border: 1px solid var(--gray-300);
   transition: all ease 0.3s;
-}
-.cp-inspection-card:hover {
-  background-color: var(--gray-opacity-1);
 }
 .cp-inspection-card-no {
   width: 200px;
