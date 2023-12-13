@@ -12,7 +12,9 @@
             <div class="cp-title pb-5">ข้อมูลโปรเจค</div>
             <v-row>
               <v-col cols="12" md="6">
-                <cp-label> ชื่อโปรเจค </cp-label>
+                <cp-label>
+                  ชื่อโปรเจค <span class="error--text">(จำเป็น)</span>
+                </cp-label>
                 <v-text-field
                   v-model="projectDetail.name"
                   :rules="projectDetail.nameRules"
@@ -24,7 +26,10 @@
               </v-col>
 
               <v-col cols="12" md="6">
-                <cp-label> ประเภทโปรเจค </cp-label>
+                <cp-label>
+                  ประเภทโปรเจค
+                  <span class="error--text">(จำเป็น)</span>
+                </cp-label>
                 <v-select
                   v-model="projectDetail.typeValue"
                   :items="projectDetail.typeItems"
@@ -39,7 +44,10 @@
               </v-col>
 
               <v-col cols="12">
-                <cp-label> หมายเหตุ: บอกทีมหน้างาน </cp-label>
+                <cp-label>
+                  หมายเหตุ: บอกทีมหน้างาน
+                  <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
+                </cp-label>
                 <v-textarea
                   v-model="projectDetail.description"
                   :disabled="loading"
@@ -70,6 +78,7 @@
                       ? mapTypeName(projectDetail.typeValue)
                       : ''
                   }}
+                  <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
                 </cp-label>
                 <v-text-field
                   v-model="typeDetail.address"
@@ -89,6 +98,7 @@
                       ? mapTypeName(projectDetail.typeValue)
                       : ''
                   }}
+                  <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
                 </cp-label>
                 <v-text-field
                   v-model="typeDetail.usableArea"
@@ -102,7 +112,10 @@
               </v-col>
 
               <v-col cols="12">
-                <div class="cp-title pb-4">ไฟล์ภาพที่เกี่ยวข้อง</div>
+                <div class="cp-title pb-4">
+                  ไฟล์ภาพที่เกี่ยวข้อง
+                  <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
+                </div>
                 <v-row>
                   <v-col cols="12">
                     <input
@@ -530,7 +543,10 @@
             <v-col cols="12">
               <cp-card class="pa-6">
                 <div class="cp-title pb-4">ข้อมูลลูกค้า</div>
-                <cp-label> ชื่อลูกค้า </cp-label>
+                <cp-label>
+                  ชื่อลูกค้า
+                  <span class="error--text">(จำเป็น)</span>
+                </cp-label>
                 <v-text-field
                   v-model="customerDetail.name"
                   :rules="customerDetail.nameRules"
@@ -539,7 +555,10 @@
                   outlined
                   required
                 />
-                <cp-label> เบอร์โทรศัพท์ </cp-label>
+                <cp-label>
+                  เบอร์โทรศัพท์
+                  <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
+                </cp-label>
                 <v-text-field
                   v-model="customerDetail.mobileNumber"
                   :disabled="loading"
@@ -550,7 +569,10 @@
                   outlined
                   required
                 />
-                <cp-label> อีเมล </cp-label>
+                <cp-label>
+                  อีเมล
+                  <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
+                </cp-label>
                 <v-text-field
                   v-model="customerDetail.email"
                   :rules="customerDetail.emailRules"
@@ -565,7 +587,10 @@
             <v-col cols="12">
               <cp-card class="pa-6">
                 <div class="cp-title pb-4">ข้อมูลเจ้าหน้าที่โครงการ</div>
-                <cp-label> ชื่อเจ้าหน้าที่ </cp-label>
+                <cp-label>
+                  ชื่อเจ้าหน้าที่
+                  <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
+                </cp-label>
                 <v-text-field
                   v-model="projectCoordinator.name"
                   :rules="projectCoordinator.nameRules"
@@ -574,7 +599,10 @@
                   outlined
                   required
                 />
-                <cp-label> เบอร์โทรศัพท์ </cp-label>
+                <cp-label>
+                  เบอร์โทรศัพท์
+                  <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
+                </cp-label>
                 <v-text-field
                   v-model="projectCoordinator.mobileNumber"
                   :disabled="loading"
@@ -585,7 +613,10 @@
                   outlined
                   required
                 />
-                <cp-label> อีเมล </cp-label>
+                <cp-label>
+                  อีเมล
+                  <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
+                </cp-label>
                 <v-text-field
                   v-model="projectCoordinator.email"
                   :rules="projectCoordinator.emailRules"
@@ -625,7 +656,10 @@
                 </v-card>
 
                 <v-card outlined class="px-4 py-2 mt-4">
-                  <cp-label> หัวหน้าทีมตรวจ </cp-label>
+                  <cp-label>
+                    หัวหน้าทีมตรวจ
+                    <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
+                  </cp-label>
                   <div
                     v-if="projectTeam.checkerSupervisor"
                     class="d-flex align-center justify-space-between"
@@ -748,7 +782,10 @@
                 </v-card>
 
                 <v-card outlined class="px-4 py-2 mt-4">
-                  <cp-label> ทีมตรวจ </cp-label>
+                  <cp-label>
+                    ทีมตรวจ
+                    <span class="cp-text-disable">(เพิ่มภายหลังได้)</span>
+                  </cp-label>
                   <v-menu bottom right>
                     <template #activator="{ on, attrs }">
                       <div v-if="loading" class="checker-add-disable">

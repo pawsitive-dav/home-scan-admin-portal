@@ -44,7 +44,9 @@
         <template #item.project_name="{ item }">
           <cp-col min="160">
             <cp-link-to-detail
-              @click="$router.push(`reports/detail?id=${item.report_id}`)"
+              @click="
+                $router.push(`/projects/reports/detail?id=${item.report_id}`)
+              "
             >
               {{ item.project_name }}
             </cp-link-to-detail>

@@ -608,7 +608,11 @@
                         </v-list-item>
                         <div v-if="!list.report_id">
                           <v-list-item
-                            v-if="role == 'Project Manager' || role == 'Admin'"
+                            v-if="
+                              role == 'Project Manager' ||
+                              role == 'Admin' ||
+                              role == 'Supervisor'
+                            "
                             :disabled="projectDetail.project_status == 'to-do'"
                             @click="onCreateReport(list)"
                           >
@@ -628,7 +632,11 @@
                         </div>
 
                         <div
-                          v-if="role == 'Project Manager' || role == 'Admin'"
+                          v-if="
+                            role == 'Project Manager' ||
+                            role == 'Admin' ||
+                            role == 'Supervisor'
+                          "
                         >
                           <div
                             v-if="
@@ -2366,7 +2374,11 @@ export default {
             })
         }
       } else {
-        this.projectDetail.type_address = this.editTypeAddress.newData.trim()
+        if (this.editTypeAddress.newData) {
+          this.projectDetail.type_address = this.editTypeAddress.newData.trim()
+        } else {
+          this.projectDetail.type_address = this.editTypeAddress.newData
+        }
         this.editTypeAddress.oldData = ''
         this.editTypeAddress.newData = ''
         this.editTypeAddress.status = false
@@ -3144,14 +3156,47 @@ export default {
 
     async onDonwloadImage(imageUrl, fileName) {
       const base64String = await this.getImageBase64(imageUrl)
-      if (base64String) {
-        const a = document.createElement('a')
-        a.href = base64String.image
-        a.download = fileName || 'no-name' + '.jpeg'
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
+      if (base64String.image) {
+        const checkDevice = this.checkDeviceType()
+        if (checkDevice === 'Desktop') {
+          const a = document.createElement('a')
+          a.href = base64String.image
+          a.download = fileName || 'no-name' + '.jpeg'
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+        } else if (checkDevice === 'iPad') {
+          alert(checkDevice)
+        } else if (checkDevice === 'Mobile') {
+          alert(checkDevice)
+        } else {
+          alert('Unknown')
+        }
       }
+    },
+
+    checkDeviceType() {
+      const userAgent = navigator.userAgent.toLowerCase()
+      const platform = navigator.platform.toLowerCase()
+      if (
+        userAgent.includes('win') ||
+        userAgent.includes('mac') ||
+        userAgent.includes('linux')
+      ) {
+        return 'Desktop'
+      }
+      if (userAgent.includes('ipad')) {
+        return 'iPad'
+      }
+      if (
+        userAgent.includes('android') ||
+        userAgent.includes('iphone') ||
+        userAgent.includes('mobile') ||
+        platform.includes('win')
+      ) {
+        return 'Mobile'
+      }
+      return 'Unknown'
     },
 
     async getImageBase64(imagePath) {

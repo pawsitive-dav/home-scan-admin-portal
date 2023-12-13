@@ -168,7 +168,7 @@
                     <cp-link-to-detail
                       @click="
                         $router.push(
-                          `inspection/location-deflect?id=${item.location_id}`
+                          `/projects/list/detail/inspection/location-deflect?id=${item.location_id}`
                         )
                       "
                     >
@@ -320,7 +320,7 @@
                     <cp-link-to-detail
                       @click="
                         $router.push(
-                          `inspection/system-deflect?id=${item.system_id}`
+                          `/projects/list/detail/inspection/system-deflect?id=${item.system_id}`
                         )
                       "
                     >

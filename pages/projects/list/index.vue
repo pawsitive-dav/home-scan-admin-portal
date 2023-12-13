@@ -20,7 +20,9 @@
       </v-sheet>
       <v-spacer />
       <v-btn
-        v-if="role == 'Project Manager' || role == 'Admin'"
+        v-if="
+          role == 'Project Manager' || role == 'Admin' || role == 'Supervisor'
+        "
         elevation="0"
         height="36"
         color="primary"
@@ -115,7 +117,11 @@
                     <span>ดูรายละเอียด</span>
                   </v-list-item>
                   <div
-                    v-if="role == 'Project Manager' || role == 'Admin'"
+                    v-if="
+                      role == 'Project Manager' ||
+                      role == 'Admin' ||
+                      role == 'Supervisor'
+                    "
                     class="delete-project"
                     @click="
                       ;(deleteProject.dialog = true),

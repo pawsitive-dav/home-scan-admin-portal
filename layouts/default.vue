@@ -49,7 +49,7 @@
       <a class="mx-2">Version: 1.0.0</a>
     </v-footer>
 
-    <div v-if="displayBlock" class="cp-display-block">
+    <!-- <div v-if="displayBlock" class="cp-display-block">
       <div class="text-center">
         <v-img
           :src="require('@/assets/images/logo-white.svg')"
@@ -59,7 +59,7 @@
         <v-divider class="mt-6 mb-4 white" />
         <div class="cp-title mt-4 white--text">ไม่รองรับขนาดหน้าจอนี้</div>
       </div>
-    </div>
+    </div> -->
   </v-app>
 </template>
 

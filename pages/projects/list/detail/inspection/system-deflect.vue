@@ -468,16 +468,24 @@
               md="4"
             >
               <div class="card-add">
-                <div class="box-select" @click="openImageInput()">
+                <label class="custom-file-upload">
+                  <input
+                    ref="imageInputRef"
+                    type="file"
+                    name="deflect"
+                    accept="image/*"
+                    multiple
+                    @change="uploadImage"
+                  />
                   <div class="text-center">
-                    <div>
-                      <v-icon class="box-icon" size="40">
+                    <div class="mb-2">
+                      <v-icon size="40" class="upload-icon">
                         mdi-file-image-plus-outline
                       </v-icon>
                     </div>
-                    <div class="pt-2">สร้าง Deflect</div>
+                    <div>สร้าง Deflect</div>
                   </div>
-                </div>
+                </label>
               </div>
             </v-col>
           </v-row>
@@ -682,7 +690,9 @@
                 height="20"
                 rounded
               >
-                <strong>{{ createDeflectProgress.createDeflect }}%</strong>
+                <strong class="white--text">
+                  {{ createDeflectProgress.createDeflect }}%
+                </strong>
               </v-progress-linear>
             </v-col>
           </v-row>
@@ -986,34 +996,37 @@ export default {
       }
     },
 
-    async openImageInput() {
-      await this.onGetSystemDetail()
-      if (this.systemDetail) {
-        this.$refs.imageInput.click()
-      }
-    },
+    // async openImageInput() {
+    //   await this.onGetSystemDetail()
+    //   if (this.systemDetail) {
+    //     this.$refs.imageInput.click()
+    //   }
+    // },
 
     async uploadImage(event) {
-      const files = event.target.files
-      if (files.length > 0) {
-        this.createDeflectProgress.dialog = true
-        this.imageGroup = await Promise.all(
-          Array.from(files).map(async (file) => {
-            const processedImage = await this.processImageFile(file)
-            const croppedImage = await this.cropImage(
-              processedImage.image,
-              2400,
-              1716
-            )
-            return {
-              image: croppedImage,
-              name: processedImage.name,
-              size: file.size,
-            }
-          })
-        )
-        this.$refs.imageInput.value = null
-        await this.uploadImages()
+      await this.onGetSystemDetail()
+      if (this.systemDetail) {
+        const files = event.target.files
+        if (files.length > 0) {
+          this.createDeflectProgress.dialog = true
+          this.imageGroup = await Promise.all(
+            Array.from(files).map(async (file) => {
+              const processedImage = await this.processImageFile(file)
+              const croppedImage = await this.cropImage(
+                processedImage.image,
+                2400,
+                1716
+              )
+              return {
+                image: croppedImage,
+                name: processedImage.name,
+                size: file.size,
+              }
+            })
+          )
+          this.$refs.imageInput.value = null
+          await this.uploadImages()
+        }
       }
     },
 
@@ -1207,9 +1220,17 @@ export default {
       })
     },
 
-    async onUpdateDeflectStatus(imageId, status, statusNow) {
+    onUpdateDeflectStatus(imageId, status, statusNow) {
+      if (statusNow === null) {
+        this.runUpdateDeflectStatus(imageId, status)
+      } else if (Number(status) !== Number(statusNow)) {
+        this.runUpdateDeflectStatus(imageId, status)
+      }
+    },
+
+    async runUpdateDeflectStatus(imageId, status) {
       const accessToken = await this.getAccessToken()
-      if (accessToken && status !== statusNow) {
+      if (accessToken) {
         this.$axios
           .post(
             `${process.env.API_ENDPOINT}/v1/project/inspection/system/deflect/status`,
@@ -1772,5 +1793,27 @@ export default {
 .cp-vbtn-error:hover {
   background-color: var(--red-opacity-1);
   color: var(--base-error);
+}
+
+input[type='file'] {
+  display: none;
+}
+.custom-file-upload {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 16px;
+  background-color: var(--deep-blue-opacity-1);
+  transition: all ease 0.3s;
+}
+.custom-file-upload:hover {
+  background-color: var(--deep-blue-opacity-2);
+  color: var(--base-primary);
+}
+.custom-file-upload:hover .upload-icon {
+  color: var(--base-primary);
 }
 </style>
