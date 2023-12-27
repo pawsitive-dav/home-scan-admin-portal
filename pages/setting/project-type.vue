@@ -8,7 +8,11 @@
         :items="desserts"
         :search="search"
         :loading="tableLoading"
+        :items-per-page="10"
+        :page.sync="page"
+        hide-default-footer
         class="elevation-0"
+        @page-count="pageCount = $event"
       >
         <template #top>
           <v-toolbar flat>
@@ -148,6 +152,9 @@
           <div class="my-6">ไม่มีข้อมูล</div>
         </template>
       </v-data-table>
+      <div class="cp-table-footer">
+        <v-pagination v-model="page" :length="pageCount" color="success" />
+      </div>
     </cp-card>
 
     <!-- Create Modal -->
@@ -284,6 +291,8 @@ export default {
       },
     ],
     desserts: [],
+    page: 1,
+    pageCount: 0,
     createModal: {
       edit: false,
       valid: false,
@@ -506,5 +515,9 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.cp-table-footer {
+  padding: 16px 0;
+  border-top: 1px solid var(--gray-100);
 }
 </style>

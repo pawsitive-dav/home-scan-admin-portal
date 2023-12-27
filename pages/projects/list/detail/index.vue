@@ -27,6 +27,7 @@
         <v-sheet color="grey lighten-2" width="500" height="20" class="mt-6" />
       </v-col>
     </v-row>
+
     <v-row v-if="projectDetail" class="mt-2">
       <v-col cols="12">
         <div class="d-flex align-center cp-header-2 cp-bold mb-2">
@@ -112,8 +113,9 @@
         </div>
       </v-col>
 
-      <v-col cols="12" sm="12" md="8" lg="8">
+      <v-col cols="12" sm="8" md="8" lg="8">
         <v-row>
+          <!-- Project Detail -->
           <v-col cols="12">
             <cp-card class="pa-6">
               <v-row>
@@ -499,171 +501,164 @@
             </cp-card>
           </v-col>
 
+          <!-- Project Team -->
           <v-col cols="12">
-            <!-- รายการตรวจ -->
-            <cp-card class="pa-6" style="height: 100%">
-              <div class="d-flex pb-4">
-                <div class="cp-subtitle pb-4">รายการตรวจ</div>
-                <v-spacer></v-spacer>
-                <v-btn
-                  v-if="role != 'Checker'"
-                  :disabled="
-                    projectDetail.project_status == 'in-progress' ||
-                    projectDetail.project_status == 'report-approval' ||
-                    (projectDetail.project_status == 'to-do' &&
-                      projectTeams.supervisor.length === 0 &&
-                      projectInspection.inspectionList.length > 0)
-                  "
-                  color="primary"
-                  elevation="0"
-                  @click="projectInspection.dialog = true"
-                >
-                  <v-icon left>mdi-list-box-outline</v-icon>
-                  สร้างรายการตรวจสอบ
-                </v-btn>
-              </div>
-
+            <cp-card-max class="pa-6">
+              <div class="cp-title pl-4">หัวหน้าทีม</div>
               <div
-                v-if="projectInspection.inspectionList.length == 0"
-                class="cp-inspection-no-data"
+                v-if="projectTeams.supervisor.length === 0 && role == 'Checker'"
+                class="cp-no-team-no-action"
               >
-                <div class="text-center">
-                  <div>
-                    <v-icon color="grey" large>mdi-playlist-remove</v-icon>
-                  </div>
-                  <div>ยังไม่มีรายการตรวจสอบ</div>
-                </div>
+                ยังไม่มีหัวหน้าทีม
               </div>
               <div v-else>
                 <div
-                  v-for="(list, index) in projectInspection.inspectionList"
-                  :key="index + 'inspectionList'"
-                  class="cp-inspection-card"
+                  v-if="projectTeams.supervisor.length === 0"
+                  class="cp-no-team"
+                  @click="
+                    ;(addTeams.dialog = true),
+                      (addTeams.teamSelectType = 'supervisor')
+                  "
                 >
-                  <div class="cp-inspection-card-no">
-                    <cp-link-to-detail
+                  <span class="ml-2">เพิ่มหัวหน้าทีม</span>
+                </div>
+                <div v-else class="pa-4 d-flex align-center">
+                  <v-avatar size="55" color="primary">
+                    <v-img
+                      v-if="projectTeams.supervisor[0].avatar_path"
+                      :src="projectTeams.supervisor[0].avatar_path"
+                    />
+                    <v-img
+                      v-else
+                      :src="require('@/assets/images/no-avatar.png')"
+                    />
+                  </v-avatar>
+
+                  <div class="ml-4 cp-subtitle">
+                    <div>
+                      <span>
+                        <b>({{ projectTeams.supervisor[0].code_name }})</b>
+                      </span>
+                      <span class="ml-1">
+                        {{
+                          projectTeams.supervisor[0].first_name +
+                          ' ' +
+                          projectTeams.supervisor[0].last_name
+                        }}</span
+                      >
+                    </div>
+
+                    <div class="green--text">
+                      <b>
+                        {{
+                          mapRoleName(projectTeams.supervisor[0].member_role)
+                        }}
+                      </b>
+                    </div>
+                  </div>
+
+                  <div class="ml-6">
+                    <v-btn
+                      v-if="role != 'Checker'"
+                      elevation="0"
+                      height="32"
+                      color="primary"
+                      outlined
                       @click="
-                        $router.push(
-                          `/projects/list/detail/inspection?id=${list.inspection_id}`
-                        )
+                        ;(addTeams.dialog = true),
+                          (addTeams.teamSelectType = 'supervisor')
                       "
                     >
-                      <b>รายการตรวจที่ {{ list.inspection_no }}</b>
-                    </cp-link-to-detail>
-                    <div>
-                      <v-chip
-                        v-if="list.report_status == 'approval'"
-                        color="info"
-                        class="mt-1"
-                        small
-                        label
-                      >
-                        รายงานรอการยืนยัน
-                      </v-chip>
-                      <v-chip
-                        v-if="list.report_status == 'approved'"
-                        color="success"
-                        class="mt-1"
-                        small
-                        label
-                      >
-                        รายงานได้รับการยืนยัน
-                      </v-chip>
-                    </div>
-                  </div>
-                  <v-divider vertical />
-                  <div class="cp-inspection-card-detail">
-                    <div>
-                      <span class="cp-text-description">วันที่เข้าตรวจ:</span>
-                      <b>{{ formatDate(list.working_date) }}</b>
-                    </div>
-                    <div>
-                      <span class="cp-text-description">สร้างโดย:</span>
-                      <b class="success--text">
-                        ({{ JSON.parse(list.created_by).code_name }})
-                        {{
-                          JSON.parse(list.created_by).first_name +
-                          ' ' +
-                          JSON.parse(list.created_by).last_name
-                        }}</b
-                      >
-                    </div>
-                  </div>
-                  <div class="cp-inspection-card-action">
-                    <v-menu :close-on-content-click="false" bottom left>
-                      <template #activator="{ on, attrs }">
-                        <v-btn small icon v-bind="attrs" v-on="on">
-                          <v-icon>mdi-dots-horizontal</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list dense nav>
-                        <v-list-item
-                          @click="
-                            $router.push(
-                              `/projects/list/detail/inspection?id=${list.inspection_id}`
-                            )
-                          "
-                        >
-                          ดูรายละเอียด
-                        </v-list-item>
-                        <div v-if="!list.report_id">
-                          <v-list-item
-                            v-if="
-                              role == 'Project Manager' ||
-                              role == 'Admin' ||
-                              role == 'Supervisor'
-                            "
-                            :disabled="projectDetail.project_status == 'to-do'"
-                            @click="onCreateReport(list)"
-                          >
-                            สร้างรายงาน
-                          </v-list-item>
-                        </div>
-                        <div v-else>
-                          <v-list-item
-                            @click="
-                              $router.push(
-                                `/projects/reports/detail?id=${list.report_id}`
-                              )
-                            "
-                          >
-                            ดูรายงาน
-                          </v-list-item>
-                        </div>
-
-                        <div
-                          v-if="
-                            role == 'Project Manager' ||
-                            role == 'Admin' ||
-                            role == 'Supervisor'
-                          "
-                        >
-                          <div
-                            v-if="
-                              projectInspection.inspectionList.length ==
-                              list.inspection_no
-                            "
-                            class="delete-inspection"
-                            @click="
-                              ;(deleteInspection.dialog = true),
-                                (deleteInspection.inspectionData = list)
-                            "
-                          >
-                            ลบรายการตรวจ
-                          </div>
-                        </div>
-                      </v-list>
-                    </v-menu>
+                      เปลี่ยน
+                    </v-btn>
                   </div>
                 </div>
               </div>
-            </cp-card>
+
+              <v-divider class="mb-6 mt-4" />
+
+              <v-data-table
+                :headers="projectTeams.headers"
+                :items="projectTeams.checker"
+                :loading="projectTeams.loading"
+                :items-per-page="-1"
+                hide-default-footer
+                class="elevation-0"
+              >
+                <template #top>
+                  <v-toolbar flat>
+                    <v-toolbar-title>ทีม Checker</v-toolbar-title>
+                    <v-spacer />
+                    <v-btn
+                      v-if="role != 'Checker'"
+                      elevation="0"
+                      height="36"
+                      color="primary"
+                      @click="
+                        ;(addTeams.dialog = true),
+                          (addTeams.teamSelectType = 'checker')
+                      "
+                    >
+                      <div class="cp-text-capitalize">
+                        <v-icon left>mdi-plus</v-icon>
+                        เพิ่ม Checker
+                      </div>
+                    </v-btn>
+                  </v-toolbar>
+                </template>
+
+                <template #item.first_name="{ item }">
+                  <div class="col-user">
+                    <v-avatar size="40" color="primary">
+                      <img v-if="item.avatar_path" :src="item.avatar_path" />
+                      <v-img
+                        v-else
+                        :src="require('@/assets/images/no-avatar.png')"
+                      />
+                    </v-avatar>
+                    <div>
+                      <div class="cp-medium">
+                        {{ item.first_name + ' ' + item.last_name }}
+                      </div>
+                    </div>
+                  </div>
+                </template>
+
+                <template #item.member_role="{ item }">
+                  <div class="success--text">
+                    {{ mapRoleName(item.member_role) }}
+                  </div>
+                </template>
+
+                <template #item.actions="{ item }">
+                  <cp-col min="100">
+                    <v-icon
+                      v-if="role != 'Checker'"
+                      small
+                      @click="
+                        ;(deleteTeamChecker.dialog = true),
+                          (deleteTeamChecker.data = item)
+                      "
+                    >
+                      mdi-trash-can-outline
+                    </v-icon>
+                    <v-icon v-else disabled small>
+                      mdi-delete-off-outline
+                    </v-icon>
+                  </cp-col>
+                </template>
+
+                <template #no-data>
+                  <div class="my-6">ไม่มีข้อมูลทีม Checker</div>
+                </template>
+              </v-data-table>
+            </cp-card-max>
           </v-col>
         </v-row>
       </v-col>
 
-      <v-col cols="12" sm="12" md="4" lg="4">
-        <!-- ไฟล์ภาพของโปรเจค -->
+      <!-- ไฟล์ภาพของโปรเจค -->
+      <v-col cols="12" sm="4" md="4" lg="4">
         <cp-card-max class="pa-6">
           <div class="cp-subtitle pb-4">ไฟล์ภาพของโปรเจค</div>
           <v-row>
@@ -1086,149 +1081,384 @@
       </v-col>
     </v-row>
 
-    <v-row>
-      <!-- ทีมงาน -->
+    <!-- รายการตรวจ -->
+    <v-row v-if="projectDetail">
       <v-col cols="12">
-        <cp-card class="pa-6">
-          <div class="cp-title pl-4">หัวหน้าทีม</div>
-          <div
-            v-if="projectTeams.supervisor.length === 0 && role == 'Checker'"
-            class="cp-no-team-no-action"
-          >
-            ยังไม่มีหัวหน้าทีม
-          </div>
-          <div v-else>
-            <div
-              v-if="projectTeams.supervisor.length === 0"
-              class="cp-no-team"
-              @click="
-                ;(addTeams.dialog = true),
-                  (addTeams.teamSelectType = 'supervisor')
+        <cp-card class="pa-6" style="height: 100%">
+          <div class="d-flex pb-4">
+            <div class="cp-subtitle pb-4">รายการตรวจ</div>
+            <v-spacer />
+            <v-btn
+              v-if="role != 'Checker'"
+              :disabled="
+                projectDetail.project_status == 'in-progress' ||
+                projectDetail.project_status == 'report-approval' ||
+                (projectDetail.project_status == 'to-do' &&
+                  projectTeams.supervisor.length === 0 &&
+                  projectInspection.inspectionList.length > 0)
               "
+              color="primary"
+              elevation="0"
+              @click="projectInspection.dialog = true"
             >
-              <span class="ml-2">เพิ่มหัวหน้าทีม</span>
-            </div>
-            <div v-else class="pa-4 d-flex align-center">
-              <v-avatar size="55" color="primary">
-                <v-img
-                  v-if="projectTeams.supervisor[0].avatar_path"
-                  :src="projectTeams.supervisor[0].avatar_path"
-                />
-                <v-img v-else :src="require('@/assets/images/no-avatar.png')" />
-              </v-avatar>
-
-              <div class="ml-4 cp-subtitle">
-                <div>
-                  <span>
-                    <b>({{ projectTeams.supervisor[0].code_name }})</b>
-                  </span>
-                  <span class="ml-1">
-                    {{
-                      projectTeams.supervisor[0].first_name +
-                      ' ' +
-                      projectTeams.supervisor[0].last_name
-                    }}</span
-                  >
-                </div>
-
-                <div class="green--text">
-                  <b>
-                    {{ mapRoleName(projectTeams.supervisor[0].member_role) }}
-                  </b>
-                </div>
-              </div>
-
-              <div class="ml-6">
-                <v-btn
-                  v-if="role != 'Checker'"
-                  elevation="0"
-                  height="32"
-                  color="primary"
-                  outlined
-                  @click="
-                    ;(addTeams.dialog = true),
-                      (addTeams.teamSelectType = 'supervisor')
-                  "
-                >
-                  เปลี่ยน
-                </v-btn>
-              </div>
-            </div>
+              <v-icon left>mdi-list-box-outline</v-icon>
+              สร้างรายการตรวจสอบ
+            </v-btn>
           </div>
 
-          <v-divider class="mb-6 mt-4" />
-
-          <v-data-table
-            :headers="projectTeams.headers"
-            :items="projectTeams.checker"
-            :loading="projectTeams.loading"
-            class="elevation-0"
-          >
-            <template #top>
-              <v-toolbar flat>
-                <v-toolbar-title>ทีม Checker</v-toolbar-title>
-                <v-spacer />
-                <v-btn
-                  v-if="role != 'Checker'"
-                  elevation="0"
-                  height="36"
-                  color="primary"
-                  @click="
-                    ;(addTeams.dialog = true),
-                      (addTeams.teamSelectType = 'checker')
-                  "
-                >
-                  <div class="cp-text-capitalize">
-                    <v-icon left>mdi-plus</v-icon>
-                    เพิ่ม Checker
-                  </div>
-                </v-btn>
-              </v-toolbar>
-            </template>
-
-            <template #item.first_name="{ item }">
-              <div class="col-user">
-                <v-avatar size="40" color="primary">
-                  <img v-if="item.avatar_path" :src="item.avatar_path" />
-                  <v-img
-                    v-else
-                    :src="require('@/assets/images/no-avatar.png')"
-                  />
-                </v-avatar>
-                <div>
-                  <div class="cp-medium">
-                    {{ item.first_name + ' ' + item.last_name }}
-                  </div>
+          <div v-if="projectInspection.inspectionList.length === 0">
+            <v-card elevation="0" color="grey lighten-5">
+              <v-card-text>
+                <div class="text-center cp-text-disable py-6">
+                  ไม่มีข้อมูลรายการตรวจ
                 </div>
-              </div>
-            </template>
+              </v-card-text>
+            </v-card>
+          </div>
 
-            <template #item.member_role="{ item }">
-              <div class="success--text">
-                {{ mapRoleName(item.member_role) }}
-              </div>
-            </template>
-
-            <template #item.actions="{ item }">
-              <cp-col min="100">
-                <v-icon
-                  v-if="role != 'Checker'"
+          <v-card
+            v-for="(list, index) in projectInspection.inspectionList"
+            :key="index + 'inspection-list'"
+            outlined
+          >
+            <v-card-title>
+              <div>รายการตรวจที่ {{ list.inspection_no }}</div>
+              <!-- Status -->
+              <div>
+                <v-chip
+                  v-if="list.report_status === 'in-progress'"
                   small
-                  @click="
-                    ;(deleteTeamChecker.dialog = true),
-                      (deleteTeamChecker.data = item)
-                  "
+                  label
+                  color="warning"
+                  class="ml-2"
                 >
-                  mdi-trash-can-outline
-                </v-icon>
-                <v-icon v-else disabled small> mdi-delete-off-outline </v-icon>
-              </cp-col>
-            </template>
-
-            <template #no-data>
-              <div class="my-6">ไม่มีข้อมูลทีม Checker</div>
-            </template>
-          </v-data-table>
+                  กำลังดำเนินการ
+                </v-chip>
+                <v-chip
+                  v-if="list.report_status === 'approval'"
+                  small
+                  label
+                  color="info"
+                  class="ml-2"
+                >
+                  รายงานรอการยืนยัน
+                </v-chip>
+                <v-chip
+                  v-if="list.report_status === 'approved'"
+                  small
+                  label
+                  color="success"
+                  class="ml-2"
+                >
+                  รายงานได้รับการยืนยัน
+                </v-chip>
+              </div>
+              <v-spacer />
+              <!-- Menu -->
+              <v-menu :close-on-content-click="false" bottom left>
+                <template #activator="{ on, attrs }">
+                  <v-btn small icon v-bind="attrs" v-on="on">
+                    <v-icon>mdi-dots-horizontal</v-icon>
+                  </v-btn>
+                </template>
+                <v-list dense nav>
+                  <div v-if="!list.report_id">
+                    <v-list-item
+                      v-if="
+                        role == 'Project Manager' ||
+                        role == 'Admin' ||
+                        role == 'Supervisor'
+                      "
+                      :disabled="projectDetail.project_status == 'to-do'"
+                      @click="onCreateReport(list)"
+                    >
+                      สร้างรายงาน
+                    </v-list-item>
+                  </div>
+                  <div v-else>
+                    <v-list-item
+                      @click="
+                        $router.push(
+                          `/projects/reports/detail?id=${list.report_id}`
+                        )
+                      "
+                    >
+                      ดูรายงาน
+                    </v-list-item>
+                  </div>
+                  <div
+                    v-if="
+                      role == 'Project Manager' ||
+                      role == 'Admin' ||
+                      role == 'Supervisor'
+                    "
+                  >
+                    <div
+                      v-if="
+                        projectInspection.inspectionList.length ==
+                        list.inspection_no
+                      "
+                      class="delete-inspection"
+                      @click="
+                        ;(deleteInspection.dialog = true),
+                          (deleteInspection.inspectionData = list)
+                      "
+                    >
+                      ลบรายการตรวจ
+                    </div>
+                  </div>
+                </v-list>
+              </v-menu>
+              <v-btn
+                color="primary"
+                elevation="0"
+                class="ml-4"
+                @click="
+                  $router.push(
+                    `/projects/list/detail/inspection?id=${list.inspection_id}`
+                  )
+                "
+              >
+                ดูรายละเอียด
+              </v-btn>
+            </v-card-title>
+            <v-card-text>
+              <v-divider class="mb-4" />
+              <v-row>
+                <v-col cols="12" sm="5" md="4">
+                  <div class="pb-4">
+                    <b>รายละเอียด : </b>
+                  </div>
+                  <v-row no-gutters>
+                    <v-col cols="4" sm="4" md="4" lg="4" class="mt-2">
+                      <div class="cp-text-description">สร้างโดย:</div>
+                    </v-col>
+                    <v-col cols="8" sm="8" md="8" lg="8" class="mt-2">
+                      <b>{{ list.created_by.code_name }}</b>
+                    </v-col>
+                    <v-col cols="4" sm="4" md="4" lg="4" class="mt-2">
+                      <div class="cp-text-description">วันที่เข้าตรวจ:</div>
+                    </v-col>
+                    <v-col cols="8" sm="8" md="8" lg="8" class="mt-2">
+                      <b>{{ formatDate(list.working_date) }}</b>
+                    </v-col>
+                    <v-col cols="4" sm="4" md="4" lg="4" class="mt-2">
+                      <div class="cp-text-description">รายงาน:</div>
+                    </v-col>
+                    <v-col cols="8" sm="8" md="8" lg="8" class="mt-2">
+                      <div v-if="!list.report_id">
+                        <div
+                          v-if="projectDetail.project_status == 'to-do'"
+                          class="cp-text-disable"
+                        >
+                          ต้องเพิ่มหัวหน้าทีมก่อน
+                        </div>
+                        <div v-else>
+                          <cp-link
+                            v-if="
+                              role == 'Project Manager' ||
+                              role == 'Admin' ||
+                              role == 'Supervisor'
+                            "
+                            class="primary--text"
+                            @click="onCreateReport(list)"
+                          >
+                            สร้างรายงาน
+                          </cp-link>
+                        </div>
+                      </div>
+                      <div v-else>
+                        <cp-link
+                          class="primary--text"
+                          @click="
+                            $router.push(
+                              `/projects/reports/detail?id=${list.report_id}`
+                            )
+                          "
+                        >
+                          ดูรายงาน
+                        </cp-link>
+                      </div>
+                    </v-col>
+                  </v-row>
+                </v-col>
+                <v-col cols="12" sm="7" md="8">
+                  <div class="d-flex align-center pb-4">
+                    <div><b>หมายเหตุ : </b> รายงาน</div>
+                    <v-spacer />
+                    <div>
+                      <v-btn
+                        :disabled="
+                          list.report_status == 'approval' ||
+                          list.report_status == 'approved'
+                        "
+                        color="primary"
+                        elevation="0"
+                        outlined
+                        small
+                        @click="
+                          ;(createInspectionNote.dialog = true),
+                            (createInspectionNote.data = list)
+                        "
+                      >
+                        เพิ่มหมายเหตุ
+                      </v-btn>
+                    </div>
+                  </div>
+                  <v-card
+                    v-if="list.inspection_note.length === 0"
+                    elevation="0"
+                    color="grey lighten-4"
+                  >
+                    <v-card-text>
+                      <div class="cp-text-disable text-center">
+                        ไม่มีรายการหมายเหตุ
+                      </div>
+                    </v-card-text>
+                  </v-card>
+                  <v-expansion-panels v-else>
+                    <v-expansion-panel
+                      v-for="(item, i) in list.inspection_note"
+                      :key="i"
+                    >
+                      <v-expansion-panel-header v-slot="{ open }">
+                        <div v-if="!open">
+                          {{ item.edit_note_title }}
+                        </div>
+                        <div v-else class="cp-text-description">
+                          แก้ไขหมายเหตุ
+                        </div>
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <div class="d-flex">
+                          <v-sheet min-width="40px" class="text-center pr-4">
+                            <div>
+                              <v-btn
+                                :disabled="
+                                  i + 1 === 1 ||
+                                  list.report_status == 'approval' ||
+                                  list.report_status == 'approved'
+                                "
+                                icon
+                                color="info"
+                                @click="
+                                  moveLocationItemList(
+                                    'up',
+                                    item.note_id,
+                                    item.inspection_id
+                                  )
+                                "
+                              >
+                                <v-icon>mdi-arrow-up-bold</v-icon>
+                              </v-btn>
+                            </div>
+                            <div class="cp-subtitle py-4">
+                              <b>{{ i + 1 }}</b>
+                            </div>
+                            <div>
+                              <v-btn
+                                :disabled="
+                                  i + 1 === list.inspection_note.length ||
+                                  list.report_status == 'approval' ||
+                                  list.report_status == 'approved'
+                                "
+                                icon
+                                color="info"
+                                @click="
+                                  moveLocationItemList(
+                                    'down',
+                                    item.note_id,
+                                    item.inspection_id
+                                  )
+                                "
+                              >
+                                <v-icon>mdi-arrow-down-bold</v-icon>
+                              </v-btn>
+                            </div>
+                          </v-sheet>
+                          <v-sheet width="100%">
+                            <v-text-field
+                              v-model="item.edit_note_title"
+                              :rules="item.titleRules"
+                              :append-icon="
+                                item.edit_note_title === item.note_title
+                                  ? ''
+                                  : 'mdi-sync'
+                              "
+                              :disabled="
+                                list.report_status == 'approval' ||
+                                list.report_status == 'approved'
+                              "
+                              counter="80"
+                              maxlength="80"
+                              outlined
+                              dense
+                              @click:append="
+                                item.edit_note_title = item.note_title
+                              "
+                            />
+                            <v-textarea
+                              v-model="item.edit_note_message"
+                              :append-icon="
+                                item.edit_note_message === item.note_message
+                                  ? ''
+                                  : 'mdi-sync'
+                              "
+                              :disabled="
+                                list.report_status == 'approval' ||
+                                list.report_status == 'approved'
+                              "
+                              placeholder="เพิ่มรายการหมายเหตุ"
+                              rows="5"
+                              outlined
+                              no-resize
+                              hide-details
+                              @click:append="
+                                item.edit_note_message = item.note_message
+                              "
+                            >
+                            </v-textarea>
+                            <div class="d-flex align-center pt-4">
+                              <v-btn
+                                :disabled="
+                                  list.report_status == 'approval' ||
+                                  list.report_status == 'approved'
+                                "
+                                color="error"
+                                text
+                                small
+                                @click="
+                                  ;(deleteInspectionNote.dialog = true),
+                                    (deleteInspectionNote.data = item)
+                                "
+                              >
+                                ลบหมายเหตู
+                              </v-btn>
+                              <v-spacer />
+                              <v-btn
+                                :disabled="
+                                  (item.edit_note_title === item.note_title &&
+                                    item.edit_note_message ===
+                                      item.note_message) ||
+                                  item.edit_note_title.length === 0
+                                "
+                                color="primary"
+                                elevation="0"
+                                small
+                                @click="onUpdateInspectionNote(item)"
+                              >
+                                บันทึก
+                              </v-btn>
+                            </div>
+                          </v-sheet>
+                        </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
         </cp-card>
       </v-col>
     </v-row>
@@ -1695,6 +1925,99 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+
+    <!-- Create Inspection Note -->
+    <v-dialog
+      v-model="createInspectionNote.dialog"
+      :persistent="createInspectionNote.loading"
+      width="400"
+      transition="dialog-transition"
+      content-class="elevation-0"
+      scrollable
+    >
+      <v-card>
+        <v-card-title>
+          สร้างหมายเหตุ
+          <v-spacer />
+          <v-btn
+            :disabled="createInspectionNote.loading"
+            icon
+            class="mt-n4 mr-n4"
+            @click="createInspectionNote.dialog = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text>
+          <v-form
+            ref="formCreateNote"
+            v-model="createInspectionNote.valid"
+            lazy-validation
+          >
+            <cp-label>หัวข้อหมายเหตุ</cp-label>
+            <v-text-field
+              v-model="createInspectionNote.title"
+              :rules="createInspectionNote.titleRules"
+              outlined
+              dense
+            />
+          </v-form>
+        </v-card-text>
+        <v-card-actions class="pb-4">
+          <v-spacer />
+          <v-btn
+            :loading="createInspectionNote.loading"
+            :disabled="!createInspectionNote.valid"
+            elevation="0"
+            height="36"
+            color="primary"
+            class="px-4"
+            @click="onCreateInspectionNote()"
+          >
+            สร้าง
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete Inspection Note -->
+    <v-dialog
+      v-model="deleteInspectionNote.dialog"
+      :persistent="deleteInspectionNote.loading"
+      max-width="400px"
+      transition="dialog-transition"
+      content-class="elevation-0"
+      scrollable
+    >
+      <v-card>
+        <v-card-title>
+          ลบ หมายเหตุ
+          <v-spacer />
+          <v-btn
+            :disabled="deleteInspectionNote.loading"
+            icon
+            class="mt-n4 mr-n4"
+            @click="deleteInspectionNote.dialog = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text>
+          คุณแน่ใจหรือไม่ที่คุณจะลบหมายเหตุนี้ออกจากรายการตรวจ?
+          <div class="mt-6 d-flex flex-row-reverse">
+            <v-btn
+              :loading="deleteInspectionNote.loading"
+              elevation="0"
+              height="36"
+              color="error"
+              @click="onDeleteInspectionNote()"
+            >
+              <div class="cp-text-capitalize">ยืนยัน</div>
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -1894,6 +2217,22 @@ export default {
         locationDeleteDone: false,
         systemDeleteDone: false,
       },
+      createInspectionNote: {
+        dialog: false,
+        loading: false,
+        valid: false,
+        title: '',
+        titleRules: [
+          (v) => !!v || 'ขอมูลจำเป็น',
+          (v) => /^(?!\s)/.test(v) || 'ห้ามมีช่องว่างด้านหน้า',
+        ],
+        data: null,
+      },
+      deleteInspectionNote: {
+        dialog: false,
+        loading: false,
+        data: null,
+      },
     }
   },
 
@@ -1902,15 +2241,7 @@ export default {
   },
 
   computed: {
-    ...mapState('user', [
-      'accountId',
-      'avatarPath',
-      'firstName',
-      'lastName',
-      'codeName',
-      'role',
-      'appRoleList',
-    ]),
+    ...mapState('user', ['role', 'appRoleList']),
 
     formattedWorkingDate() {
       if (this.projectInspection.workingDate) {
@@ -2044,6 +2375,12 @@ export default {
     'deleteInspection.dialog'(newValue) {
       if (newValue) {
         this.onBeforeDeleteInspection()
+      }
+    },
+    'createInspectionNote.dialog'(newValue) {
+      if (!newValue) {
+        this.$refs.formCreateNote.reset()
+        this.createInspectionNote.data = null
       }
     },
   },
@@ -2911,6 +3248,26 @@ export default {
           .then(({ data }) => {
             if (data.data) {
               data.data.sort((a, b) => a.id - b.id)
+              data.data.forEach((inspection) => {
+                inspection.inspection_note.forEach((note) => {
+                  note.titleRules = [(v) => !!v || 'ขอมูลจำเป็น']
+                  note.edit_note_title = note.note_title
+                  if (note.note_message) {
+                    const newlineContent = note.note_message.replace(
+                      /<br \/>/g,
+                      ''
+                    )
+                    note.note_message = newlineContent
+                    note.edit_note_message = newlineContent
+                  } else {
+                    note.note_message = ''
+                    note.edit_note_message = ''
+                  }
+                })
+                inspection.inspection_note.sort(
+                  (a, b) => a.item_number - b.item_number
+                )
+              })
               this.projectInspection.inspectionList = data.data
             }
           })
@@ -3527,6 +3884,144 @@ export default {
         this.handleUploadError(response.data)
       }
     },
+
+    async onCreateInspectionNote() {
+      if (this.$refs.formCreateNote.validate()) {
+        const accessToken = await this.getAccessToken()
+        if (accessToken) {
+          this.createInspectionNote.loading = true
+          this.$axios
+            .post(
+              `${process.env.API_ENDPOINT}/v1/project/inspection/create-note`,
+              {
+                project_id: this.$route.query.id,
+                inspection_id: this.createInspectionNote.data.inspection_id,
+                note_title: this.createInspectionNote.title.trim(),
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              }
+            )
+            .then(({ data }) => {
+              this.createInspectionNote.loading = false
+              this.createInspectionNote.dialog = false
+              this.getInspectionList()
+            })
+            .catch(({ response }) => {
+              this.createInspectionNote.loading = false
+              this.onNotify({
+                notifyValue: true,
+                type: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                message: 'รายการตรวจนี้ถูกลบไปแล้วกรุณาโหลดข้อมูลใหม่',
+              })
+            })
+        }
+      }
+    },
+
+    async onDeleteInspectionNote() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.deleteInspectionNote.loading = true
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/delete-note`,
+            {
+              project_id: this.$route.query.id,
+              inspection_id: this.deleteInspectionNote.data.inspection_id,
+              note_id: this.deleteInspectionNote.data.note_id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            this.deleteInspectionNote.loading = false
+            this.deleteInspectionNote.dialog = false
+            this.getInspectionList()
+          })
+          .catch(({ response }) => {
+            this.deleteInspectionNote.loading = false
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              message: 'หมายเหตุนี้ถูกลบไปแล้วกรุณาโหลดข้อมูลใหม่',
+            })
+          })
+      }
+    },
+
+    async onUpdateInspectionNote(item) {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        const formattedMessage = item.edit_note_message.replace(/\n/g, '\n')
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/update-note`,
+            {
+              project_id: this.$route.query.id,
+              inspection_id: item.inspection_id,
+              note_id: item.note_id,
+              note_title: item.edit_note_title.trim(),
+              note_message: formattedMessage,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            this.getInspectionList()
+          })
+          .catch(({ response }) => {
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              message: 'หมายเหตุนี้ถูกลบไปแล้วกรุณาโหลดข้อมูลใหม่',
+            })
+          })
+      }
+    },
+
+    async moveLocationItemList(action, noteId, inspectionId) {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/move-note`,
+            {
+              project_id: this.$route.query.id,
+              inspection_id: inspectionId,
+              type_action: action,
+              note_id: noteId,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            this.getInspectionList()
+          })
+          .catch(({ response }) => {
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'ดำเนินการไม่สำเร็จ',
+              message: response,
+            })
+          })
+      }
+    },
   },
 }
 </script>
@@ -3741,5 +4236,15 @@ export default {
   border-radius: 4px;
   border: 1px solid var(--gray-300);
   background-color: var(--gray-opacity-1);
+}
+textarea {
+  border: 1px solid var(--gray-100);
+  border-radius: 4px;
+  width: 100%;
+  padding: 12px;
+  resize: none;
+}
+textarea:focus {
+  outline: 2px solid var(--base-primary);
 }
 </style>

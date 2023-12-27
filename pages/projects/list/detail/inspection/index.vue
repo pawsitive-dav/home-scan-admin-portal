@@ -123,6 +123,8 @@
                 :items="locationDataList"
                 :search="locationSearch"
                 :loading="locationDataLoading"
+                :items-per-page="-1"
+                hide-default-footer
                 class="elevation-0"
               >
                 <template #top>
@@ -161,6 +163,38 @@
                   <cp-col min="20">
                     {{ index + 1 }}
                   </cp-col>
+                </template>
+
+                <template #item.item_number="{ item, index }">
+                  <v-card
+                    min-width="55"
+                    max-width="55"
+                    color="transparent"
+                    flat
+                  >
+                    <v-icon
+                      :disabled="
+                        index + 1 === 1 ||
+                        inspectionDetail.report_status == 'approval' ||
+                        inspectionDetail.report_status == 'approved'
+                      "
+                      color="primary"
+                      @click="moveLocationItemList('up', item.location_id)"
+                    >
+                      mdi-arrow-up-thin
+                    </v-icon>
+                    <v-icon
+                      :disabled="
+                        locationDataList.length === index + 1 ||
+                        inspectionDetail.report_status == 'approval' ||
+                        inspectionDetail.report_status == 'approved'
+                      "
+                      color="primary"
+                      @click="moveLocationItemList('down', item.location_id)"
+                    >
+                      mdi-arrow-down-thin
+                    </v-icon>
+                  </v-card>
                 </template>
 
                 <template #item.location_name="{ item }">
@@ -275,6 +309,8 @@
                 :items="systemDataList"
                 :search="systemSearch"
                 :loading="systemDataLoading"
+                :items-per-page="-1"
+                hide-default-footer
                 class="elevation-0"
               >
                 <template #top>
@@ -313,6 +349,38 @@
                   <cp-col min="20">
                     {{ index + 1 }}
                   </cp-col>
+                </template>
+
+                <template #item.item_number="{ item, index }">
+                  <v-card
+                    min-width="55"
+                    max-width="55"
+                    color="transparent"
+                    flat
+                  >
+                    <v-icon
+                      :disabled="
+                        index + 1 === 1 ||
+                        inspectionDetail.report_status == 'approval' ||
+                        inspectionDetail.report_status == 'approved'
+                      "
+                      color="primary"
+                      @click="moveSystemItemList('up', item.system_id)"
+                    >
+                      mdi-arrow-up-thin
+                    </v-icon>
+                    <v-icon
+                      :disabled="
+                        systemDataList.length === index + 1 ||
+                        inspectionDetail.report_status == 'approval' ||
+                        inspectionDetail.report_status == 'approved'
+                      "
+                      color="primary"
+                      @click="moveSystemItemList('down', item.system_id)"
+                    >
+                      mdi-arrow-down-thin
+                    </v-icon>
+                  </v-card>
                 </template>
 
                 <template #item.system_name="{ item }">
@@ -417,313 +485,6 @@
                   <div class="my-6">ไม่มีข้อมูล</div>
                 </template>
               </v-data-table>
-            </v-tab-item>
-
-            <!-- Image Storage -->
-            <v-tab-item>
-              <div class="d-flex align-center pb-6">
-                <div>
-                  จำนวนรูปทั้งหมด:
-                  <b class="cp-header-2 cp-semibold">
-                    {{
-                      imageStorage.imageList.length +
-                      imageStorage.imageUsageList.length
-                    }}
-                  </b>
-                  รูป
-                </div>
-                <v-spacer />
-                <v-btn
-                  elevation="0"
-                  height="36"
-                  color="primary"
-                  @click="imageUpload.dialog = true"
-                >
-                  <div class="cp-text-capitalize">
-                    <v-icon left>mdi-image-plus-outline</v-icon>
-                    อัพโหลดรูป
-                  </div>
-                </v-btn>
-              </div>
-
-              <!-- Image Usage List -->
-              <div class="d-flex pb-6">
-                <div class="cp-header-2 cp-semibold">
-                  รูปที่ใช้งานอยู่ใน Location และ System
-                </div>
-              </div>
-
-              <div
-                v-if="imageStorage.imageUsageList.length == 0"
-                class="cp-no-image"
-              >
-                <div class="text-center">
-                  <v-icon large color="grey" class="mb-2">
-                    mdi-image-remove-outline
-                  </v-icon>
-                  <div>ยังไม่มีรูปที่ใช้งาน</div>
-                </div>
-              </div>
-              <v-row v-else>
-                <v-col
-                  v-for="(list, index) in imageStorage.imageUsageList"
-                  :key="index + 'imageUsageList'"
-                  class="d-flex child-flex"
-                  cols="3"
-                >
-                  <v-card outlined>
-                    <v-img
-                      :src="list.image_path"
-                      aspect-ratio="1.4"
-                      class="grey lighten-2"
-                    >
-                      <div class="d-flex justify-end mt-1 mx-1">
-                        <v-chip
-                          v-if="list.location_tag"
-                          color="primary"
-                          class="mr-2"
-                          small
-                          label
-                        >
-                          <v-icon small left>mdi-home-map-marker</v-icon>
-                          LOCATION
-                        </v-chip>
-                        <v-chip
-                          v-if="list.system_tag"
-                          color="success"
-                          small
-                          label
-                        >
-                          <v-icon small left>mdi-overscan</v-icon>
-                          SYSTEM
-                        </v-chip>
-                        <v-spacer />
-                        <v-btn
-                          icon
-                          small
-                          color="white"
-                          @click="
-                            ;(imagePreview.dialog = true),
-                              (imagePreview.imageData = list)
-                          "
-                        >
-                          <v-icon>mdi-arrow-expand-all</v-icon>
-                        </v-btn>
-                      </div>
-                      <template #placeholder>
-                        <v-row
-                          class="fill-height ma-0"
-                          align="center"
-                          justify="center"
-                        >
-                          <v-progress-circular
-                            indeterminate
-                            color="grey lighten-5"
-                          />
-                        </v-row>
-                      </template>
-                    </v-img>
-                    <div class="pa-4">
-                      <div v-if="list.image_name" class="truncate">
-                        {{ list.image_name }}
-                      </div>
-                      <div v-else class="cp-text-disable">ไม่มีชื่อรูป</div>
-                      <div
-                        class="image-box-detail cp-caption cp-text-description"
-                      >
-                        <div class="image-user truncate">
-                          <v-icon small>mdi-account-outline</v-icon>
-                          {{ list.uploaded_by.code_name }}
-                        </div>
-                        <div class="image-size">
-                          <v-icon small>mdi-folder-swap-outline</v-icon>
-                          {{ convertBytes(list.image_size) }}
-                        </div>
-                      </div>
-                      <v-divider class="my-2" />
-                      <div class="image-footer">
-                        <div class="cp-caption cp-text-description">
-                          <v-icon small>mdi-calendar</v-icon>
-                          <span>{{ formatDateShot(list.uploaded_at) }}</span>
-                        </div>
-                        <v-spacer />
-                        <v-btn
-                          :disabled="
-                            inspectionDetail.report_status == 'approval' ||
-                            inspectionDetail.report_status == 'approved'
-                          "
-                          icon
-                          small
-                          @click="
-                            ;(imageNameEdit.dialog = true),
-                              (imageNameEdit.imageData = list),
-                              (imageNameEdit.imageName = list.image_name)
-                          "
-                        >
-                          <v-icon
-                            v-if="
-                              inspectionDetail.report_status == 'approval' ||
-                              inspectionDetail.report_status == 'approved'
-                            "
-                            small
-                          >
-                            mdi-pencil-off-outline
-                          </v-icon>
-                          <v-icon v-else small>mdi-pencil-outline</v-icon>
-                        </v-btn>
-                      </div>
-                    </div>
-                  </v-card>
-                </v-col>
-              </v-row>
-
-              <!-- Image List -->
-              <div class="pt-6"></div>
-              <v-divider class="mt-6" />
-              <div class="d-flex align-center pt-6 pb-2">
-                <div class="cp-header-2 cp-semibold">รูปที่ยังไม่ได้ใช้งาน</div>
-                <v-spacer />
-                <v-btn
-                  v-if="imageMultipleDelete.active"
-                  :disabled="imageMultipleDelete.imageDataList.length < 2"
-                  elevation="0"
-                  height="36"
-                  color="error"
-                  class="mr-4"
-                  @click="imageMultipleDelete.dialog = true"
-                >
-                  <div class="cp-text-capitalize">
-                    <v-icon left>mdi-trash-can-outline</v-icon>
-                    ลบ {{ imageMultipleDelete.imageDataList.length }}/15 รูป
-                  </div>
-                </v-btn>
-                <v-switch
-                  v-model="imageMultipleDelete.active"
-                  label="ลบหลายรูป"
-                  inset
-                ></v-switch>
-              </div>
-              <div
-                v-if="imageStorage.imageList.length == 0"
-                class="cp-no-image"
-              >
-                <div class="text-center">
-                  <v-icon large color="grey" class="mb-2">
-                    mdi-image-remove-outline
-                  </v-icon>
-                  <div>ยังไม่มีรูปภาพ</div>
-                </div>
-              </div>
-              <v-row v-else>
-                <v-col
-                  v-for="(list, index) in imageStorage.imageList"
-                  :key="index + 'imageList'"
-                  class="d-flex child-flex"
-                  cols="3"
-                >
-                  <v-card
-                    :class="list.checked ? 'select-delete-image' : ''"
-                    outlined
-                    @mousedown="handleMouseDown(list)"
-                    @mouseup="handleMouseUp"
-                  >
-                    <v-img
-                      :src="list.image_path"
-                      aspect-ratio="1.4"
-                      class="grey lighten-2"
-                    >
-                      <div class="d-flex justify-end mt-1 mr-1">
-                        <div
-                          v-if="imageMultipleDelete.active"
-                          class="cp-checkbox mt-1 ml-2"
-                        >
-                          <input
-                            v-model="list.checked"
-                            :disabled="
-                              imageMultipleDelete.imageDataList.length == 15 &&
-                              !list.checked
-                            "
-                            type="checkbox"
-                            @click="selectImageDeleteMultiple(list)"
-                          />
-                        </div>
-                        <v-spacer />
-                        <v-btn
-                          icon
-                          small
-                          color="white"
-                          @click="
-                            ;(imagePreview.dialog = true),
-                              (imagePreview.imageData = list)
-                          "
-                        >
-                          <v-icon>mdi-arrow-expand-all</v-icon>
-                        </v-btn>
-                      </div>
-                      <template #placeholder>
-                        <v-row
-                          class="fill-height ma-0"
-                          align="center"
-                          justify="center"
-                        >
-                          <v-progress-circular
-                            indeterminate
-                            color="grey lighten-5"
-                          />
-                        </v-row>
-                      </template>
-                    </v-img>
-                    <div class="pa-4">
-                      <div v-if="list.image_name" class="truncate">
-                        {{ list.image_name }}
-                      </div>
-                      <div v-else class="cp-text-disable">ไม่มีชื่อรูป</div>
-                      <div
-                        class="image-box-detail cp-caption cp-text-description"
-                      >
-                        <div class="image-user truncate">
-                          <v-icon small>mdi-account-outline</v-icon>
-                          {{ list.uploaded_by.code_name }}
-                        </div>
-                        <div class="image-size">
-                          <v-icon small>mdi-folder-swap-outline</v-icon>
-                          {{ convertBytes(list.image_size) }}
-                        </div>
-                      </div>
-                      <v-divider class="my-2" />
-                      <div class="image-footer">
-                        <div class="cp-caption cp-text-description">
-                          <v-icon small>mdi-calendar</v-icon>
-                          <span>{{ formatDateShot(list.uploaded_at) }}</span>
-                        </div>
-                        <v-spacer />
-                        <v-btn
-                          icon
-                          small
-                          @click="
-                            ;(imageNameEdit.dialog = true),
-                              (imageNameEdit.imageData = list),
-                              (imageNameEdit.imageName = list.image_name)
-                          "
-                        >
-                          <v-icon small> mdi-pencil-outline </v-icon>
-                        </v-btn>
-                        <v-btn
-                          :disabled="imageMultipleDelete.active"
-                          icon
-                          small
-                          @click="
-                            ;(imageDelete.dialog = true),
-                              (imageDelete.imageData = list)
-                          "
-                        >
-                          <v-icon small> mdi-trash-can-outline </v-icon>
-                        </v-btn>
-                      </div>
-                    </div>
-                  </v-card>
-                </v-col>
-              </v-row>
             </v-tab-item>
           </v-tabs-items>
         </cp-card>
@@ -1539,6 +1300,12 @@ export default {
       locationSearch: '',
       locationHeaders: [
         { text: 'ลำดับ', align: 'center', value: 'on', sortable: false },
+        {
+          text: 'ลำดับ',
+          align: 'center',
+          value: 'item_number',
+          sortable: false,
+        },
         { text: 'Location', value: 'location_name', sortable: false },
         { text: 'Deflect', value: 'deflect_count', sortable: false },
         {
@@ -1601,6 +1368,12 @@ export default {
       systemSearch: '',
       systemHeaders: [
         { text: 'ลำดับ', align: 'center', value: 'on', sortable: false },
+        {
+          text: 'ลำดับ',
+          align: 'center',
+          value: 'item_number',
+          sortable: false,
+        },
         { text: 'System', value: 'system_name', sortable: false },
         { text: 'Deflect', value: 'deflect_count', sortable: false },
         {
@@ -1947,7 +1720,7 @@ export default {
           )
           .then(({ data }) => {
             this.locationDataLoading = false
-            data.data.sort((a, b) => a.id - b.id)
+            data.data.sort((a, b) => a.item_number - b.item_number)
             this.locationDataList = data.data
           })
           .catch(({ response }) => {
@@ -2413,7 +2186,7 @@ export default {
           )
           .then(({ data }) => {
             this.systemDataLoading = false
-            data.data.sort((a, b) => a.id - b.id)
+            data.data.sort((a, b) => a.item_number - b.item_number)
             this.systemDataList = data.data
           })
           .catch(({ response }) => {
@@ -3184,6 +2957,70 @@ export default {
         message: error,
       })
     },
+
+    async moveLocationItemList(action, locationId) {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/location/move`,
+            {
+              project_id: this.inspectionDetail.project_id,
+              inspection_id: this.inspectionDetail.inspection_id,
+              type_action: action,
+              location_id: locationId,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            this.getLocationList()
+          })
+          .catch(({ response }) => {
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'ดำเนินการไม่สำเร็จ',
+              message: response,
+            })
+          })
+      }
+    },
+
+    async moveSystemItemList(action, systemId) {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        this.$axios
+          .post(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/system/move`,
+            {
+              project_id: this.inspectionDetail.project_id,
+              inspection_id: this.inspectionDetail.inspection_id,
+              type_action: action,
+              system_id: systemId,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            this.getSystemList()
+          })
+          .catch(({ response }) => {
+            this.onNotify({
+              notifyValue: true,
+              type: 'error',
+              title: 'ดำเนินการไม่สำเร็จ',
+              message: response,
+            })
+          })
+      }
+    },
   },
 }
 </script>
@@ -3249,105 +3086,5 @@ export default {
 
 .select-delete-image {
   outline: 4px solid var(--green-300);
-}
-
-/* Checkbox */
-@supports (-webkit-appearance: none) or (-moz-appearance: none) {
-  .cp-checkbox input[type='checkbox'] {
-    --active: var(--base-success);
-    --active-inner: #fff;
-    --focus: 2px var(--green-opacity-1);
-    --border: #bbc1e1;
-    --border-hover: var(--base-success);
-    --background: #fff;
-    --disabled: #f6f8ff;
-    --disabled-inner: #e1e6f9;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    height: 21px;
-    outline: none;
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
-    margin: 0;
-    cursor: pointer;
-    border: 1px solid var(--bc, var(--border));
-    background: var(--b, var(--background));
-    transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
-  }
-  .cp-checkbox input[type='checkbox']:after {
-    content: '';
-    display: block;
-    left: 0;
-    top: 0;
-    position: absolute;
-    transition: transform var(--d-t, 0.3s) var(--d-t-e, ease),
-      opacity var(--d-o, 0.2s);
-  }
-  .cp-checkbox input[type='checkbox']:checked {
-    --b: var(--active);
-    --bc: var(--active);
-    --d-o: 0.3s;
-    --d-t: 0.6s;
-    --d-t-e: cubic-bezier(0.2, 0.85, 0.32, 1.2);
-  }
-  .cp-checkbox input[type='checkbox']:disabled {
-    --b: var(--disabled);
-    cursor: not-allowed;
-    opacity: 0.9;
-  }
-  .cp-checkbox input[type='checkbox']:disabled:checked {
-    --b: var(--disabled-inner);
-    --bc: var(--border);
-  }
-  .cp-checkbox input[type='checkbox']:disabled + label {
-    cursor: not-allowed;
-  }
-  .cp-checkbox input[type='checkbox']:hover:not(:checked):not(:disabled) {
-    --bc: var(--border-hover);
-  }
-  .cp-checkbox input[type='checkbox']:focus {
-    box-shadow: 0 0 0 var(--focus);
-  }
-  .cp-checkbox input[type='checkbox']:not(.switch) {
-    width: 21px;
-  }
-  .cp-checkbox input[type='checkbox']:not(.switch):after {
-    opacity: var(--o, 0);
-  }
-  .cp-checkbox input[type='checkbox']:not(.switch):checked {
-    --o: 1;
-  }
-  .cp-checkbox input[type='checkbox'] + label {
-    display: inline-block;
-    vertical-align: middle;
-    cursor: pointer;
-    margin-left: 4px;
-  }
-
-  .cp-checkbox input[type='checkbox']:not(.switch) {
-    border-radius: 4px;
-  }
-  .cp-checkbox input[type='checkbox']:not(.switch):after {
-    width: 5px;
-    height: 9px;
-    border: 2px solid var(--active-inner);
-    border-top: 0;
-    border-left: 0;
-    left: 7px;
-    top: 4px;
-    transform: rotate(var(--r, 20deg));
-  }
-  .cp-checkbox input[type='checkbox']:not(.switch):checked {
-    --r: 43deg;
-  }
-}
-
-.cp-checkbox * {
-  box-sizing: inherit;
-}
-.cp-checkbox *:before,
-.cp-checkbox *:after {
-  box-sizing: inherit;
 }
 </style>

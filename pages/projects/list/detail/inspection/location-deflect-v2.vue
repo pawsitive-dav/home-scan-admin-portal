@@ -91,7 +91,7 @@
           </div>
           <v-divider class="my-4" />
 
-          <v-row v-if="locationDetail">
+          <v-row>
             <v-col cols="12">
               <div class="d-flex align-center">
                 <v-menu offset-y bottom right>
@@ -149,13 +149,7 @@
                   </div>
                 </v-btn>
 
-                <label
-                  v-if="
-                    locationDetail.report_status == 'in-progress' ||
-                    locationDetail.report_status == null
-                  "
-                  class="custom-file-upload"
-                >
+                <label class="custom-file-upload">
                   <input
                     ref="imageInputRef"
                     type="file"
@@ -174,23 +168,19 @@
           </v-row>
 
           <v-data-table
-            v-if="locationDetail"
             v-model="selected"
             :loading="tableLoading"
             :headers="headers"
             :items="deflectList"
             :footer-props="{ 'items-per-page-options': [10, 20, 50, 100] }"
-            :show-select="
-              locationDetail.report_status == 'in-progress' ||
-              locationDetail.report_status == null
-            "
+            show-select
             class="mt-6"
           >
             <template #item.image_path="{ item }">
               <v-img
                 :src="item.image_path"
                 aspect-ratio="1.4"
-                class="my-4 grey lighten-2"
+                class="my-4"
                 min-width="150"
                 contain
               >
@@ -218,12 +208,8 @@
             </template>
 
             <template #item.deflect_status="{ item }">
-              <v-card min-width="210" color="transparent" class="d-flex" flat>
+              <v-card min-width="210" color="transparent" flat>
                 <v-btn
-                  v-if="
-                    locationDetail.report_status == 'in-progress' ||
-                    locationDetail.report_status == null
-                  "
                   :color="
                     item.deflect_status === 0 || item.deflect_status === null
                       ? 'grey lighten-2'
@@ -243,33 +229,7 @@
                 >
                   <div class="cp-body">ผ่าน</div>
                 </v-btn>
-                <v-sheet
-                  v-else
-                  :color="
-                    item.deflect_status === 0 || item.deflect_status === null
-                      ? 'grey lighten-2'
-                      : 'success'
-                  "
-                  width="100"
-                  height="36"
-                  class="d-flex align-center justify-center"
-                >
-                  <div
-                    v-if="
-                      item.deflect_status === 0 || item.deflect_status === null
-                    "
-                    class="cp-body"
-                  >
-                    ผ่าน
-                  </div>
-                  <div v-else class="cp-body white--text">ผ่าน</div>
-                </v-sheet>
-
                 <v-btn
-                  v-if="
-                    locationDetail.report_status == 'in-progress' ||
-                    locationDetail.report_status == null
-                  "
                   :color="
                     item.deflect_status === 1 || item.deflect_status === null
                       ? 'grey lighten-2'
@@ -289,27 +249,6 @@
                 >
                   <div class="cp-body">ไม่ผ่าน</div>
                 </v-btn>
-                <v-sheet
-                  v-else
-                  :color="
-                    item.deflect_status === 1 || item.deflect_status === null
-                      ? 'grey lighten-2'
-                      : 'error'
-                  "
-                  width="100"
-                  height="36"
-                  class="d-flex align-center justify-center"
-                >
-                  <div
-                    v-if="
-                      item.deflect_status === 1 || item.deflect_status === null
-                    "
-                    class="cp-body"
-                  >
-                    ไม่ผ่าน
-                  </div>
-                  <div v-else class="cp-body white--text">ไม่ผ่าน</div>
-                </v-sheet>
               </v-card>
             </template>
 
@@ -345,10 +284,6 @@
             <template #item.actions="{ item }">
               <cp-col min="100">
                 <v-icon
-                  v-if="
-                    locationDetail.report_status == 'in-progress' ||
-                    locationDetail.report_status == null
-                  "
                   small
                   class="mr-2"
                   @click="
@@ -359,14 +294,7 @@
                 >
                   mdi-pencil-outline
                 </v-icon>
-                <v-icon v-else small disabled class="mr-2">
-                  mdi-pencil-off-outline
-                </v-icon>
                 <v-icon
-                  v-if="
-                    locationDetail.report_status == 'in-progress' ||
-                    locationDetail.report_status == null
-                  "
                   small
                   class="cp-vbtn-error ml-4"
                   @click="
@@ -375,9 +303,6 @@
                   "
                 >
                   mdi-trash-can-outline
-                </v-icon>
-                <v-icon v-else small disabled class="ml-4">
-                  mdi-delete-off-outline
                 </v-icon>
               </cp-col>
             </template>
@@ -436,6 +361,36 @@
         <v-card-title> ระบบกำลังดำเนินการ </v-card-title>
         <v-card-text>
           <v-row>
+            <v-col cols="3"> เตรียมข้อมูล </v-col>
+            <v-col cols="9">
+              <div v-if="!createDeflectProgress.preImageFalse">
+                <v-progress-circular
+                  :width="2"
+                  size="16"
+                  color="grey"
+                  class="mr-1"
+                  indeterminate
+                />
+                <span class="cp-text-disable">กำลังดำเนินการ...</span>
+              </div>
+              <div v-else>
+                <v-icon color="success" class="mr-1">mdi-check</v-icon>
+                <span>ดำเนินการเสร็จ</span>
+              </div>
+            </v-col>
+            <v-col cols="3"> อัพโหลดรูป </v-col>
+            <v-col cols="9">
+              <v-progress-linear
+                v-model="createDeflectProgress.uploadImage"
+                color="primary"
+                height="20"
+                rounded
+              >
+                <strong class="white--text">
+                  {{ createDeflectProgress.uploadImage }}%
+                </strong>
+              </v-progress-linear>
+            </v-col>
             <v-col cols="3"> สร้าง Deflect </v-col>
             <v-col cols="9">
               <v-progress-linear
@@ -787,6 +742,33 @@ export default {
       }
     },
 
+    async uploadImage(event) {
+      await this.onGetLocationDetail()
+      if (this.locationDetail) {
+        const files = event.target.files
+        if (files.length > 0) {
+          this.createDeflectProgress.dialog = true
+          this.imageGroup = await Promise.all(
+            Array.from(files).map(async (file) => {
+              const processedImage = await this.processImageFile(file)
+              const croppedImage = await this.cropImage(
+                processedImage.image,
+                1000,
+                715
+              )
+              return {
+                image: croppedImage,
+                name: processedImage.name,
+                size: file.size,
+              }
+            })
+          )
+          this.$refs.imageInputRef.value = null
+          await this.uploadImages()
+        }
+      }
+    },
+
     processImageFile(file) {
       return new Promise((resolve) => {
         const reader = new FileReader()
@@ -845,53 +827,73 @@ export default {
       })
     },
 
-    async uploadImage(event) {
-      await this.onGetLocationDetail()
-      if (this.locationDetail) {
-        const files = event.target.files
-        if (files.length > 0) {
-          const accessToken = await this.getAccessToken()
-          if (accessToken) {
-            this.createDeflectProgress.dialog = true
-            for (let index = 0; index < files.length; index++) {
-              const processedImage = await this.processImageFile(files[index])
-              const croppedImage = await this.cropImage(
-                processedImage.image,
-                1000,
-                715
-              )
-              const fileImage = {
-                image: croppedImage,
-                name: processedImage.name,
-                size: files[index].size,
-              }
-              await this.onCreateDeflectV2(
-                accessToken,
-                fileImage,
-                index,
-                files.length
-              )
-            }
-            this.$refs.imageInputRef.value = null
-            this.onGetDeflectList()
-            setTimeout(() => {
-              this.createDeflectProgress.dialog = false
-              this.createDeflectProgress.createDeflect = 0
-            }, 1000)
+    async uploadImages() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        let imageTotalSize = 0
+        for (let x = 0; x < this.imageGroup.length; x++) {
+          imageTotalSize = imageTotalSize + this.imageGroup[x].size
+        }
+        const storageFree = await this.checkFreeStorage()
+        if (imageTotalSize > storageFree) {
+          this.onNotify({
+            notifyValue: true,
+            type: 'error',
+            title: 'ดำเนินการไม่สำเร็จ',
+            message: 'พื้นที่จัดเก็บข้อมูลไม่เพียงพอ',
+          })
+          this.createDeflectProgress.dialog = false
+          this.createDeflectProgress.preImageFalse = false
+          this.createDeflectProgress.uploadImage = 0
+          this.createDeflectProgress.createDeflect = 0
+        } else {
+          this.createDeflectProgress.preImageFalse = true
+          for (let i = 0; i < this.imageGroup.length; i++) {
+            await this.uploadImageItem(accessToken, this.imageGroup[i], i)
           }
+          this.runCreateDeflect()
         }
       }
     },
 
-    async onCreateDeflectV2(accessToken, fileImage, index, fileLength) {
+    async checkFreeStorage() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        try {
+          const { data } = await this.$axios.get(
+            `${process.env.API_ENDPOINT}/v1/project/inspection/storage/usage`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          return data.data.freeStorage
+        } catch (error) {
+          this.handleUploadError(error)
+        }
+      }
+    },
+
+    async uploadImageItem(accessToken, imageFile, index) {
+      await this.onUploadNewDeflect(
+        accessToken,
+        imageFile.image,
+        imageFile.name
+      )
+      const progress = ((index + 1) / this.imageGroup.length) * 100
+      this.createDeflectProgress.uploadImage = progress.toFixed(2)
+    },
+
+    async onUploadNewDeflect(accessToken, imageFile, imageName) {
       try {
-        await this.$axios.post(
-          `${process.env.API_ENDPOINT}/v2/project/inspection/location/deflect/create`,
+        const { data } = await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/storage/upload`,
           {
             project_id: this.locationDetail.project_id,
             inspection_id: this.locationDetail.inspection_id,
-            location_id: this.locationDetail.location_id,
-            file_image: fileImage,
+            image_name: imageName,
+            image: imageFile,
           },
           {
             headers: {
@@ -899,7 +901,47 @@ export default {
             },
           }
         )
-        const progress = ((index + 1) / fileLength) * 100
+        this.deflectPreCreate.push(data.data.image_id)
+      } catch (error) {
+        this.handleUploadError(error)
+      }
+    },
+
+    async runCreateDeflect() {
+      const accessToken = await this.getAccessToken()
+      if (accessToken) {
+        for (let i = 0; i < this.deflectPreCreate.length; i++) {
+          await this.onCreateDeflect(accessToken, this.deflectPreCreate[i], i)
+        }
+      }
+      this.onGetDeflectList()
+      this.imageGroup = []
+      this.deflectPreCreate = []
+      setTimeout(() => {
+        this.createDeflectProgress.dialog = false
+        this.createDeflectProgress.preImageFalse = false
+        this.createDeflectProgress.uploadImage = 0
+        this.createDeflectProgress.createDeflect = 0
+      }, 1000)
+    },
+
+    async onCreateDeflect(accessToken, imageId, index) {
+      try {
+        await this.$axios.post(
+          `${process.env.API_ENDPOINT}/v1/project/inspection/location/deflect/create`,
+          {
+            project_id: this.locationDetail.project_id,
+            inspection_id: this.locationDetail.inspection_id,
+            location_id: this.locationDetail.location_id,
+            image_id: imageId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        const progress = ((index + 1) / this.deflectPreCreate.length) * 100
         this.createDeflectProgress.createDeflect = progress.toFixed(2)
       } catch ({ response }) {
         this.handleUploadError(response.data)
@@ -1152,21 +1194,14 @@ export default {
     },
 
     onSortDeflect(action) {
-      switch (action) {
-        case 'pass':
-          this.deflectList.sort((a, b) => b.deflect_status - a.deflect_status)
-          break
-        case 'not-pass':
-          this.deflectList.sort((a, b) => a.deflect_status - b.deflect_status)
-          break
-        case 'new':
-          this.deflectList.sort((a, b) => b.id - a.id)
-          break
-        case 'old':
-          this.deflectList.sort((a, b) => a.id - b.id)
-          break
-        default:
-          console.error('Unknown action:', action)
+      if (action === 'pass') {
+        this.deflectList.sort((a, b) => b.deflect_status - a.deflect_status)
+      } else if (action === 'not-pass') {
+        this.deflectList.sort((a, b) => a.deflect_status - b.deflect_status)
+      } else if (action === 'new') {
+        this.deflectList.sort((a, b) => b.id - a.id)
+      } else if (action === 'old') {
+        this.deflectList.sort((a, b) => a.id - b.id)
       }
     },
   },

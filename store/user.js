@@ -16,7 +16,8 @@ export const mutations = {
     state.refreshToken = true
   },
   setAppRole(state, data) {
-    if (state.role === data.role_level) state.role = data.role_name
+    if (Number(state.role) === Number(data.role_level))
+      state.role = data.role_name
     state.appRoleList.push(data)
   },
   setAppRoleListStatus(state) {

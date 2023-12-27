@@ -89,15 +89,15 @@ export default {
     },
   },
 
-  mounted() {
-    // เพิ่ม event listener เพื่อตรวจสอบความกว้างของหน้าต่างเมื่อ component ถูก mount
-    this.getWindowWidth()
-    window.addEventListener('resize', this.getWindowWidth)
-  },
-  beforeDestroy() {
-    // ลบ event listener เมื่อ component ถูก destroy เพื่อป้องกันการหลุด memory
-    window.removeEventListener('resize', this.getWindowWidth)
-  },
+  // mounted() {
+  //   // เพิ่ม event listener เพื่อตรวจสอบความกว้างของหน้าต่างเมื่อ component ถูก mount
+  //   this.getWindowWidth()
+  //   window.addEventListener('resize', this.getWindowWidth)
+  // },
+  // beforeDestroy() {
+  //   // ลบ event listener เมื่อ component ถูก destroy เพื่อป้องกันการหลุด memory
+  //   window.removeEventListener('resize', this.getWindowWidth)
+  // },
 
   methods: {
     ...mapActions('user', [
@@ -107,18 +107,18 @@ export default {
       'setAppRoleStatus',
     ]),
 
-    getWindowWidth() {
-      // ดึงค่าความกว้างของหน้าต่าง
-      this.windowWidth = window.innerWidth
+    // getWindowWidth() {
+    //   // ดึงค่าความกว้างของหน้าต่าง
+    //   this.windowWidth = window.innerWidth
 
-      if (this.windowWidth < 768) {
-        if (!this.displayBlock) {
-          this.displayBlock = true
-        }
-      } else if (this.displayBlock) {
-        this.displayBlock = false
-      }
-    },
+    //   if (this.windowWidth < 768) {
+    //     if (!this.displayBlock) {
+    //       this.displayBlock = true
+    //     }
+    //   } else if (this.displayBlock) {
+    //     this.displayBlock = false
+    //   }
+    // },
 
     async getMyProfile() {
       try {

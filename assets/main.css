@@ -295,3 +295,10 @@ body {
   color: var(--gray-800);
   font-weight: 500;
 }
+
+.cp-icon-primary {
+  transition: all ease 0.3s;
+}
+.cp-icon-primary:hover {
+  color: var(--base-primary) !important;
+}
