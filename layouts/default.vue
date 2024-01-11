@@ -46,7 +46,7 @@
         rights reserved.</span
       >
       <v-spacer />
-      <a class="mx-2">Version: 1.0.0</a>
+      <div class="mx-2">Version: 1.10.4</div>
     </v-footer>
 
     <!-- <div v-if="displayBlock" class="cp-display-block">

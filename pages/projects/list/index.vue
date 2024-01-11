@@ -1,9 +1,15 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- eslint-disable vue/no-template-shadow -->
 <template>
   <div>
-    <div class="cp-text-description cp-subtitle cp-medium">รายการโปรเจค</div>
+    <div class="cp-text-description cp-subtitle cp-medium">
+      รายการโปรเจค
+    </div>
     <div class="project-header">
-      <v-sheet width="245" color="transparent">
+      <v-sheet
+        width="245"
+        color="transparent"
+      >
         <v-select
           v-model="filterValue"
           :items="filterItems"
@@ -29,7 +35,9 @@
         @click="$router.push('list/create')"
       >
         <div class="cp-text-capitalize">
-          <v-icon left>mdi-plus</v-icon>
+          <v-icon left>
+            mdi-plus
+          </v-icon>
           สร้างโปรเจค
         </div>
       </v-btn>
@@ -37,18 +45,30 @@
 
     <v-divider />
 
-    <v-row v-if="projectLoading" class="mt-2">
-      <v-col v-for="item in 4" :key="item">
-        <v-skeleton-loader type="card"></v-skeleton-loader>
+    <v-row
+      v-if="projectLoading"
+      class="mt-2"
+    >
+      <v-col
+        v-for="item in 4"
+        :key="item"
+      >
+        <v-skeleton-loader type="card" />
       </v-col>
     </v-row>
 
     <div v-else>
-      <v-row v-if="projectList.length === 0" class="mt-2">
+      <v-row
+        v-if="projectList.length === 0"
+        class="mt-2"
+      >
         <v-col>
           <v-card outlined>
             <v-card-text class="text-center">
-              <v-icon color="grey lighten-1" large>
+              <v-icon
+                color="grey lighten-1"
+                large
+              >
                 mdi-card-remove-outline
               </v-icon>
               <div class="cp-subtitle pt-2 cp-text-disable">
@@ -58,7 +78,10 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-row v-else class="mt-2">
+      <v-row
+        v-else
+        class="mt-2"
+      >
         <v-col
           v-for="(list, index) in filteredProjects"
           :key="index"
@@ -70,7 +93,11 @@
           <cp-card>
             <div class="d-flex align-center pt-4 pb-2 px-4">
               <div class="cp-overline cp-text-description cp-medium">
-                <v-chip v-if="list.project_status == 'to-do'" small label>
+                <v-chip
+                  v-if="list.project_status == 'to-do'"
+                  small
+                  label
+                >
                   เตรียมดำเนินการ
                 </v-chip>
                 <v-chip
@@ -99,13 +126,24 @@
                 </v-chip>
               </div>
               <v-spacer />
-              <v-menu bottom left>
+              <v-menu
+                bottom
+                left
+              >
                 <template #activator="{ on, attrs }">
-                  <v-btn small icon v-bind="attrs" v-on="on">
+                  <v-btn
+                    small
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                  >
                     <v-icon>mdi-dots-horizontal</v-icon>
                   </v-btn>
                 </template>
-                <v-list dense nav>
+                <v-list
+                  dense
+                  nav
+                >
                   <v-list-item
                     @click="
                       $router.push(
@@ -113,14 +151,19 @@
                       )
                     "
                   >
-                    <v-icon small left>mdi-open-in-new</v-icon>
+                    <v-icon
+                      small
+                      left
+                    >
+                      mdi-open-in-new
+                    </v-icon>
                     <span>ดูรายละเอียด</span>
                   </v-list-item>
                   <div
                     v-if="
                       role == 'Project Manager' ||
-                      role == 'Admin' ||
-                      role == 'Supervisor'
+                        role == 'Admin' ||
+                        role == 'Supervisor'
                     "
                     class="delete-project"
                     @click="
@@ -128,7 +171,11 @@
                         (deleteProject.data = list)
                     "
                   >
-                    <v-icon class="delete-project-icon" small left>
+                    <v-icon
+                      class="delete-project-icon"
+                      small
+                      left
+                    >
                       mdi-trash-can-outline
                     </v-icon>
                     <span>ลบโปรเจค</span>
@@ -156,7 +203,10 @@
                         justify="center"
                       >
                         <div class="text-center">
-                          <v-icon size="30" color="grey lighten-1">
+                          <v-icon
+                            size="30"
+                            color="grey lighten-1"
+                          >
                             mdi-image-remove-outline
                           </v-icon>
                           <div class="cp-caption cp-text-disable mt-1">
@@ -167,7 +217,10 @@
                     </template>
                   </v-img>
                 </v-col>
-                <v-col cols="12" class="mt-2">
+                <v-col
+                  cols="12"
+                  class="mt-2"
+                >
                   <div class="cp-body cp-semibold pb-1">
                     <div
                       @click="
@@ -189,7 +242,9 @@
 
                 <v-col cols="6">
                   <div class="cp-caption">
-                    <div class="cp-text-description">ประเภท</div>
+                    <div class="cp-text-description">
+                      ประเภท
+                    </div>
                     <div class="truncate-col cp-semibold">
                       {{ list.type_name }}
                     </div>
@@ -198,7 +253,9 @@
 
                 <v-col cols="6">
                   <div class="cp-caption">
-                    <div class="cp-text-description">พื้นที่ใช้สอย</div>
+                    <div class="cp-text-description">
+                      พื้นที่ใช้สอย
+                    </div>
                     <span class="truncate-col cp-semibold">
                       {{ list.type_usable_area || '-' }}
                     </span>
@@ -208,7 +265,9 @@
 
                 <v-col cols="6">
                   <div class="cp-caption mt-3">
-                    <div class="cp-text-description">ลูกค้า</div>
+                    <div class="cp-text-description">
+                      ลูกค้า
+                    </div>
                     <div class="truncate-col cp-semibold">
                       {{ list.customer.customer_name }}
                     </div>
@@ -217,7 +276,9 @@
 
                 <v-col cols="6">
                   <div class="cp-caption mt-3">
-                    <div class="cp-text-description">เจ้าหน้าที่โครงการ</div>
+                    <div class="cp-text-description">
+                      เจ้าหน้าที่โครงการ
+                    </div>
                     <div class="truncate-col cp-semibold">
                       {{ list.coordinator.coordinator_name || '-' }}
                     </div>
@@ -230,9 +291,16 @@
 
                 <v-col cols="6">
                   <div class="cp-caption">
-                    <div class="cp-text-description">หัวหน้าทีม</div>
-                    <div v-if="!list.checker_supervisor.code_name">-</div>
-                    <v-tooltip v-else top>
+                    <div class="cp-text-description">
+                      หัวหน้าทีม
+                    </div>
+                    <div v-if="!list.checker_supervisor.code_name">
+                      -
+                    </div>
+                    <v-tooltip
+                      v-else
+                      top
+                    >
                       <template #activator="{ on, attrs }">
                         <v-avatar
                           v-bind="attrs"
@@ -259,9 +327,16 @@
 
                 <v-col cols="6">
                   <div class="cp-caption">
-                    <div class="cp-text-description">ทีมงาน</div>
-                    <div v-if="list.checker_team.length === 0">-</div>
-                    <div v-else class="avatar-action-container">
+                    <div class="cp-text-description">
+                      ทีมงาน
+                    </div>
+                    <div v-if="list.checker_team.length === 0">
+                      -
+                    </div>
+                    <div
+                      v-else
+                      class="avatar-action-container"
+                    >
                       <div
                         v-for="(checker, index) in list.checker_team"
                         :key="index + 'checker_team'"
@@ -361,7 +436,9 @@
               color="error"
               @click="onDeleteProject()"
             >
-              <div class="cp-text-capitalize">ลบโปรเจค</div>
+              <div class="cp-text-capitalize">
+                ลบโปรเจค
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -451,7 +528,6 @@ export default {
               data.data.forEach((e) => {
                 e.checker_team = []
               })
-
               this.projectList = data.data
               this.filteredProjects = data.data
               await this.mapCheckerTeam()
@@ -508,7 +584,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.deleteProject.loading = false
             this.deleteProject.dialog = false
             this.onNotify({

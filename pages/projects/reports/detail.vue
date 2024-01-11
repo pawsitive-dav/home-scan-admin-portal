@@ -1,8 +1,12 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <div v-if="!reportDetail">
     <div class="d-flex cp-text-description cp-subtitle cp-medium">
-      <span class="mr-1" @click="$router.push('/projects/reports')">
+      <span
+        class="mr-1"
+        @click="$router.push('/projects/reports')"
+      >
         <cp-link> รายงานทั้งหมด </cp-link>
       </span>
       /
@@ -18,33 +22,36 @@
             height="30"
             color="grey lighten-3"
             class="mt-6"
-          ></v-sheet>
+          />
           <v-sheet
             width="70"
             height="30"
             color="grey lighten-3"
             class="mt-6 ml-4"
-          ></v-sheet>
+          />
         </div>
         <v-sheet
           width="200"
           height="30"
           color="grey lighten-3"
           class="mt-6"
-        ></v-sheet>
+        />
         <v-sheet
           width="100%"
           height="400"
           color="grey lighten-3"
           class="mt-6"
-        ></v-sheet>
+        />
       </v-col>
     </v-row>
   </div>
 
   <div v-else>
     <div class="d-flex cp-text-description cp-subtitle cp-medium">
-      <span class="mr-1" @click="$router.push('/projects/reports')">
+      <span
+        class="mr-1"
+        @click="$router.push('/projects/reports')"
+      >
         <cp-link> รายงานทั้งหมด </cp-link>
       </span>
       /
@@ -55,8 +62,14 @@
     </div>
 
     <!-- Page Action -->
-    <v-row v-if="reportDetail" class="mt-2">
-      <v-col cols="12" class="d-lg-none">
+    <v-row
+      v-if="reportDetail"
+      class="mt-2"
+    >
+      <v-col
+        cols="12"
+        class="d-lg-none"
+      >
         <div class="cp-header-2 cp-bold">
           รายงานของ รายการตรวจที่
           {{ reportDetail.project_detail.inspection_no }}
@@ -70,15 +83,25 @@
           </div>
           <div>
             <div v-if="reportDetail.report_status == 'in-progress'">
-              <v-chip label color="warning">กำลังดำเนินการ</v-chip>
+              <v-chip
+                label
+                color="warning"
+              >
+                กำลังดำเนินการ
+              </v-chip>
             </div>
             <div v-else-if="reportDetail.report_status == 'approval'">
               <div class="d-flex align-center">
-                <v-chip label color="info" class="mr-4">รอการยืนยัน</v-chip>
+                <v-chip
+                  label
+                  color="info"
+                  class="mr-4"
+                >
+                  รอการยืนยัน
+                </v-chip>
 
                 <v-btn
-                  v-if="
-                    role == 'Admin' ||
+                  v-if="role == 'Admin' ||
                     role == 'Project Manager' ||
                     role == 'Supervisor'
                   "
@@ -88,11 +111,16 @@
                   class="mr-4"
                   @click="cancelApproval.dialog = true"
                 >
-                  <v-icon left>mdi-file-document-refresh-outline</v-icon>
+                  <v-icon left>
+                    mdi-file-document-refresh-outline
+                  </v-icon>
                   ยกเลิก
                 </v-btn>
 
-                <v-avatar size="40" color="primary">
+                <v-avatar
+                  size="40"
+                  color="primary"
+                >
                   <v-img
                     v-if="reportDetail.checker_supervisor.avatar_path"
                     :src="reportDetail.checker_supervisor.avatar_path"
@@ -103,13 +131,15 @@
                   />
                 </v-avatar>
                 <div class="ml-4">
-                  <div class="cp-semibold cp-body">ผู้ยืนยันหลัก</div>
+                  <div class="cp-semibold cp-body">
+                    ผู้ยืนยันหลัก
+                  </div>
                   <div class="cp-caption cp-text-description truncate">
                     ({{ reportDetail.checker_supervisor.code_name }})
                     {{
                       reportDetail.checker_supervisor.first_name +
-                      ' ' +
-                      reportDetail.checker_supervisor.last_name
+                        ' ' +
+                        reportDetail.checker_supervisor.last_name
                     }}
                   </div>
                 </div>
@@ -117,10 +147,17 @@
             </div>
             <div v-else-if="reportDetail.report_status == 'approved'">
               <div class="d-flex align-center">
-                <v-chip label color="success" class="mr-4">
+                <v-chip
+                  label
+                  color="success"
+                  class="mr-4"
+                >
                   รายงานได้รับการยืนยัน
                 </v-chip>
-                <v-avatar size="40" color="primary">
+                <v-avatar
+                  size="40"
+                  color="primary"
+                >
                   <v-img
                     v-if="reportDetail.approved_by.avatar_path"
                     :src="reportDetail.approved_by.avatar_path"
@@ -137,13 +174,15 @@
                       ({{ reportDetail.approved_by.code_name }})
                       {{
                         reportDetail.approved_by.first_name +
-                        ' ' +
-                        reportDetail.approved_by.last_name
+                          ' ' +
+                          reportDetail.approved_by.last_name
                       }}
                     </span>
                   </div>
                   <div class="cp-caption cp-text-description">
-                    <v-icon small>mdi-calendar-clock-outline</v-icon>
+                    <v-icon small>
+                      mdi-calendar-clock-outline
+                    </v-icon>
                     {{ formatDate(reportDetail.approved_at) }}
                   </div>
                 </div>
@@ -152,22 +191,24 @@
           </div>
           <v-spacer />
           <div>
-            <v-btn
-              v-if="
-                role != 'Checker' && reportDetail.report_status == 'in-progress'
-              "
-              :loading="approvalReport.checkLoading"
-              color="primary"
-              elevation="0"
-              @click="onBeforeApprovalReport()"
-            >
-              <v-icon left>mdi-file-sign</v-icon>
-              ขอการยืนยันรายงาน
-            </v-btn>
+            <div v-if="locationList.length > 0 && systemList.length > 0">
+              <v-btn
+                v-if="role != 'Checker' && reportDetail.report_status == 'in-progress'
+                "
+                :loading="approvalReport.checkLoading"
+                color="primary"
+                elevation="0"
+                @click="onBeforeApprovalReport()"
+              >
+                <v-icon left>
+                  mdi-file-sign
+                </v-icon>
+                ขอการยืนยันรายงาน
+              </v-btn>
+            </div>
             <div v-if="reportDetail.report_status == 'approval'">
               <v-btn
-                v-if="
-                  accountId == reportDetail.checker_supervisor.account_id ||
+                v-if="accountId == reportDetail.checker_supervisor.account_id ||
                   role == 'Project Manager' ||
                   role == 'Supervisor'
                 "
@@ -175,7 +216,9 @@
                 elevation="0"
                 @click="confirmReport.dialog = true"
               >
-                <v-icon left>mdi-file-document-check-outline</v-icon>
+                <v-icon left>
+                  mdi-file-document-check-outline
+                </v-icon>
                 ยืนยันรายงาน
               </v-btn>
             </div>
@@ -188,7 +231,9 @@
               large
               @click="createPDF()"
             >
-              <v-icon class="mr-2">mdi-file-star-outline</v-icon>
+              <v-icon class="mr-2">
+                mdi-file-star-outline
+              </v-icon>
               สร้างรายงาน (PDF)
             </v-btn>
           </div>
@@ -219,163 +264,348 @@
 
     <!-- Page Header -->
     <cp-card class="page-a4">
-      <v-img :src="require('@/assets/images/header-page.png')" width="100%" />
+      <v-img
+        :src="require('@/assets/images/header-page-2.png')"
+        width="100%"
+      />
 
       <div class="my-6">
         <v-img
           v-if="projectFile.main"
           :src="projectFile.main"
           width="100%"
+          height="500px"
           aspect-ratio="1.4"
         />
-        <v-card v-else flat color="grey lighten-4" width="100%" height="600px">
-        </v-card>
+        <v-card
+          v-else
+          flat
+          color="grey lighten-4"
+          width="100%"
+          height="500px"
+        />
       </div>
 
       <!-- Project Detail -->
       <v-row>
-        <v-col cols="12" sm="6">
-          <v-card flat class="cp-subtitle">
-            <div class="detail-title">ข้อมูล โปรเจค</div>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> ชื่อโปรเจค </v-col>
-              <v-col cols="9">
-                {{ reportDetail.project_detail.project_name }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> ตรวจรอบที่ </v-col>
-              <v-col cols="9">
-                {{ reportDetail.project_detail.inspection_no }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> วันที่เข้าตรวจ </v-col>
-              <v-col cols="9">
-                {{ formatDate(reportDetail.project_detail.working_date) }}
-              </v-col>
-            </v-row>
-
-            <div class="detail-title" style="margin-top: 50px">
-              ข้อมูล {{ reportDetail.type_detail.project_type }}
-            </div>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> ประเภท </v-col>
-              <v-col cols="9">
-                {{ reportDetail.type_detail.project_type }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> เลขที่ </v-col>
-              <v-col cols="9">
-                {{ reportDetail.type_detail.type_address || '-' }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> พื้นที่ใช้สอย </v-col>
-              <v-col cols="9">
-                <span v-if="reportDetail.type_detail.type_usable_area">
-                  {{ reportDetail.type_detail.type_usable_area }} ตร.ม.
-                </span>
-                <span v-else>-</span>
-              </v-col>
-            </v-row>
-          </v-card>
+        <v-col
+          cols="12"
+          sm="6"
+        >
+          <div class="detail-title">
+            ข้อมูล โปรเจค
+          </div>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              ชื่อโปรเจค
+            </v-col>
+            <v-col cols="9">
+              {{ reportDetail.project_detail.project_name }}
+            </v-col>
+          </v-row>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              ตรวจรอบที่
+            </v-col>
+            <v-col cols="9">
+              {{ reportDetail.project_detail.inspection_no }}
+            </v-col>
+          </v-row>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              วันที่เข้าตรวจ
+            </v-col>
+            <v-col cols="9">
+              {{ formatDate(reportDetail.project_detail.working_date) }}
+            </v-col>
+          </v-row>
         </v-col>
-        <v-col cols="1"></v-col>
-        <v-col cols="12" sm="5">
-          <v-card flat class="cp-subtitle">
-            <div class="detail-title">ข้อมูล ลูกค้า</div>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> ชื่อ </v-col>
-              <v-col cols="9">
-                {{ reportDetail.customer_detail.name }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> เบอร์โทร </v-col>
-              <v-col cols="9">
-                {{
-                  reportDetail.customer_detail.phone
-                    ? formatPhoneNumber(reportDetail.customer_detail.phone)
-                    : '-'
-                }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> อีเมล </v-col>
-              <v-col cols="9">
-                {{ reportDetail.customer_detail.email || '-' }}
-              </v-col>
-            </v-row>
-
-            <div class="detail-title" style="margin-top: 50px">
-              ข้อมูล เจ้าหน้าที่โครงการ
-            </div>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> ชื่อ </v-col>
-              <v-col cols="9">
-                {{ reportDetail.coordinator_detail.name || '-' }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> เบอร์โทร </v-col>
-              <v-col cols="9">
-                {{
-                  reportDetail.coordinator_detail.phone
-                    ? formatPhoneNumber(reportDetail.coordinator_detail.phone)
-                    : '-'
-                }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="my-3">
-              <v-col cols="3"> อีเมล </v-col>
-              <v-col cols="9">
-                {{ reportDetail.coordinator_detail.email || '-' }}
-              </v-col>
-            </v-row>
-          </v-card>
+        <v-col cols="1" />
+        <v-col
+          cols="12"
+          sm="5"
+        >
+          <div class="detail-title">
+            ข้อมูล ลูกค้า
+          </div>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              ชื่อ
+            </v-col>
+            <v-col cols="9">
+              {{ reportDetail.customer_detail.name }}
+            </v-col>
+          </v-row>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              เบอร์โทร
+            </v-col>
+            <v-col cols="9">
+              {{
+                reportDetail.customer_detail.phone
+                  ? formatPhoneNumber(reportDetail.customer_detail.phone)
+                  : '-'
+              }}
+            </v-col>
+          </v-row>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              อีเมล
+            </v-col>
+            <v-col cols="9">
+              <div v-if="reportDetail.customer_detail.email">
+                <div v-if="reportDetail.customer_detail.email.split(',')[0]">
+                  {{ reportDetail.customer_detail.email.split(",")[0] }}
+                </div>
+                <div v-if="reportDetail.customer_detail.email.split(',')[1]">
+                  {{ reportDetail.customer_detail.email.split(",")[1] }}
+                </div>
+                <div v-if="reportDetail.customer_detail.email.split(',')[2]">
+                  {{ reportDetail.customer_detail.email.split(",")[2] }}
+                </div>
+              </div>
+              <div v-else>
+                -
+              </div>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
+          cols="12"
+          sm="6"
+        >
+          <div
+            class="detail-title"
+          >
+            ข้อมูล {{ reportDetail.type_detail.project_type }}
+          </div>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              ประเภท
+            </v-col>
+            <v-col cols="9">
+              {{ reportDetail.type_detail.project_type }}
+            </v-col>
+          </v-row>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              เลขที่
+            </v-col>
+            <v-col cols="9">
+              {{ reportDetail.type_detail.type_address || '-' }}
+            </v-col>
+          </v-row>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              พื้นที่ใช้สอย
+            </v-col>
+            <v-col cols="9">
+              <span v-if="reportDetail.type_detail.type_usable_area">
+                {{ reportDetail.type_detail.type_usable_area }} ตร.ม.
+              </span>
+              <span v-else>-</span>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="1" />
+        <v-col
+          cols="12"
+          sm="5"
+        >
+          <div
+            class="detail-title"
+          >
+            ข้อมูล เจ้าหน้าที่โครงการ
+          </div>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              ชื่อ
+            </v-col>
+            <v-col cols="9">
+              {{ reportDetail.coordinator_detail.name || '-' }}
+            </v-col>
+          </v-row>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              เบอร์โทร
+            </v-col>
+            <v-col cols="9">
+              {{
+                reportDetail.coordinator_detail.phone
+                  ? formatPhoneNumber(reportDetail.coordinator_detail.phone)
+                  : '-'
+              }}
+            </v-col>
+          </v-row>
+          <v-row
+            no-gutters
+            class="my-3"
+          >
+            <v-col cols="3">
+              อีเมล
+            </v-col>
+            <v-col cols="9">
+              <div v-if="reportDetail.coordinator_detail.email">
+                <div v-if="reportDetail.coordinator_detail.email.split(',')[0]">
+                  {{ reportDetail.coordinator_detail.email.split(',')[0] }}
+                </div>
+                <div v-if="reportDetail.coordinator_detail.email.split(',')[1]">
+                  {{ reportDetail.coordinator_detail.email.split(',')[1] }}
+                </div>
+                <div v-if="reportDetail.coordinator_detail.email.split(',')[2]">
+                  {{ reportDetail.coordinator_detail.email.split(',')[2] }}
+                </div>
+              </div>
+              <div v-else>
+                -
+              </div>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </cp-card>
 
     <!-- Page Plan -->
     <cp-card class="page-a4 mt-6">
-      <div class="detail-title">แปลน</div>
+      <div class="detail-title">
+        แปลน
+      </div>
       <div class="detail-plan">
-        <div v-if="!projectFile.plan1" class="text-center pt-6">
-          <div class="cp-title cp-text-description">ไม่มีข้อมูลแปลน</div>
+        <div
+          v-if="!projectFile.plan1"
+          class="text-center pt-6"
+        >
+          <div class="cp-title cp-text-description">
+            ไม่มีข้อมูลแปลน
+          </div>
         </div>
         <v-row v-else>
-          <v-col v-if="projectFile.plan1" cols="6">
-            <v-img :src="projectFile.plan1" width="100%" contain />
+          <v-col
+            v-if="projectFile.plan1"
+            cols="6"
+          >
+            <v-img
+              :src="projectFile.plan1"
+              width="100%"
+              contain
+            />
           </v-col>
-          <v-col v-if="projectFile.plan2" cols="6">
-            <v-img :src="projectFile.plan2" width="100%" contain />
+          <v-col
+            v-if="projectFile.plan2"
+            cols="6"
+          >
+            <v-img
+              :src="projectFile.plan2"
+              width="100%"
+              contain
+            />
           </v-col>
-          <v-col v-if="projectFile.plan3" cols="6">
-            <v-img :src="projectFile.plan3" width="100%" contain />
+          <v-col
+            v-if="projectFile.plan3"
+            cols="6"
+          >
+            <v-img
+              :src="projectFile.plan3"
+              width="100%"
+              contain
+            />
           </v-col>
-          <v-col v-if="projectFile.plan4" cols="6">
-            <v-img :src="projectFile.plan4" width="100%" contain />
+          <v-col
+            v-if="projectFile.plan4"
+            cols="6"
+          >
+            <v-img
+              :src="projectFile.plan4"
+              width="100%"
+              contain
+            />
           </v-col>
         </v-row>
       </div>
     </cp-card>
 
     <!-- Page Note -->
-    <cp-card class="page-a4 mt-6">
+    <cp-card
+      v-if="noteGroupPreview.length > 0"
+      class="page-a4 mt-6"
+    >
       <div class="detail-title mb-6">
         <span class="error--text">หมายเหตุ</span>
+      </div>
+      <div>
+        <v-card
+          v-for="(item, index) in noteGroupPreview"
+          :key="index + 'noteGroupPreview'"
+          flat
+        >
+          <div
+            v-for="(item, index) in item"
+            :key="index + 'item'"
+          >
+            <div
+              v-if="item.type === 'title'"
+              class="cp-title mb-4 mt-6 pt-6"
+            >
+              {{ item.text }}
+            </div>
+            <div
+              v-else
+              class="cp-body my-4 cp-text-description"
+            >
+              {{ item.text }}
+            </div>
+          </div>
+        </v-card>
       </div>
     </cp-card>
 
     <!-- Page Location -->
     <cp-card class="page-a4 mt-6">
-      <div v-if="locationList.length == 0" class="no-deflect">
+      <div
+        v-if="locationList.length == 0"
+        class="no-deflect"
+      >
         Location ยังไม่มี Deflect
       </div>
-      <div v-for="(list, index) in locationList" :key="index + 'locationList'">
+      <div
+        v-for="(list, index) in locationList"
+        :key="index + 'locationList'"
+      >
         <div class="detail-title mb-6">
           <span class="cp-text-primary">
             Location: {{ list.location_name }}
@@ -395,7 +625,7 @@
               class="my-4 grey lighten-2"
               min-width="150"
               contain
-            ></v-img>
+            />
           </template>
 
           <template #item.deflect_status="{ item }">
@@ -406,58 +636,81 @@
               flat
             >
               <v-sheet
-                :color="
-                  item.deflect_status === 0 || item.deflect_status === null
-                    ? 'grey lighten-2'
-                    : 'success'
+                :color="Number(item.deflect_status) === 0 || item.deflect_status === null
+                  ? 'grey lighten-2'
+                  : 'success'
                 "
                 width="100"
                 height="36"
                 class="d-flex align-center justify-center"
               >
                 <div
-                  v-if="
-                    item.deflect_status === 0 || item.deflect_status === null
+                  v-if="Number(item.deflect_status) === 0 || item.deflect_status === null
                   "
                   class="cp-body"
                 >
                   ผ่าน
                 </div>
-                <div v-else class="cp-body white--text">ผ่าน</div>
+                <div
+                  v-else
+                  class="cp-body white--text"
+                >
+                  ผ่าน
+                </div>
               </v-sheet>
 
               <v-sheet
-                :color="
-                  item.deflect_status === 1 || item.deflect_status === null
-                    ? 'grey lighten-2'
-                    : 'error'
+                :color="Number(item.deflect_status) === 1 || item.deflect_status === null
+                  ? 'grey lighten-2'
+                  : 'error'
                 "
                 width="100"
                 height="36"
                 class="d-flex align-center justify-center"
               >
                 <div
-                  v-if="
-                    item.deflect_status === 1 || item.deflect_status === null
+                  v-if="Number(item.deflect_status) === 1 || item.deflect_status === null
                   "
                   class="cp-body"
                 >
                   ไม่ผ่าน
                 </div>
-                <div v-else class="cp-body white--text">ไม่ผ่าน</div>
+                <div
+                  v-else
+                  class="cp-body white--text"
+                >
+                  ไม่ผ่าน
+                </div>
               </v-sheet>
             </v-card>
           </template>
 
           <template #item.deflect_detail="{ item }">
-            <v-card min-width="150" max-width="150" color="transparent" flat>
-              <p v-if="item.deflect_detail">{{ item.deflect_detail }}</p>
-              <p v-else class="cp-text-disable">ไม่มีรายละเอียด</p>
+            <v-card
+              min-width="150"
+              max-width="150"
+              color="transparent"
+              flat
+            >
+              <p v-if="item.deflect_detail">
+                {{ item.deflect_detail }}
+              </p>
+              <p
+                v-else
+                class="cp-text-disable"
+              >
+                ไม่มีรายละเอียด
+              </p>
             </v-card>
           </template>
 
           <template #item.created_at="{ item }">
-            <v-card max-width="130" min-width="130" color="transparent" flat>
+            <v-card
+              max-width="130"
+              min-width="130"
+              color="transparent"
+              flat
+            >
               <div>
                 {{ item.created_by.code_name }}
               </div>
@@ -468,7 +721,12 @@
           </template>
 
           <template #item.update_status_at="{ item }">
-            <v-card max-width="130" min-width="130" color="transparent" flat>
+            <v-card
+              max-width="130"
+              min-width="130"
+              color="transparent"
+              flat
+            >
               <div>
                 {{ item.update_status_by.code_name }}
               </div>
@@ -477,16 +735,26 @@
               </div>
             </v-card>
           </template>
+
+          <template #no-data>
+            <div>รายการ Deflect ผ่านหมดแล้ว</div>
+          </template>
         </v-data-table>
       </div>
     </cp-card>
 
     <!-- Page System -->
     <cp-card class="page-a4 mt-6">
-      <div v-if="systemList.length == 0" class="no-deflect">
+      <div
+        v-if="systemList.length == 0"
+        class="no-deflect"
+      >
         System ยังไม่มี Deflect
       </div>
-      <div v-for="(list, index) in systemList" :key="index + 'systemList'">
+      <div
+        v-for="(list, index) in systemList"
+        :key="index + 'systemList'"
+      >
         <div class="detail-title mb-6">
           <span class="cp-text-primary"> System: {{ list.system_name }} </span>
         </div>
@@ -504,7 +772,7 @@
               class="my-4 grey lighten-2"
               min-width="150"
               contain
-            ></v-img>
+            />
           </template>
 
           <template #item.deflect_status="{ item }">
@@ -515,58 +783,81 @@
               flat
             >
               <v-sheet
-                :color="
-                  item.deflect_status === 0 || item.deflect_status === null
-                    ? 'grey lighten-2'
-                    : 'success'
+                :color="Number(item.deflect_status) === 0 || item.deflect_status === null
+                  ? 'grey lighten-2'
+                  : 'success'
                 "
                 width="100"
                 height="36"
                 class="d-flex align-center justify-center"
               >
                 <div
-                  v-if="
-                    item.deflect_status === 0 || item.deflect_status === null
+                  v-if="Number(item.deflect_status) === 0 || item.deflect_status === null
                   "
                   class="cp-body"
                 >
                   ผ่าน
                 </div>
-                <div v-else class="cp-body white--text">ผ่าน</div>
+                <div
+                  v-else
+                  class="cp-body white--text"
+                >
+                  ผ่าน
+                </div>
               </v-sheet>
 
               <v-sheet
-                :color="
-                  item.deflect_status === 1 || item.deflect_status === null
-                    ? 'grey lighten-2'
-                    : 'error'
+                :color="Number(item.deflect_status) === 1 || item.deflect_status === null
+                  ? 'grey lighten-2'
+                  : 'error'
                 "
                 width="100"
                 height="36"
                 class="d-flex align-center justify-center"
               >
                 <div
-                  v-if="
-                    item.deflect_status === 1 || item.deflect_status === null
+                  v-if="Number(item.deflect_status) === 1 || item.deflect_status === null
                   "
                   class="cp-body"
                 >
                   ไม่ผ่าน
                 </div>
-                <div v-else class="cp-body white--text">ไม่ผ่าน</div>
+                <div
+                  v-else
+                  class="cp-body white--text"
+                >
+                  ไม่ผ่าน
+                </div>
               </v-sheet>
             </v-card>
           </template>
 
           <template #item.deflect_detail="{ item }">
-            <v-card min-width="150" max-width="150" color="transparent" flat>
-              <p v-if="item.deflect_detail">{{ item.deflect_detail }}</p>
-              <p v-else class="cp-text-disable">ไม่มีรายละเอียด</p>
+            <v-card
+              min-width="150"
+              max-width="150"
+              color="transparent"
+              flat
+            >
+              <p v-if="item.deflect_detail">
+                {{ item.deflect_detail }}
+              </p>
+              <p
+                v-else
+                class="cp-text-disable"
+              >
+                ไม่มีรายละเอียด
+              </p>
             </v-card>
           </template>
 
           <template #item.created_at="{ item }">
-            <v-card max-width="130" min-width="130" color="transparent" flat>
+            <v-card
+              max-width="130"
+              min-width="130"
+              color="transparent"
+              flat
+            >
               <div>
                 {{ item.created_by.code_name }}
               </div>
@@ -577,7 +868,12 @@
           </template>
 
           <template #item.update_status_at="{ item }">
-            <v-card max-width="130" min-width="130" color="transparent" flat>
+            <v-card
+              max-width="130"
+              min-width="130"
+              color="transparent"
+              flat
+            >
               <div>
                 {{ item.update_status_by.code_name }}
               </div>
@@ -619,9 +915,15 @@
               การขอยืนยันจะทำให้ไม่สามารถแก้ไขข้อมูลทั้งหมดที่เกี่ยวข้องกับโปรเจคนี้ได้โปรดตรวจสอบข้อมูลก่อนขอยืนยัน
             </div>
             <cp-label>หัวหน้าทีมตรวจของรายการตรวจนี้</cp-label>
-            <v-card outlined class="pa-2">
+            <v-card
+              outlined
+              class="pa-2"
+            >
               <div class="d-flex align-center">
-                <v-avatar size="55" color="primary">
+                <v-avatar
+                  size="55"
+                  color="primary"
+                >
                   <v-img
                     v-if="reportDetail.checker_supervisor.avatar_path"
                     :src="reportDetail.checker_supervisor.avatar_path"
@@ -638,8 +940,8 @@
                   <div>
                     {{
                       reportDetail.checker_supervisor.first_name +
-                      ' ' +
-                      reportDetail.checker_supervisor.last_name
+                        ' ' +
+                        reportDetail.checker_supervisor.last_name
                     }}
                   </div>
                 </div>
@@ -654,7 +956,9 @@
               color="primary"
               @click="onConfirmReportApproval()"
             >
-              <div class="cp-text-capitalize">ดำเนินการ</div>
+              <div class="cp-text-capitalize">
+                ดำเนินการ
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -693,7 +997,9 @@
               color="primary"
               @click="onCancelReportApproval()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -732,7 +1038,9 @@
               color="primary"
               @click="onConfirmReportApproved()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -752,14 +1060,24 @@
         <v-card-title> สร้างไฟล์ PDF </v-card-title>
         <v-card-text>
           <v-row>
-            <v-col cols="4"> <b>ตั้งค่าหน้าแรก</b> </v-col>
+            <v-col cols="4">
+              <b>ตั้งค่าหน้าแรก</b>
+            </v-col>
             <v-col cols="8">
-              <b v-if="!createPDFModal.setupPageDetail" class="cp-text-disable">
+              <b
+                v-if="!createPDFModal.setupPageDetail"
+                class="cp-text-disable"
+              >
                 กำลังดำเนินการ...
               </b>
-              <b v-else class="success--text">เสร็จสิ้น</b>
+              <b
+                v-else
+                class="success--text"
+              >เสร็จสิ้น</b>
             </v-col>
-            <v-col cols="4"> <b>ตั้งค่าหน้า Location</b> </v-col>
+            <v-col cols="4">
+              <b>ตั้งค่าหน้า Location</b>
+            </v-col>
             <v-col cols="8">
               Deflect:
               <b class="primary--text cp-title">{{
@@ -770,7 +1088,9 @@
                 createPDFModal.setupPageLocation
               }}</b>
             </v-col>
-            <v-col cols="4"> <b>ตั้งค่าหน้า System</b> </v-col>
+            <v-col cols="4">
+              <b>ตั้งค่าหน้า System</b>
+            </v-col>
             <v-col cols="8">
               Deflect
               <b class="primary--text cp-title">
@@ -848,6 +1168,7 @@ export default {
         { text: 'สร้างโดย', sortable: false, value: 'created_at' },
         { text: 'บันทึกสถานะ', sortable: false, value: 'update_status_at' },
       ],
+      noteGroupPreview: []
     }
   },
 
@@ -950,7 +1271,7 @@ export default {
               this.reportDetail = data.data
             }
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.onNotify({
               notifyValue: true,
               type: 'error',
@@ -982,6 +1303,7 @@ export default {
             if (data.data) {
               data.data.sort((a, b) => a.item_number - b.item_number)
               this.noteGroupList = data.data
+              this.previewNoteGroupList(data.data)
             }
           })
           .catch(({ response }) => {
@@ -1022,7 +1344,7 @@ export default {
               this.locationListStatus = true
             }
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.approvalReport.checkLoading = false
           })
       }
@@ -1134,12 +1456,12 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.onGetReportDetail()
             this.approvalReport.loading = false
             this.approvalReport.dialog = false
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.approvalReport.loading = false
             this.onNotify({
               notifyValue: true,
@@ -1170,12 +1492,12 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.onGetReportDetail()
             this.cancelApproval.loading = false
             this.cancelApproval.dialog = false
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.cancelApproval.loading = false
             this.onNotify({
               notifyValue: true,
@@ -1206,12 +1528,12 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.onGetReportDetail()
             this.confirmReport.loading = false
             this.confirmReport.dialog = false
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.confirmReport.loading = false
             this.onNotify({
               notifyValue: true,
@@ -1306,14 +1628,14 @@ export default {
       }))
 
       filteredLocationSetup.forEach((location) => {
-        location.deflectList.forEach((deflect) => {
+        location.deflectList.forEach(() => {
           this.createPDFModal.allLocationDeflect =
             this.createPDFModal.allLocationDeflect + 1
         })
       })
 
       filteredSystemSetup.forEach((system) => {
-        system.deflectList.forEach((deflect) => {
+        system.deflectList.forEach(() => {
           this.createPDFModal.allSystemDeflect =
             this.createPDFModal.allSystemDeflect + 1
         })
@@ -1488,7 +1810,7 @@ export default {
       pdfDoc.setFont('Sarabun-SemiBold', 'normal')
       const textLines = pdfDoc.splitTextToSize(title, maxWidth)
       for (let i = 0; i < textLines.length; i++) {
-        this.thaitext(pdfDoc, textLines[i], x, y + i * 5.5)
+        this.thaitext(pdfDoc, textLines[i], x, y + i * 6)
       }
     },
 
@@ -1498,7 +1820,7 @@ export default {
       pdfDoc.setFont('Sarabun-Regular', 'normal')
       const textLines = pdfDoc.splitTextToSize(title, maxWidth)
       for (let i = 0; i < textLines.length; i++) {
-        this.thaitext(pdfDoc, textLines[i], x, y + i * 5.5)
+        this.thaitext(pdfDoc, textLines[i], x, y + i * 6)
       }
     },
 
@@ -1646,13 +1968,13 @@ export default {
           if (!pushers.includes(pusher)) {
             if (str.charAt(i + 1) !== '' && str.charAt(i + 1) === 'ำ') {
               const len = pdfDoc.getTextWidth(base + 'ำ')
-              pdfDoc.text(c, x + len, y - dim.h / 4)
+              pdfDoc.text(c, x + len - 1.5, y - dim.h / 3)
             } else {
               base += c
             }
           } else {
             const len = pdfDoc.getTextWidth(base)
-            pdfDoc.text(c, x + len, y - dim.h / 4)
+            pdfDoc.text(c, x + len, y - dim.h / 3)
           }
         }
       }
@@ -1700,84 +2022,81 @@ export default {
       // eslint-disable-next-line new-cap
       const pdfDoc = new jsPDF()
 
-      const imageHeader = require('@/assets/images/header-page.png')
-      pdfDoc.addImage(imageHeader, 'PNG', 15, 15, 180, 43.55)
+      const imageHeader = require('@/assets/images/header-page-2.png')
+      pdfDoc.addImage(imageHeader, 'PNG', 15, 10, 180, 43.55)
 
       // ---> Main Image
       if (pdfPageDetail[0].mainImage) {
         const mainImage = pdfPageDetail[0].mainImage
-        pdfDoc.addImage(mainImage.image, 'JPEG', 15, 62, 180, 101.25)
+        pdfDoc.addImage(mainImage.image, 'JPEG', 15, 55, 180, 101.25)
       } else {
         pdfDoc.setFillColor('#F2F2F2')
-        pdfDoc.rect(15, 62, 180, 94, 'F')
+        pdfDoc.rect(15, 55, 180, 94, 'F')
       }
 
       const projectDetail = pdfPageDetail[0].projectDetail
-      this.drawSection(pdfDoc, 15, 170, 85, 'ข้อมูล โปรเจค')
-      this.drawLabel(pdfDoc, 15, 193, 'ชื่อโปรเจค')
-      this.drawValue(pdfDoc, 42, 193, projectDetail.project_name, 58)
-      this.drawLabel(pdfDoc, 15, 205, 'ตรวจรอบที่')
-      this.drawValue(pdfDoc, 42, 205, projectDetail.inspection_no, 58)
-      this.drawLabel(pdfDoc, 15, 217, 'วันที่เข้าตรวจ')
-      this.drawValue(
-        pdfDoc,
-        42,
-        217,
-        this.formatDatePDF(projectDetail.working_date),
-        58
-      )
+      this.drawSection(pdfDoc, 15, 162, 80, 'ข้อมูล โปรเจค')
+      this.drawLabel(pdfDoc, 15, 184, 'ชื่อโปรเจค')
+      this.drawValue(pdfDoc, 42, 184, projectDetail.project_name, 53)
+      this.drawLabel(pdfDoc, 15, 196, 'ตรวจรอบที่')
+      this.drawValue(pdfDoc, 42, 196, projectDetail.inspection_no, 53)
+      this.drawLabel(pdfDoc, 15, 208, 'วันที่เข้าตรวจ')
+      this.drawValue(pdfDoc, 42, 208, this.formatDatePDF(projectDetail.working_date), 53)
 
       const customerDetail = pdfPageDetail[0].customerDetail
-      this.drawSection(pdfDoc, 115, 170, 80, 'ข้อมูล ลูกค้า')
-      this.drawLabel(pdfDoc, 115, 193, 'ชื่อ')
-      this.drawValue(pdfDoc, 135, 193, customerDetail.name, 60)
-      this.drawLabel(pdfDoc, 115, 205, 'เบอร์โทร')
-      this.drawValue(
-        pdfDoc,
-        135,
-        205,
-        customerDetail.phone
-          ? this.formatPhoneNumber(customerDetail.phone)
-          : '-',
-        60
-      )
-      this.drawLabel(pdfDoc, 115, 217, 'อีเมล')
-      this.drawValue(pdfDoc, 135, 217, customerDetail.email || '-', 60)
+      this.drawSection(pdfDoc, 105, 162, 90, 'ข้อมูล ลูกค้า')
+      this.drawLabel(pdfDoc, 105, 184, 'ชื่อ')
+      this.drawValue(pdfDoc, 125, 184, customerDetail.name, 70)
+      this.drawLabel(pdfDoc, 105, 196, 'เบอร์โทร')
+      this.drawValue(pdfDoc, 125, 196, customerDetail.phone ? this.formatPhoneNumber(customerDetail.phone) : '-', 70)
+      this.drawLabel(pdfDoc, 105, 208, 'อีเมล')
+      if (customerDetail.email) {
+        const customerEmailList = customerDetail.email.split(',')
+        if (customerEmailList[0]) {
+          this.drawValue(pdfDoc, 125, 208, customerEmailList[0], 70)
+        }
+        if (customerEmailList[1]) {
+          this.drawValue(pdfDoc, 125, 214, customerEmailList[1], 70)
+        }
+        if (customerEmailList[2]) {
+          this.drawValue(pdfDoc, 125, 220, customerEmailList[2], 70)
+        }
+      } else {
+        this.drawValue(pdfDoc, 125, 208, '-', 70)
+      }
 
       const typeDetail = pdfPageDetail[0].typeDetail
-      this.drawSection(pdfDoc, 15, 229, 85, 'ข้อมูล ' + typeDetail.project_type)
-      this.drawLabel(pdfDoc, 15, 251, 'ประเภท')
-      this.drawValue(pdfDoc, 42, 251, typeDetail.project_type, 58)
-      this.drawLabel(pdfDoc, 15, 263, 'เลขที่')
-      this.drawValue(pdfDoc, 42, 263, typeDetail.type_address || '-', 58)
-      this.drawLabel(pdfDoc, 15, 275, 'พื้นที่ใช้สอย')
-      this.drawValue(
-        pdfDoc,
-        42,
-        275,
-        `${typeDetail.type_usable_area} ตร.ม.`,
-        58
-      )
+      this.drawSection(pdfDoc, 15, 224, 80, 'ข้อมูล ' + typeDetail.project_type)
+      this.drawLabel(pdfDoc, 15, 246, 'ประเภท')
+      this.drawValue(pdfDoc, 42, 246, typeDetail.project_type, 53)
+      this.drawLabel(pdfDoc, 15, 258, 'เลขที่')
+      this.drawValue(pdfDoc, 42, 258, typeDetail.type_address || '-', 53)
+      this.drawLabel(pdfDoc, 15, 270, 'พื้นที่ใช้สอย')
+      this.drawValue(pdfDoc, 42, 270, `${typeDetail.type_usable_area} ตร.ม.`, 53)
 
       const coordinatorDetail = pdfPageDetail[0].coordinatorDetail
-      this.drawSection(pdfDoc, 115, 229, 85, 'ข้อมูล เจ้าหน้าที่โครงการ')
-      this.drawLabel(pdfDoc, 115, 251, 'ชื่อ')
-      this.drawValue(pdfDoc, 135, 251, coordinatorDetail.name || '-', 60)
-      this.drawLabel(pdfDoc, 115, 263, 'เบอร์โทร')
-      this.drawValue(
-        pdfDoc,
-        135,
-        263,
-        coordinatorDetail.phone
-          ? this.formatPhoneNumber(coordinatorDetail.phone)
-          : '-',
-        60
-      )
-      this.drawLabel(pdfDoc, 115, 275, 'อีเมล')
-      this.drawValue(pdfDoc, 135, 275, coordinatorDetail.email || '-', 60)
+      this.drawSection(pdfDoc, 105, 224, 90, 'ข้อมูล เจ้าหน้าที่โครงการ')
+      this.drawLabel(pdfDoc, 105, 246, 'ชื่อ')
+      this.drawValue(pdfDoc, 125, 246, coordinatorDetail.name || '-', 70)
+      this.drawLabel(pdfDoc, 105, 258, 'เบอร์โทร')
+      this.drawValue(pdfDoc, 125, 258, coordinatorDetail.phone ? this.formatPhoneNumber(coordinatorDetail.phone) : '-', 70 )
+      this.drawLabel(pdfDoc, 105, 270, 'อีเมล')
+      if (coordinatorDetail.email) {
+        const coordinatorEmailList = coordinatorDetail.email.split(',')
+        if (coordinatorEmailList[0]) {
+          this.drawValue(pdfDoc, 125, 270, coordinatorEmailList[0], 70)
+        }
+        if (coordinatorEmailList[1]) {
+          this.drawValue(pdfDoc, 125, 276, coordinatorEmailList[1], 70)
+        }
+        if (coordinatorEmailList[2]) {
+          this.drawValue(pdfDoc, 125, 282, coordinatorEmailList[2], 70)
+        }
+      } else {
+        this.drawValue(pdfDoc, 125, 270, '-', 70)
+      }
 
       // ---> Plan 1 Page
-
       const planPage1 = pdfPageDetail[1]
       if (planPage1) {
         pdfDoc.addPage()
@@ -1860,87 +2179,117 @@ export default {
       }
 
       // ---> Note Page
-      // let pageHeightStart = 0
-      // noteDataGroup.forEach((element, index) => {
-      //   if (element.noteList.length === 1 || element.noteList.length === 2) {
-      //     element.heightBox = 25
-      //   } else if (
-      //     element.noteList.length === 3 ||
-      //     element.noteList.length === 4
-      //   ) {
-      //     element.heightBox = 37
-      //   } else if (
-      //     element.noteList.length === 5 ||
-      //     element.noteList.length === 6
-      //   ) {
-      //     element.heightBox = 49
-      //   } else if (
-      //     element.noteList.length === 7 ||
-      //     element.noteList.length === 8
-      //   ) {
-      //     element.heightBox = 61
-      //   } else if (
-      //     element.noteList.length === 9 ||
-      //     element.noteList.length === 10
-      //   ) {
-      //     element.heightBox = 72
-      //   }
-
-      //   if (pageHeightStart === 0) {
-      //     element.newPage = true
-      //     element.yPosition = 26
-      //     pageHeightStart = 26 + element.heightBox + 5
-      //   } else if (pageHeightStart >= 220) {
-      //     element.newPage = true
-      //     pageHeightStart = 26
-      //     element.yPosition = 26
-      //     pageHeightStart = 26 + element.heightBox + 5
-      //   } else {
-      //     element.newPage = false
-      //     element.yPosition = pageHeightStart
-      //     pageHeightStart = pageHeightStart + element.heightBox + 5
-      //   }
-      // })
+      const getNextNumber = (line) => {
+        if (line === 0) {
+          return 32
+        } else if (line === 1) {
+          return 10
+        } else if (line === 2) {
+          return 16
+        } else if (line === 3) {
+          return 22
+        } else {
+          return false
+        }
+      }
 
       const setupNote = []
       noteDataGroup.forEach((element) => {
-        const obj = {}
-        obj.newPage = true
-        obj.title = element.note_title
-        obj.message = element.note_message.split('<br />\n')
-        const newMessage = []
-        obj.message.forEach((msg) => {
-          newMessage.push({
-            line: pdfDoc.splitTextToSize(msg, 180).length,
-            message: msg,
-          })
+        setupNote.push({
+          line: pdfDoc.splitTextToSize(element.note_title, 180).length,
+          type: "title",
+          text: element.note_title,
+          start: 0,
+          next: 10
         })
-        obj.message = newMessage
-        setupNote.push(obj)
+        if (element.note_message) {
+          const messageList = element.note_message.split('<br />\n')
+          pdfDoc.setFontSize(10)
+          pdfDoc.setFont('Sarabun-Regular', 'normal')
+          messageList.forEach((msg) => {
+            msg = msg.replace(/\s+/g, ' ');
+            const getListNumber = pdfDoc.splitTextToSize(msg, 180).length
+            setupNote.push({
+              line: getListNumber,
+              type: "message",
+              text: msg,
+              start: 0,
+              next: getNextNumber(getListNumber)
+            })
+          })
+        }
       })
-      console.log(setupNote)
-      // const textLines = pdfDoc.splitTextToSize(title, 180)
 
-      pdfDoc.addPage()
-      this.drawSectionError(pdfDoc, 15, 10, 180, 'หมายเหตุ')
-      this.drawFooterNote(pdfDoc)
+      const groupedData = this.groupDataByTitle(setupNote);
 
-      const longText1 =
-        '- ห้องน้ำ 1 (ห้องนอน3)  : อ้างล้างหน้ารั่วซึม , เก็บงานใต้เคาท์เตอร์อ่าง , สุขภัทฑ์ติดตั้งไม่แน่น , กระจกเงาไม่ได้ติดตั้ง ตรวจสอบยาแนวกระเบื้องโมเสดไม่เต็มร่อง'
-      const shotText =
-        '- ห้องน้ำ 1 (ห้องนอน3) : อ้างล้างหน้ารั่วซึม , เก็บงานใต้เคาท์เตอร์อ่าง , สุขภัทฑ์ติดตั้งไม่แน่น'
-      this.drawNoteTitle(pdfDoc, 15, 32, 'หัวข้อหมายเหตุ 1', 180) // Start 32
-      this.drawValueList(pdfDoc, 15, 40, longText1, 180) // + 8
-      this.drawValueList(pdfDoc, 15, 54, shotText, 180) // + 14
-      this.drawValueList(pdfDoc, 15, 62, longText1, 180) // + 8
+      const calculateTotalLines = (group) => {
+        return group.reduce((total, item) => total + item.line, 0);
+      };
 
-      // this.drawNoteTitle(pdfDoc, 15, 68, 'หัวข้อหมายเหตุ 1', 180) // + 20
-      // this.drawValueList(pdfDoc, 15, 76, longText1, 180) // + 8
-      // this.drawValueList(pdfDoc, 15, 68, shotText, 180) // + 8
-      // const longText2 =
-      //   '- โถง (นั่งเล่น) : ตรวจสอบฝาครอบกลิวแอร์ติดตั้งชิดขอบฝ้า , บานหน้าต่างเบียด , ผนังผิวไม่เรียบ เป็นคลื่น'
-      // this.drawValueList(pdfDoc, 15, 38 + 14, longText2, 180)
-      // this.drawValueList(pdfDoc, 15, 38 + 28, longText1, 180)
+      const fillterLine = groupedData.map((group) => ({
+        line: calculateTotalLines(group),
+        noteGroup: group,
+      }));
+
+      const allNotePage = [];
+      let onePage = [];
+      let countLine = 0;
+
+      for (const item of fillterLine) {
+        if (countLine + item.line < 25) {
+          onePage.push(item);
+          countLine += item.line;
+        } else {
+          allNotePage.push([...onePage]);
+          onePage = [item];
+          countLine = item.line;
+        }
+      }
+
+      if (onePage.length > 0) {
+        allNotePage.push(onePage);
+      }
+
+      const mapDataNote = allNotePage.map(item => item.map(subItem => subItem.noteGroup));
+      const flatMapDataNote = mapDataNote.map(innerArray => [innerArray.flat()]);
+
+      flatMapDataNote.forEach(item => {
+        item[0].unshift({
+          line: 0,
+          type: "header",
+          next: 32,
+          start: 0,
+          text: "หมายเหตุ",
+        })
+      });
+
+      flatMapDataNote.forEach(item => {
+        for (let index = 1; index < item[0].length; index++) {
+          if (item[0][index].type === "title" && index === 1) {
+            item[0][index].start = item[0][index - 1].next
+            item[0][index].next = item[0][index].next + item[0][index - 1].next
+          } else if (item[0][index].type === "title" && index !== 1) {
+            item[0][index].start = item[0][index - 1].next + 6
+            item[0][index].next = item[0][index].next + item[0][index - 1].next + 6
+          } else if (item[0][index].type === "message") {
+            item[0][index].start = item[0][index - 1].next
+            item[0][index].next = item[0][index].next + item[0][index - 1].next
+          }
+        }
+      });
+
+      flatMapDataNote.forEach(item => {
+        pdfDoc.addPage()
+        this.drawSectionError(pdfDoc, 15, 10, 180, 'หมายเหตุ')
+        this.drawFooterNote(pdfDoc)
+        for (let index = 1; index < item[0].length; index++) {
+          if (item[0][index].type === "title") {
+            this.drawNoteTitle(pdfDoc, 15, item[0][index].start, item[0][index].text, 180)
+          } else if (item[0][index].type === "message") {
+            this.drawValueList(pdfDoc, 15, item[0][index].start, item[0][index].text, 180)
+          }
+        }
+      });
 
       // ---> Location Page
       const topLeft = [15, 28]
@@ -2189,6 +2538,47 @@ export default {
         pdfDoc.save(`${fileName}.pdf`)
       }, 1500)
     },
+
+    groupDataByTitle(data) {
+      const result = [];
+      let currentGroup = [];
+      for (const item of data) {
+        if (item.type === 'title') {
+          if (currentGroup.length > 0) {
+            result.push(currentGroup);
+          }
+          currentGroup = [item];
+        } else {
+          currentGroup.push(item);
+        }
+      }
+      if (currentGroup.length > 0) {
+        result.push(currentGroup);
+      }
+      return result;
+    },
+
+    previewNoteGroupList(noteGroup) {
+      const setupNote = []
+      noteGroup.forEach((element) => {
+        setupNote.push({
+          type: "title",
+          text: element.note_title,
+        })
+        if (element.note_message) {
+          const messageList = element.note_message.split('<br />\n')
+          messageList.forEach((msg) => {
+            msg = msg.replace(/\s+/g, ' ');
+            setupNote.push({
+              type: "message",
+              text: msg
+            })
+          })
+        }
+      })
+
+      this.noteGroupPreview = this.groupDataByTitle(setupNote);
+    }
   },
 }
 </script>
@@ -2200,21 +2590,26 @@ export default {
   text-overflow: ellipsis;
   max-width: 250px;
 }
+
 .page-a4 {
   padding: 80px;
 }
+
 .page-box {
   margin-left: 24px;
 }
+
 .page-header {
   font-size: 60px;
   font-weight: 700;
 }
+
 .page-subtitle {
   font-size: 28px;
   color: #676268;
   padding-bottom: 16px;
 }
+
 .page-contact {
   display: flex;
   align-items: center;
@@ -2226,6 +2621,7 @@ export default {
   border-top: 1px solid #d9d9d9;
   border-bottom: 1px solid #d9d9d9;
 }
+
 .cp-flex {
   display: flex;
   gap: 100px;
@@ -2243,6 +2639,7 @@ export default {
 .cp-col-5 {
   flex: 5;
 }
+
 .detail-title {
   font-size: 24px;
   font-weight: 700;
@@ -2251,6 +2648,7 @@ export default {
   border-top: 1px solid #d9d9d9;
   border-bottom: 1px solid #d9d9d9;
 }
+
 .detail-label {
   display: flex;
   align-items: center;
@@ -2258,22 +2656,27 @@ export default {
   font-size: 18px;
   padding: 8px 0;
 }
+
 .detail-label .detail-key {
   min-width: 100px;
   color: #676268;
   font-weight: 600;
 }
+
 .detail-label .detail-value {
   color: #676268;
 }
+
 .detail-plan {
   border: 1px solid #d9d9d9;
   padding: 30px;
   margin: 50px 0;
 }
+
 .cp-icon-delete {
   transition: all ease 0.3s;
 }
+
 .cp-icon-delete:hover {
   color: var(--base-error);
 }
@@ -2293,6 +2696,7 @@ export default {
 .deflect-container {
   margin-bottom: 60px;
 }
+
 .deflect-card-no {
   display: flex;
   align-items: center;
@@ -2306,10 +2710,12 @@ export default {
   border: 1px solid var(--gray-100);
   background-color: var(--gray-opacity-1);
 }
+
 .deflect-card {
   padding: 24px;
   border: 1px solid var(--gray-100);
 }
+
 .box-status {
   width: 100%;
   height: 100%;
@@ -2334,13 +2740,16 @@ export default {
 .box-status .status-pass:hover {
   background-color: var(--green-100);
 }
+
 .box-status .status-pass-active {
   cursor: default;
   background-color: var(--green-100);
 }
+
 .box-status .status-not-pass:hover {
   background-color: var(--red-100);
 }
+
 .box-status .status-not-pass-active {
   cursor: default;
   background-color: var(--red-100);
@@ -2353,6 +2762,7 @@ export default {
   gap: 16px;
   margin-bottom: 16px;
 }
+
 .box-status-only .status {
   font-size: 18px;
   width: 100%;
@@ -2363,6 +2773,7 @@ export default {
   height: 50px;
   background-color: var(--gray-opacity-1);
 }
+
 .box-status-only .status-pass {
   font-size: 18px;
   width: 100%;
@@ -2373,6 +2784,7 @@ export default {
   height: 50px;
   background-color: var(--green-100);
 }
+
 .box-status-only .status-not-pass {
   font-size: 18px;
   width: 100%;
@@ -2397,9 +2809,11 @@ export default {
   color: var(--orange-600);
   margin-bottom: 16px;
 }
+
 .box-status-wait .wait-icon {
   color: var(--orange-600);
 }
+
 .no-deflect {
   display: flex;
   align-items: center;

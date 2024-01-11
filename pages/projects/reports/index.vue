@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- eslint-disable vue/no-unused-vars -->
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
@@ -13,7 +14,11 @@
         <template #top>
           <v-toolbar flat>
             <v-toolbar-title>รายงานทั้งหมด</v-toolbar-title>
-            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-divider
+              class="mx-4"
+              inset
+              vertical
+            />
             <v-sheet width="300">
               <v-text-field
                 v-model="search"
@@ -30,7 +35,10 @@
         </template>
 
         <template #item.project_id="{ item }">
-          <v-sheet width="60" class="my-4">
+          <v-sheet
+            width="60"
+            class="my-4"
+          >
             <v-img
               :src="item.image_path"
               width="100%"
@@ -90,11 +98,16 @@
           <cp-col min="50">
             <v-tooltip top>
               <template #activator="{ on, attrs }">
-                <v-avatar size="40" color="primary" v-bind="attrs" v-on="on">
+                <v-avatar
+                  size="40"
+                  color="primary"
+                  v-bind="attrs"
+                  v-on="on"
+                >
                   <img
                     v-if="item.created_by.avatar_path"
                     :src="item.created_by.avatar_path"
-                  />
+                  >
                   <v-img
                     v-else
                     :src="require('@/assets/images/no-avatar.png')"
@@ -108,13 +121,21 @@
 
         <template #item.approved_by="{ item }">
           <cp-col min="55">
-            <v-tooltip v-if="item.approved_by.code_name" top>
+            <v-tooltip
+              v-if="item.approved_by.code_name"
+              top
+            >
               <template #activator="{ on, attrs }">
-                <v-avatar size="40" color="primary" v-bind="attrs" v-on="on">
+                <v-avatar
+                  size="40"
+                  color="primary"
+                  v-bind="attrs"
+                  v-on="on"
+                >
                   <img
                     v-if="item.approved_by.avatar_path"
                     :src="item.approved_by.avatar_path"
-                  />
+                  >
                   <v-img
                     v-else
                     :src="require('@/assets/images/no-avatar.png')"
@@ -169,7 +190,9 @@
         </template> -->
 
         <template #no-data>
-          <div class="my-6">ไม่มีข้อมูล</div>
+          <div class="my-6">
+            ไม่มีข้อมูล
+          </div>
         </template>
       </v-data-table>
     </cp-card>
@@ -207,7 +230,9 @@
               color="error"
               @click="onDeleteReport()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>

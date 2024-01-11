@@ -1,13 +1,20 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- eslint-disable vue/no-unused-vars -->
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <div>
     <div class="d-flex cp-text-description cp-subtitle cp-medium">
-      <span class="mr-1" @click="$router.push('/projects/list')">
+      <span
+        class="mr-1"
+        @click="$router.push('/projects/list')"
+      >
         <cp-link> รายการโปรเจค </cp-link>
       </span>
       /
-      <span v-if="!inspectionDetail" class="mx-1 cp-text-disable">...</span>
+      <span
+        v-if="!inspectionDetail"
+        class="mx-1 cp-text-disable"
+      >...</span>
       <span
         v-else
         class="mx-1"
@@ -22,17 +29,30 @@
         </cp-link>
       </span>
       /
-      <span v-if="!inspectionDetail" class="mx-1 cp-text-disable">...</span>
-      <span v-else class="mx-1 cp-text-disable">
+      <span
+        v-if="!inspectionDetail"
+        class="mx-1 cp-text-disable"
+      >...</span>
+      <span
+        v-else
+        class="mx-1 cp-text-disable"
+      >
         รายการตรวจที่
         {{ inspectionDetail ? inspectionDetail.inspection_no : '' }}
       </span>
     </div>
 
-    <v-row v-if="!inspectionDetail" class="mt-4">
+    <v-row
+      v-if="!inspectionDetail"
+      class="mt-4"
+    >
       <v-col cols="12">
         <div class="d-flex">
-          <v-sheet color="grey lighten-2" width="300" height="30" />
+          <v-sheet
+            color="grey lighten-2"
+            width="300"
+            height="30"
+          />
           <v-sheet
             color="grey lighten-2"
             width="100"
@@ -40,19 +60,26 @@
             class="ml-4"
           />
         </div>
-        <v-sheet color="grey lighten-2" width="500" height="20" class="mt-4" />
+        <v-sheet
+          color="grey lighten-2"
+          width="500"
+          height="20"
+          class="mt-4"
+        />
         <v-card
           flat
           width="100%"
           height="300"
           color="grey lighten-2"
           class="mt-6"
-        >
-        </v-card>
+        />
       </v-col>
     </v-row>
     <v-row class="mt-2">
-      <v-col v-if="inspectionDetail" cols="12">
+      <v-col
+        v-if="inspectionDetail"
+        cols="12"
+      >
         <div class="d-flex align-center cp-header-2 cp-bold mb-2">
           <div class="mr-2">
             <span>รายการตรวจที่</span>
@@ -108,14 +135,23 @@
       </v-col>
 
       <v-col cols="12">
-        <cp-card v-if="inspectionDetail" class="pa-6">
+        <cp-card
+          v-if="inspectionDetail"
+          class="pa-6"
+        >
           <v-tabs v-model="tab">
-            <v-tab v-for="item in tabList" :key="item">
+            <v-tab
+              v-for="item in tabList"
+              :key="item"
+            >
               {{ item }}
             </v-tab>
           </v-tabs>
           <v-divider class="mb-4" />
-          <v-tabs-items v-model="tab" style="overflow: visible">
+          <v-tabs-items
+            v-model="tab"
+            style="overflow: visible"
+          >
             <!-- Location Data Table -->
             <v-tab-item>
               <v-data-table
@@ -142,17 +178,15 @@
                     </v-sheet>
                     <v-spacer />
                     <v-btn
-                      :disabled="
-                        inspectionDetail.report_status == 'approval' ||
-                        inspectionDetail.report_status == 'approved'
-                      "
                       elevation="0"
                       height="36"
                       color="primary"
                       @click="createLocation.dialog = true"
                     >
                       <div class="cp-text-capitalize">
-                        <v-icon left>mdi-plus</v-icon>
+                        <v-icon left>
+                          mdi-plus
+                        </v-icon>
                         สร้าง Location
                       </div>
                     </v-btn>
@@ -174,21 +208,14 @@
                   >
                     <v-icon
                       :disabled="
-                        index + 1 === 1 ||
-                        inspectionDetail.report_status == 'approval' ||
-                        inspectionDetail.report_status == 'approved'
-                      "
+                        index + 1 === 1"
                       color="primary"
                       @click="moveLocationItemList('up', item.location_id)"
                     >
                       mdi-arrow-up-thin
                     </v-icon>
                     <v-icon
-                      :disabled="
-                        locationDataList.length === index + 1 ||
-                        inspectionDetail.report_status == 'approval' ||
-                        inspectionDetail.report_status == 'approved'
-                      "
+                      :disabled="locationDataList.length === index + 1"
                       color="primary"
                       @click="moveLocationItemList('down', item.location_id)"
                     >
@@ -213,10 +240,18 @@
 
                 <template #item.deflect_count="{ item }">
                   <cp-col min="80">
-                    <v-chip v-if="item.deflect_count != 0" color="primary">
+                    <v-chip
+                      v-if="item.deflect_count != 0"
+                      color="primary"
+                    >
                       {{ item.deflect_count }}
                     </v-chip>
-                    <v-chip v-else color="grey lighten-4">0</v-chip>
+                    <v-chip
+                      v-else
+                      color="grey lighten-4"
+                    >
+                      0
+                    </v-chip>
                   </cp-col>
                 </template>
 
@@ -228,7 +263,12 @@
                     >
                       {{ item.deflect_status_1_count }}
                     </v-chip>
-                    <v-chip v-else color="grey lighten-4">0</v-chip>
+                    <v-chip
+                      v-else
+                      color="grey lighten-4"
+                    >
+                      0
+                    </v-chip>
                   </cp-col>
                 </template>
 
@@ -240,7 +280,12 @@
                     >
                       {{ item.deflect_status_0_count }}
                     </v-chip>
-                    <v-chip v-else color="grey lighten-4">0</v-chip>
+                    <v-chip
+                      v-else
+                      color="grey lighten-4"
+                    >
+                      0
+                    </v-chip>
                   </cp-col>
                 </template>
 
@@ -260,25 +305,14 @@
 
                 <template #item.actions="{ item }">
                   <cp-col
-                    v-if="
-                      inspectionDetail.report_status == 'approval' ||
-                      inspectionDetail.report_status == 'approved'
-                    "
                     min="100"
                   >
-                    <v-icon small disabled class="mr-2">
-                      mdi-pencil-off-outline
-                    </v-icon>
-                    <v-icon small disabled> mdi-delete-off-outline </v-icon>
-                  </cp-col>
-                  <cp-col v-else min="100">
                     <v-icon
                       small
                       class="mr-2"
                       @click="
                         ;(editLocation.dialog = true),
-                          (editLocation.locationSelectBefore =
-                            item.location_name),
+                          (editLocation.locationSelectBefore = item.location_name),
                           (editLocation.locationId = item.location_id)
                       "
                     >
@@ -297,7 +331,9 @@
                 </template>
 
                 <template #no-data>
-                  <div class="my-6">ไม่มีข้อมูล</div>
+                  <div class="my-6">
+                    ไม่มีข้อมูล
+                  </div>
                 </template>
               </v-data-table>
             </v-tab-item>
@@ -328,17 +364,15 @@
                     </v-sheet>
                     <v-spacer />
                     <v-btn
-                      :disabled="
-                        inspectionDetail.report_status == 'approval' ||
-                        inspectionDetail.report_status == 'approved'
-                      "
                       elevation="0"
                       height="36"
                       color="primary"
                       @click="createSystem.dialog = true"
                     >
                       <div class="cp-text-capitalize">
-                        <v-icon left>mdi-plus</v-icon>
+                        <v-icon left>
+                          mdi-plus
+                        </v-icon>
                         สร้าง System
                       </div>
                     </v-btn>
@@ -360,21 +394,14 @@
                   >
                     <v-icon
                       :disabled="
-                        index + 1 === 1 ||
-                        inspectionDetail.report_status == 'approval' ||
-                        inspectionDetail.report_status == 'approved'
-                      "
+                        index + 1 === 1"
                       color="primary"
                       @click="moveSystemItemList('up', item.system_id)"
                     >
                       mdi-arrow-up-thin
                     </v-icon>
                     <v-icon
-                      :disabled="
-                        systemDataList.length === index + 1 ||
-                        inspectionDetail.report_status == 'approval' ||
-                        inspectionDetail.report_status == 'approved'
-                      "
+                      :disabled="systemDataList.length === index + 1"
                       color="primary"
                       @click="moveSystemItemList('down', item.system_id)"
                     >
@@ -399,10 +426,18 @@
 
                 <template #item.deflect_count="{ item }">
                   <cp-col min="80">
-                    <v-chip v-if="item.deflect_count != 0" color="primary">
+                    <v-chip
+                      v-if="item.deflect_count != 0"
+                      color="primary"
+                    >
                       {{ item.deflect_count }}
                     </v-chip>
-                    <v-chip v-else color="grey lighten-4">0</v-chip>
+                    <v-chip
+                      v-else
+                      color="grey lighten-4"
+                    >
+                      0
+                    </v-chip>
                   </cp-col>
                 </template>
 
@@ -414,7 +449,12 @@
                     >
                       {{ item.deflect_status_1_count }}
                     </v-chip>
-                    <v-chip v-else color="grey lighten-4">0</v-chip>
+                    <v-chip
+                      v-else
+                      color="grey lighten-4"
+                    >
+                      0
+                    </v-chip>
                   </cp-col>
                 </template>
 
@@ -426,7 +466,12 @@
                     >
                       {{ item.deflect_status_0_count }}
                     </v-chip>
-                    <v-chip v-else color="grey lighten-4">0</v-chip>
+                    <v-chip
+                      v-else
+                      color="grey lighten-4"
+                    >
+                      0
+                    </v-chip>
                   </cp-col>
                 </template>
 
@@ -446,18 +491,8 @@
 
                 <template #item.actions="{ item }">
                   <cp-col
-                    v-if="
-                      inspectionDetail.report_status == 'approval' ||
-                      inspectionDetail.report_status == 'approved'
-                    "
                     min="100"
                   >
-                    <v-icon small disabled class="mr-2">
-                      mdi-pencil-off-outline
-                    </v-icon>
-                    <v-icon small disabled> mdi-delete-off-outline </v-icon>
-                  </cp-col>
-                  <cp-col v-else min="100">
                     <v-icon
                       small
                       class="mr-2"
@@ -482,7 +517,9 @@
                 </template>
 
                 <template #no-data>
-                  <div class="my-6">ไม่มีข้อมูล</div>
+                  <div class="my-6">
+                    ไม่มีข้อมูล
+                  </div>
                 </template>
               </v-data-table>
             </v-tab-item>
@@ -520,7 +557,10 @@
             lazy-validation
           >
             <v-sheet class="d-flex align-center">
-              <v-switch v-model="createLocation.createNew" inset />
+              <v-switch
+                v-model="createLocation.createNew"
+                inset
+              />
               <span class="cp-body">สร้าง Location ใหม่</span>
             </v-sheet>
             <div v-if="!createLocation.createNew">
@@ -530,7 +570,7 @@
                 :items="createLocation.locationList"
                 :disabled="
                   createLocation.loading ||
-                  createLocation.locationList.length == 0
+                    createLocation.locationList.length == 0
                 "
                 placeholder="ยังไม่ได้เลือกรายการ"
                 hide-details
@@ -552,11 +592,16 @@
             <div
               v-if="
                 createLocation.locationList.length == 0 &&
-                !createLocation.createNew
+                  !createLocation.createNew
               "
               class="mt-4"
             >
-              <v-alert text outlined color="orange" icon="mdi-alert-outline">
+              <v-alert
+                text
+                outlined
+                color="orange"
+                icon="mdi-alert-outline"
+              >
                 ไม่มีรายการ Location ต้องสร้างใหม่
               </v-alert>
             </div>
@@ -566,8 +611,8 @@
             <v-btn
               :disabled="
                 !createLocation.valid ||
-                (createLocation.locationList.length == 0 &&
-                  !createLocation.createNew)
+                  (createLocation.locationList.length == 0 &&
+                    !createLocation.createNew)
               "
               :loading="createLocation.loading"
               elevation="0"
@@ -575,7 +620,9 @@
               color="primary"
               @click="onCreateLocation()"
             >
-              <div class="cp-text-capitalize">สร้าง</div>
+              <div class="cp-text-capitalize">
+                สร้าง
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -624,7 +671,10 @@
             lazy-validation
           >
             <v-sheet class="d-flex align-center">
-              <v-switch v-model="editLocation.createNew" inset />
+              <v-switch
+                v-model="editLocation.createNew"
+                inset
+              />
               <span class="cp-body">สร้าง Location ใหม่</span>
             </v-sheet>
             <div v-if="!editLocation.createNew">
@@ -658,7 +708,12 @@
               "
               class="mt-4"
             >
-              <v-alert text outlined color="orange" icon="mdi-alert-outline">
+              <v-alert
+                text
+                outlined
+                color="orange"
+                icon="mdi-alert-outline"
+              >
                 ไม่มีรายการ Location ต้องสร้างใหม่
               </v-alert>
             </div>
@@ -668,8 +723,8 @@
             <v-btn
               :disabled="
                 !editLocation.valid ||
-                (editLocation.locationList.length == 0 &&
-                  !editLocation.createNew)
+                  (editLocation.locationList.length == 0 &&
+                    !editLocation.createNew)
               "
               :loading="editLocation.loading"
               elevation="0"
@@ -677,7 +732,9 @@
               color="primary"
               @click="onEditLocation()"
             >
-              <div class="cp-text-capitalize">ยืนยันการแก้ไข</div>
+              <div class="cp-text-capitalize">
+                ยืนยันการแก้ไข
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -708,7 +765,10 @@
         </v-card-title>
         <v-card-text>
           คุณแน่ใจหรือไม่ที่คุณจะลบ Location นี้ออกจากรายการ?
-          <v-card outlined class="mt-4">
+          <v-card
+            outlined
+            class="mt-4"
+          >
             <v-card-text>
               Deflect ที่จะถูกลบไปด้วย:
               <b>
@@ -717,8 +777,13 @@
               รายการ
             </v-card-text>
           </v-card>
-          <v-row v-if="deleteLocation.loading" class="mt-4">
-            <v-col cols="3"> ลบ Deflect </v-col>
+          <v-row
+            v-if="deleteLocation.loading"
+            class="mt-4"
+          >
+            <v-col cols="3">
+              ลบ Deflect
+            </v-col>
             <v-col cols="9">
               <v-progress-linear
                 v-model="deleteLocation.deleteProgress"
@@ -743,7 +808,9 @@
               color="error"
               @click="onDeleteLocation()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -778,7 +845,10 @@
             lazy-validation
           >
             <v-sheet class="d-flex align-center">
-              <v-switch v-model="createSystem.createNew" inset />
+              <v-switch
+                v-model="createSystem.createNew"
+                inset
+              />
               <span class="cp-body">สร้าง System ใหม่</span>
             </v-sheet>
             <div v-if="!createSystem.createNew">
@@ -812,7 +882,12 @@
               "
               class="mt-4"
             >
-              <v-alert text outlined color="orange" icon="mdi-alert-outline">
+              <v-alert
+                text
+                outlined
+                color="orange"
+                icon="mdi-alert-outline"
+              >
                 ไม่มีรายการ System ต้องสร้างใหม่
               </v-alert>
             </div>
@@ -822,7 +897,7 @@
             <v-btn
               :disabled="
                 !createSystem.valid ||
-                (createSystem.systemList.length == 0 && !createSystem.createNew)
+                  (createSystem.systemList.length == 0 && !createSystem.createNew)
               "
               :loading="createSystem.loading"
               elevation="0"
@@ -830,7 +905,9 @@
               color="primary"
               @click="onCreateSystem()"
             >
-              <div class="cp-text-capitalize">สร้าง</div>
+              <div class="cp-text-capitalize">
+                สร้าง
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -879,7 +956,10 @@
             lazy-validation
           >
             <v-sheet class="d-flex align-center">
-              <v-switch v-model="editSystem.createNew" inset />
+              <v-switch
+                v-model="editSystem.createNew"
+                inset
+              />
               <span class="cp-body">สร้าง System ใหม่</span>
             </v-sheet>
             <div v-if="!editSystem.createNew">
@@ -911,7 +991,12 @@
               v-if="editSystem.systemList.length == 0 && !editSystem.createNew"
               class="mt-4"
             >
-              <v-alert text outlined color="orange" icon="mdi-alert-outline">
+              <v-alert
+                text
+                outlined
+                color="orange"
+                icon="mdi-alert-outline"
+              >
                 ไม่มีรายการ System ต้องสร้างใหม่
               </v-alert>
             </div>
@@ -921,7 +1006,7 @@
             <v-btn
               :disabled="
                 !editSystem.valid ||
-                (editSystem.systemList.length == 0 && !editSystem.createNew)
+                  (editSystem.systemList.length == 0 && !editSystem.createNew)
               "
               :loading="editSystem.loading"
               elevation="0"
@@ -929,7 +1014,9 @@
               color="primary"
               @click="onEditSystem()"
             >
-              <div class="cp-text-capitalize">ยืนยันการแก้ไข</div>
+              <div class="cp-text-capitalize">
+                ยืนยันการแก้ไข
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -960,7 +1047,10 @@
         </v-card-title>
         <v-card-text>
           คุณแน่ใจหรือไม่ที่คุณจะลบ System นี้ออกจากรายการ?
-          <v-card outlined class="mt-4">
+          <v-card
+            outlined
+            class="mt-4"
+          >
             <v-card-text>
               Deflect ที่จะถูกลบไปด้วย:
               <b>
@@ -969,8 +1059,13 @@
               รายการ
             </v-card-text>
           </v-card>
-          <v-row v-if="deleteSystem.loading" class="mt-4">
-            <v-col cols="3"> ลบ Deflect </v-col>
+          <v-row
+            v-if="deleteSystem.loading"
+            class="mt-4"
+          >
+            <v-col cols="3">
+              ลบ Deflect
+            </v-col>
             <v-col cols="9">
               <v-progress-linear
                 v-model="deleteSystem.deleteProgress"
@@ -996,7 +1091,9 @@
               color="error"
               @click="onDeleteSystem()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -1038,7 +1135,7 @@
             accept="image/*"
             multiple
             @change="uploadImage"
-          />
+          >
 
           <div v-if="imageUpload.loading">
             <v-progress-linear
@@ -1060,7 +1157,10 @@
               md="4"
             >
               <v-card outlined>
-                <v-img :src="list.image" aspect-ratio="1.4" />
+                <v-img
+                  :src="list.image"
+                  aspect-ratio="1.4"
+                />
                 <div class="pt-4 pb-2 px-4">
                   <div class="mb-4">
                     <v-text-field
@@ -1076,19 +1176,35 @@
                     <div class="cp-caption cp-text-description">
                       ขนาดไฟล์: <b>{{ convertBytes(list.size) }}</b>
                     </div>
-                    <v-btn icon small @click="removeImageUploadList(i)">
-                      <v-icon small>mdi-trash-can-outline</v-icon>
+                    <v-btn
+                      icon
+                      small
+                      @click="removeImageUploadList(i)"
+                    >
+                      <v-icon small>
+                        mdi-trash-can-outline
+                      </v-icon>
                     </v-btn>
                   </div>
                 </div>
               </v-card>
             </v-col>
 
-            <v-col v-if="!imageUpload.imageMaxList" cols="12" md="4">
-              <div class="add-image-box" @click="openImageInput()">
+            <v-col
+              v-if="!imageUpload.imageMaxList"
+              cols="12"
+              md="4"
+            >
+              <div
+                class="add-image-box"
+                @click="openImageInput()"
+              >
                 <div class="text-center">
                   <div class="mb-1">
-                    <v-icon class="add-image-box-icon" large>
+                    <v-icon
+                      class="add-image-box-icon"
+                      large
+                    >
                       mdi-image-plus-outline
                     </v-icon>
                   </div>
@@ -1122,7 +1238,9 @@
             class="mb-2"
             @click="onUploadImageCheck()"
           >
-            <div class="cp-text-capitalize px-2">อัพโหลด</div>
+            <div class="cp-text-capitalize px-2">
+              อัพโหลด
+            </div>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -1142,9 +1260,18 @@
           <div v-if="imagePreview.imageData.image_name">
             {{ imagePreview.imageData.image_name }}
           </div>
-          <div v-else class="cp-text-disable">ไม่มีชื่อรูป</div>
+          <div
+            v-else
+            class="cp-text-disable"
+          >
+            ไม่มีชื่อรูป
+          </div>
           <v-spacer />
-          <v-btn icon class="mt-n4 mr-n4" @click="imagePreview.dialog = false">
+          <v-btn
+            icon
+            class="mt-n4 mr-n4"
+            @click="imagePreview.dialog = false"
+          >
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
@@ -1155,7 +1282,7 @@
               width="100%"
               aspect-ratio="1.4"
               contain
-            ></v-img>
+            />
           </v-sheet>
         </v-card-text>
       </v-card>
@@ -1193,7 +1320,9 @@
               color="error"
               @click="onDeleteImage()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -1232,7 +1361,9 @@
               color="error"
               @click="onDeleteMultipleImage()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -1276,7 +1407,9 @@
               color="primary"
               @click="onEditImageName()"
             >
-              <div class="cp-text-capitalize">บันทึก</div>
+              <div class="cp-text-capitalize">
+                บันทึก
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -1688,7 +1821,7 @@ export default {
             this.inspectionDetail = data.data
             this.getLocationList()
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.onNotify({
               notifyValue: true,
               type: 'error',
@@ -1797,7 +1930,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.createLocation.dialog = false
               this.createLocation.loading = false
               this.getLocationList()
@@ -1841,7 +1974,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.updateCreateNewLocation(accessToken)
           })
           .catch((error) => {
@@ -1872,7 +2005,7 @@ export default {
             },
           }
         )
-        .then(({ data }) => {
+        .then(() => {
           this.createLocation.dialog = false
           this.createLocation.loading = false
           this.getLocationList()
@@ -1965,7 +2098,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.deleteLocation.dialog = false
             this.deleteLocation.loading = false
             this.getLocationList()
@@ -2045,7 +2178,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.editLocation.dialog = false
               this.editLocation.loading = false
               this.getLocationList()
@@ -2089,7 +2222,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             if (
               this.editLocation.locationSelectBefore !==
               this.editLocation.locationName.trim()
@@ -2138,7 +2271,7 @@ export default {
             },
           }
         )
-        .then(({ data }) => {
+        .then(() => {
           this.editLocation.dialog = false
           this.editLocation.loading = false
           this.getLocationList()
@@ -2259,7 +2392,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.createSystem.dialog = false
               this.createSystem.loading = false
               this.getSystemList()
@@ -2303,7 +2436,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.updateCreateNewSystem(accessToken)
           })
           .catch((error) => {
@@ -2334,7 +2467,7 @@ export default {
             },
           }
         )
-        .then(({ data }) => {
+        .then(() => {
           this.createSystem.dialog = false
           this.createSystem.loading = false
           this.getSystemList()
@@ -2427,7 +2560,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.deleteSystem.dialog = false
             this.deleteSystem.loading = false
             this.getSystemList()
@@ -2507,7 +2640,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.editSystem.dialog = false
               this.editSystem.loading = false
               this.getSystemList()
@@ -2551,7 +2684,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             if (
               this.editSystem.systemSelectBefore !==
               this.editSystem.systemName.trim()
@@ -2600,7 +2733,7 @@ export default {
             },
           }
         )
-        .then(({ data }) => {
+        .then(() => {
           this.editSystem.dialog = false
           this.editSystem.loading = false
           this.getSystemList()
@@ -2759,7 +2892,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             if (single) {
               this.imageUpload.uploadPersen = 50
               setTimeout(() => {
@@ -2805,7 +2938,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.imageDelete.loading = false
             this.imageDelete.dialog = false
             this.getImageList()
@@ -2865,7 +2998,7 @@ export default {
                     },
                   }
                 )
-                .then(({ data }) => {
+                .then(() => {
                   resolve()
                 })
                 .catch((error) => {
@@ -2907,7 +3040,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.imageNameEdit.loading = false
             this.imageNameEdit.dialog = false
             this.getImageList()
@@ -2976,7 +3109,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.getLocationList()
           })
           .catch(({ response }) => {
@@ -3008,7 +3141,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.getSystemList()
           })
           .catch(({ response }) => {

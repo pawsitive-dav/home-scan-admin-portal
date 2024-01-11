@@ -1,17 +1,17 @@
 module.exports = {
   root: true,
   env: {
-    browser: true,
     node: true,
+    browser: true
   },
-  parserOptions: {
-    parser: '@babel/eslint-parser',
-    requireConfigFile: false,
-  },
-  extends: ['@nuxtjs', 'plugin:nuxt/recommended', 'prettier'],
-  plugins: [],
-  // add your custom rules here
+  extends: [
+    "plugin:vue/recommended",
+    "eslint:recommended"
+  ],
   rules: {
-    // 'vue/v-slot-style': ['error', 'longform'],
+    "vue/component-name-in-template-casing": ["error", "PascalCase"]
   },
-}
+  globals: {
+    $nuxt: true
+  }
+};

@@ -1,22 +1,38 @@
-<!-- eslint-disable vue/no-unused-vars -->
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <div>
     <div class="d-flex cp-text-description cp-subtitle cp-medium">
-      <span class="mr-1" @click="$router.push('/projects/list')">
+      <span
+        class="mr-1"
+        @click="$router.push('/projects/list')"
+      >
         <cp-link> รายการโปรเจค </cp-link>
       </span>
       /
-      <span v-if="!projectDetail" class="mx-1 cp-text-disable">...</span>
-      <span v-else class="mx-1 cp-text-disable">
+      <span
+        v-if="!projectDetail"
+        class="mx-1 cp-text-disable"
+      >...</span>
+      <span
+        v-else
+        class="mx-1 cp-text-disable"
+      >
         {{ projectDetail ? projectDetail.project_name : '' }}
       </span>
     </div>
 
-    <v-row v-if="!projectDetail" class="mt-2">
+    <v-row
+      v-if="!projectDetail"
+      class="mt-2"
+    >
       <v-col cols="12">
         <div class="d-flex">
-          <v-sheet color="grey lighten-2" width="300" height="30" />
+          <v-sheet
+            color="grey lighten-2"
+            width="300"
+            height="30"
+          />
           <v-sheet
             color="grey lighten-2"
             width="100"
@@ -24,29 +40,40 @@
             class="ml-4"
           />
         </div>
-        <v-sheet color="grey lighten-2" width="500" height="20" class="mt-6" />
+        <v-sheet
+          color="grey lighten-2"
+          width="500"
+          height="20"
+          class="mt-6"
+        />
       </v-col>
     </v-row>
 
-    <v-row v-if="projectDetail" class="mt-2">
+    <v-row
+      v-if="projectDetail"
+      class="mt-2"
+    >
       <v-col cols="12">
         <div class="d-flex align-center cp-header-2 cp-bold mb-2">
           <div
             v-if="editProjectName.oldData.length === 0"
             class="box-edit-project-name mr-2"
             @click="
-              ;(editProjectName.oldData = projectDetail.project_name),
-                (editProjectName.newData = projectDetail.project_name),
-                (editProjectName.focus = true)
+              (editProjectName.oldData = projectDetail.project_name),
+              (editProjectName.newData = projectDetail.project_name),
+              (editProjectName.focus = true)
             "
           >
             {{ projectDetail.project_name }}
           </div>
-          <v-sheet v-else width="500" class="mr-2">
+          <v-sheet
+            v-else
+            width="500"
+            class="mr-2"
+          >
             <v-text-field
               v-model="editProjectName.newData"
-              :append-icon="
-                editProjectName.status ? 'mdi-content-save-outline' : ''
+              :append-icon="editProjectName.status ? 'mdi-content-save-outline' : ''
               "
               :autofocus="editProjectName.focus"
               :error="editProjectName.error"
@@ -58,7 +85,10 @@
             />
           </v-sheet>
 
-          <v-chip v-if="projectDetail.project_status == 'to-do'" label>
+          <v-chip
+            v-if="projectDetail.project_status == 'to-do'"
+            label
+          >
             เตรียมดำเนินการ
           </v-chip>
           <v-chip
@@ -91,9 +121,7 @@
         </div>
         <div class="d-flex align-center">
           <b class="hidden-sm-and-down">ประเภท:</b>
-          <span
-            class="ml-1 mr-4 primary--text cp-semibold cp-subtitle hidden-sm-and-down"
-          >
+          <span class="ml-1 mr-4 primary--text cp-semibold cp-subtitle hidden-sm-and-down">
             {{ projectDetail.type_name }}
           </span>
           <b>วันที่สร้าง:</b>
@@ -104,16 +132,17 @@
           <b class="ml-4">สร้างโดย:</b>
           <span class="cp-text-description ml-1">
             ({{ projectDetail.created_by.code_name }})
-            {{
-              projectDetail.created_by.first_name +
-              ' ' +
-              projectDetail.created_by.last_name
-            }}
+            {{ projectDetail.created_by.first_name + ' ' + projectDetail.created_by.last_name }}
           </span>
         </div>
       </v-col>
 
-      <v-col cols="12" sm="8" md="8" lg="8">
+      <v-col
+        cols="12"
+        sm="8"
+        md="8"
+        lg="8"
+      >
         <v-row>
           <!-- Project Detail -->
           <v-col cols="12">
@@ -121,16 +150,15 @@
               <v-row>
                 <!-- หมายเหตุ: บอกทีมหน้างาน -->
                 <v-col cols="12">
-                  <div class="cp-text-description">หมายเหตุ: บอกทีมหน้างาน</div>
+                  <div class="cp-text-description">
+                    หมายเหตุ: บอกทีมหน้างาน
+                  </div>
                   <div
                     v-if="!editProjectNote.focus"
                     class="box-edit-note"
-                    @click="
-                      ;(editProjectNote.oldData =
-                        projectDetail.project_note || ''),
-                        (editProjectNote.newData =
-                          projectDetail.project_note || ''),
-                        (editProjectNote.focus = true)
+                    @click="(editProjectNote.oldData = projectDetail.project_note || ''),
+                            (editProjectNote.newData = projectDetail.project_note || ''),
+                            (editProjectNote.focus = true)
                     "
                   >
                     {{ projectDetail.project_note || '-' }}
@@ -138,8 +166,7 @@
                   <v-textarea
                     v-else
                     v-model="editProjectNote.newData"
-                    :append-icon="
-                      editProjectNote.status ? 'mdi-content-save-outline' : ''
+                    :append-icon="editProjectNote.status ? 'mdi-content-save-outline' : ''
                     "
                     :autofocus="editProjectNote.focus"
                     counter="250"
@@ -153,16 +180,21 @@
                 </v-col>
 
                 <!-- เลขที่ -->
-                <v-col cols="12" sm="6" md="4">
-                  <div class="cp-text-description">เลขที่</div>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <div class="cp-text-description">
+                    เลขที่
+                  </div>
                   <div
                     v-if="!editTypeAddress.focus"
                     class="box-edit"
                     @click="
-                      ;(editTypeAddress.oldData = projectDetail.type_address),
-                        (editTypeAddress.newData = projectDetail.type_address),
-                        (editTypeAddress.focus = true)
-                    "
+                      (editTypeAddress.oldData = projectDetail.type_address),
+                      (editTypeAddress.newData = projectDetail.type_address),
+                      (editTypeAddress.focus = true)"
                   >
                     {{ projectDetail.type_address || '-' }}
                   </div>
@@ -174,8 +206,7 @@
                   >
                     <v-text-field
                       v-model="editTypeAddress.newData"
-                      :append-icon="
-                        editTypeAddress.status ? 'mdi-content-save-outline' : ''
+                      :append-icon="editTypeAddress.status ? 'mdi-content-save-outline' : ''
                       "
                       :autofocus="editTypeAddress.focus"
                       :rules="editTypeAddress.rules"
@@ -188,21 +219,27 @@
                 </v-col>
 
                 <!-- พื้นที่ใช้สอย -->
-                <v-col cols="12" sm="6" md="4">
-                  <div class="cp-text-description">พื้นที่ใช้สอย</div>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <div class="cp-text-description">
+                    พื้นที่ใช้สอย
+                  </div>
                   <div
                     v-if="!editTypeUsableArea.focus"
                     class="box-edit"
-                    @click="
-                      ;(editTypeUsableArea.oldData =
-                        projectDetail.type_usable_area || ''),
-                        (editTypeUsableArea.newData =
-                          projectDetail.type_usable_area || ''),
-                        (editTypeUsableArea.focus = true)
+                    @click="(editTypeUsableArea.oldData = projectDetail.type_usable_area || ''),
+                            (editTypeUsableArea.newData = projectDetail.type_usable_area || ''),
+                            (editTypeUsableArea.focus = true)
                     "
                   >
                     {{ projectDetail.type_usable_area || '-' }}
-                    <span v-if="projectDetail.type_usable_area" class="ml-2">
+                    <span
+                      v-if="projectDetail.type_usable_area"
+                      class="ml-2"
+                    >
                       ตร.ม.
                     </span>
                   </div>
@@ -214,10 +251,9 @@
                   >
                     <v-text-field
                       v-model="editTypeUsableArea.newData"
-                      :append-icon="
-                        editTypeUsableArea.status
-                          ? 'mdi-content-save-outline'
-                          : ''
+                      :append-icon="editTypeUsableArea.status
+                        ? 'mdi-content-save-outline'
+                        : ''
                       "
                       :autofocus="editTypeUsableArea.focus"
                       :rules="editTypeUsableArea.rules"
@@ -231,25 +267,30 @@
                 </v-col>
 
                 <v-col cols="12">
-                  <v-divider></v-divider>
+                  <v-divider />
                 </v-col>
 
                 <!-- ข้อมูลลูกค้า -->
                 <v-col cols="12">
-                  <div class="cp-subtitle pb-4">ข้อมูลลูกค้า</div>
+                  <div class="cp-subtitle pb-4">
+                    ข้อมูลลูกค้า
+                  </div>
                   <v-row>
                     <!-- ชื่อ -->
-                    <v-col cols="12" sm="6" md="4">
-                      <div class="cp-text-description">ชื่อ</div>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <div class="cp-text-description">
+                        ชื่อ
+                      </div>
                       <div
                         v-if="!editCustomerName.focus"
                         class="box-edit"
-                        @click="
-                          ;(editCustomerName.oldData =
-                            projectDetail.customer.customer_name),
-                            (editCustomerName.newData =
-                              projectDetail.customer.customer_name),
-                            (editCustomerName.focus = true)
+                        @click="(editCustomerName.oldData = projectDetail.customer.customer_name),
+                                (editCustomerName.newData = projectDetail.customer.customer_name),
+                                (editCustomerName.focus = true)
                         "
                       >
                         {{ projectDetail.customer.customer_name }}
@@ -262,10 +303,9 @@
                       >
                         <v-text-field
                           v-model="editCustomerName.newData"
-                          :append-icon="
-                            editCustomerName.status
-                              ? 'mdi-content-save-outline'
-                              : ''
+                          :append-icon="editCustomerName.status
+                            ? 'mdi-content-save-outline'
+                            : ''
                           "
                           :autofocus="editCustomerName.focus"
                           :rules="editCustomerName.rules"
@@ -278,24 +318,27 @@
                     </v-col>
 
                     <!-- เบอร์โทรศัพท์ -->
-                    <v-col cols="12" sm="6" md="3">
-                      <div class="cp-text-description">เบอร์โทรศัพท์</div>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <div class="cp-text-description">
+                        เบอร์โทรศัพท์
+                      </div>
                       <div
                         v-if="!editCustomerPhone.focus"
                         class="box-edit"
-                        @click="
-                          ;(editCustomerPhone.oldData =
-                            projectDetail.customer.customer_phone || ''),
-                            (editCustomerPhone.newData =
-                              projectDetail.customer.customer_phone || ''),
-                            (editCustomerPhone.focus = true)
+                        @click="(editCustomerPhone.oldData = projectDetail.customer.customer_phone || ''),
+                                (editCustomerPhone.newData = projectDetail.customer.customer_phone || ''),
+                                (editCustomerPhone.focus = true)
                         "
                       >
                         {{
                           projectDetail.customer.customer_phone
                             ? formatPhoneNumber(
-                                projectDetail.customer.customer_phone
-                              )
+                              projectDetail.customer.customer_phone
+                            )
                             : '-'
                         }}
                       </div>
@@ -307,10 +350,9 @@
                       >
                         <v-text-field
                           v-model="editCustomerPhone.newData"
-                          :append-icon="
-                            editCustomerPhone.status
-                              ? 'mdi-content-save-outline'
-                              : ''
+                          :append-icon="editCustomerPhone.status
+                            ? 'mdi-content-save-outline'
+                            : ''
                           "
                           :autofocus="editCustomerPhone.focus"
                           :rules="editCustomerPhone.rules"
@@ -323,42 +365,119 @@
                         />
                       </v-form>
                     </v-col>
-
-                    <!-- อีเมล -->
-                    <v-col cols="12" sm="6" md="5">
-                      <div class="cp-text-description">อีเมล</div>
+                  </v-row>
+                  <v-row>
+                    <!-- อีเมล 1 -->
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <div class="cp-text-description">
+                        อีเมล 1
+                      </div>
                       <div
-                        v-if="!editCustomerEmail.focus"
+                        v-if="!editCustomerEmail1.focus"
                         class="box-edit truncate"
-                        @click="
-                          ;(editCustomerEmail.oldData =
-                            projectDetail.customer.customer_email || ''),
-                            (editCustomerEmail.newData =
-                              projectDetail.customer.customer_email || ''),
-                            (editCustomerEmail.focus = true)
-                        "
+                        @click="(editCustomerEmail1.oldData = projectDetail.customer.customer_email_1 || ''),
+                                (editCustomerEmail1.newData = projectDetail.customer.customer_email_1 || ''),
+                                (editCustomerEmail1.focus = true)"
                       >
-                        {{ projectDetail.customer.customer_email || '-' }}
+                        {{ projectDetail.customer.customer_email_1 || '-' }}
                       </div>
                       <v-form
                         v-else
-                        ref="formEditCustomerEmail"
-                        v-model="editCustomerEmail.valid"
+                        ref="formEditCustomerEmail1"
+                        v-model="editCustomerEmail1.valid"
                         lazy-validation
                       >
                         <v-text-field
-                          v-model="editCustomerEmail.newData"
-                          :append-icon="
-                            editCustomerEmail.status
-                              ? 'mdi-content-save-outline'
-                              : ''
+                          v-model="editCustomerEmail1.newData"
+                          :append-icon="editCustomerEmail1.status
+                            ? 'mdi-content-save-outline'
+                            : ''
                           "
-                          :autofocus="editCustomerEmail.focus"
-                          :rules="editCustomerEmail.rules"
+                          :autofocus="editCustomerEmail1.focus"
                           dense
                           outlined
-                          @blur="saveNewCustomerEmail()"
-                          @click:append="saveNewCustomerEmail()"
+                          @blur="saveNewCustomerEmail(1)"
+                          @click:append="saveNewCustomerEmail(1)"
+                        />
+                      </v-form>
+                    </v-col>
+                    <!-- อีเมล 2 -->
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <div class="cp-text-description">
+                        อีเมล 2
+                      </div>
+                      <div
+                        v-if="!editCustomerEmail2.focus"
+                        class="box-edit truncate"
+                        @click="(editCustomerEmail2.oldData = projectDetail.customer.customer_email_2 || ''),
+                                (editCustomerEmail2.newData = projectDetail.customer.customer_email_2 || ''),
+                                (editCustomerEmail2.focus = true)"
+                      >
+                        {{ projectDetail.customer.customer_email_2 || '-' }}
+                      </div>
+                      <v-form
+                        v-else
+                        ref="formEditCustomerEmail2"
+                        v-model="editCustomerEmail2.valid"
+                        lazy-validation
+                      >
+                        <v-text-field
+                          v-model="editCustomerEmail2.newData"
+                          :append-icon="editCustomerEmail2.status
+                            ? 'mdi-content-save-outline'
+                            : ''
+                          "
+                          :autofocus="editCustomerEmail2.focus"
+                          dense
+                          outlined
+                          @blur="saveNewCustomerEmail(2)"
+                          @click:append="saveNewCustomerEmail(2)"
+                        />
+                      </v-form>
+                    </v-col>
+                    <!-- อีเมล 3 -->
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <div class="cp-text-description">
+                        อีเมล 3
+                      </div>
+                      <div
+                        v-if="!editCustomerEmail3.focus"
+                        class="box-edit truncate"
+                        @click="(editCustomerEmail3.oldData = projectDetail.customer.customer_email_3 || ''),
+                                (editCustomerEmail3.newData = projectDetail.customer.customer_email_3 || ''),
+                                (editCustomerEmail3.focus = true)"
+                      >
+                        {{ projectDetail.customer.customer_email_3 || '-' }}
+                      </div>
+                      <v-form
+                        v-else
+                        ref="formEditCustomerEmail3"
+                        v-model="editCustomerEmail3.valid"
+                        lazy-validation
+                      >
+                        <v-text-field
+                          v-model="editCustomerEmail3.newData"
+                          :append-icon="editCustomerEmail3.status
+                            ? 'mdi-content-save-outline'
+                            : ''
+                          "
+                          :autofocus="editCustomerEmail3.focus"
+                          dense
+                          outlined
+                          @blur="saveNewCustomerEmail(3)"
+                          @click:append="saveNewCustomerEmail(3)"
                         />
                       </v-form>
                     </v-col>
@@ -367,21 +486,25 @@
 
                 <!-- ข้อมูลเจ้าหน้าที่โครงการ -->
                 <v-col cols="12">
-                  <div class="cp-subtitle pb-4">ข้อมูลเจ้าหน้าที่โครงการ</div>
+                  <div class="cp-subtitle pb-4">
+                    ข้อมูลเจ้าหน้าที่โครงการ
+                  </div>
                   <v-row>
                     <!-- ชื่อ -->
-                    <v-col cols="12" sm="6" md="4">
-                      <div class="cp-text-description">ชื่อ</div>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <div class="cp-text-description">
+                        ชื่อ
+                      </div>
                       <div
                         v-if="!editCoordinatorName.focus"
                         class="box-edit"
-                        @click="
-                          ;(editCoordinatorName.oldData =
-                            projectDetail.coordinator.coordinator_name || ''),
-                            (editCoordinatorName.newData =
-                              projectDetail.coordinator.coordinator_name || ''),
-                            (editCoordinatorName.focus = true)
-                        "
+                        @click="(editCoordinatorName.oldData = projectDetail.coordinator.coordinator_name || ''),
+                                (editCoordinatorName.newData = projectDetail.coordinator.coordinator_name || ''),
+                                (editCoordinatorName.focus = true)"
                       >
                         {{ projectDetail.coordinator.coordinator_name || '-' }}
                       </div>
@@ -393,10 +516,9 @@
                       >
                         <v-text-field
                           v-model="editCoordinatorName.newData"
-                          :append-icon="
-                            editCoordinatorName.status
-                              ? 'mdi-content-save-outline'
-                              : ''
+                          :append-icon="editCoordinatorName.status
+                            ? 'mdi-content-save-outline'
+                            : ''
                           "
                           :autofocus="editCoordinatorName.focus"
                           :rules="editCoordinatorName.rules"
@@ -409,25 +531,26 @@
                     </v-col>
 
                     <!-- เบอร์โทรศัพท์ -->
-                    <v-col cols="12" sm="6" md="3">
-                      <div class="cp-text-description">เบอร์โทรศัพท์</div>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <div class="cp-text-description">
+                        เบอร์โทรศัพท์
+                      </div>
                       <div
                         v-if="!editCoordinatorPhone.focus"
                         class="box-edit"
-                        @click="
-                          ;(editCoordinatorPhone.oldData =
-                            projectDetail.coordinator.coordinator_phone || ''),
-                            (editCoordinatorPhone.newData =
-                              projectDetail.coordinator.coordinator_phone ||
-                              ''),
-                            (editCoordinatorPhone.focus = true)
-                        "
+                        @click="(editCoordinatorPhone.oldData = projectDetail.coordinator.coordinator_phone || ''),
+                                (editCoordinatorPhone.newData = projectDetail.coordinator.coordinator_phone || ''),
+                                (editCoordinatorPhone.focus = true)"
                       >
                         {{
                           projectDetail.coordinator.coordinator_phone
                             ? formatPhoneNumber(
-                                projectDetail.coordinator.coordinator_phone
-                              )
+                              projectDetail.coordinator.coordinator_phone
+                            )
                             : '-'
                         }}
                       </div>
@@ -439,10 +562,9 @@
                       >
                         <v-text-field
                           v-model="editCoordinatorPhone.newData"
-                          :append-icon="
-                            editCoordinatorPhone.status
-                              ? 'mdi-content-save-outline'
-                              : ''
+                          :append-icon="editCoordinatorPhone.status
+                            ? 'mdi-content-save-outline'
+                            : ''
                           "
                           :autofocus="editCoordinatorPhone.focus"
                           :rules="editCoordinatorPhone.rules"
@@ -455,43 +577,119 @@
                         />
                       </v-form>
                     </v-col>
-
-                    <!-- อีเมล -->
-                    <v-col cols="12" sm="6" md="5">
-                      <div class="cp-text-description">อีเมล</div>
+                  </v-row>
+                  <v-row>
+                    <!-- อีเมล 1 -->
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <div class="cp-text-description">
+                        อีเมล 1
+                      </div>
                       <div
-                        v-if="!editCoordinatorEmail.focus"
+                        v-if="!editCoordinatorEmail1.focus"
                         class="box-edit truncate"
-                        @click="
-                          ;(editCoordinatorEmail.oldData =
-                            projectDetail.coordinator.coordinator_email || ''),
-                            (editCoordinatorEmail.newData =
-                              projectDetail.coordinator.coordinator_email ||
-                              ''),
-                            (editCoordinatorEmail.focus = true)
-                        "
+                        @click="(editCoordinatorEmail1.oldData = projectDetail.coordinator.coordinator_email_1 || ''),
+                                (editCoordinatorEmail1.newData = projectDetail.coordinator.coordinator_email_1 || ''),
+                                (editCoordinatorEmail1.focus = true)"
                       >
-                        {{ projectDetail.coordinator.coordinator_email || '-' }}
+                        {{ projectDetail.coordinator.coordinator_email_1 || '-' }}
                       </div>
                       <v-form
                         v-else
-                        ref="formEditCoordinatorEmail"
-                        v-model="editCoordinatorEmail.valid"
+                        ref="formEditCoordinatorEmail1"
+                        v-model="editCoordinatorEmail1.valid"
                         lazy-validation
                       >
                         <v-text-field
-                          v-model="editCoordinatorEmail.newData"
-                          :append-icon="
-                            editCoordinatorEmail.status
-                              ? 'mdi-content-save-outline'
-                              : ''
+                          v-model="editCoordinatorEmail1.newData"
+                          :append-icon="editCoordinatorEmail1.status
+                            ? 'mdi-content-save-outline'
+                            : ''
                           "
-                          :autofocus="editCoordinatorEmail.focus"
-                          :rules="editCoordinatorEmail.rules"
+                          :autofocus="editCoordinatorEmail1.focus"
                           dense
                           outlined
-                          @blur="saveNewCoordinatorEmail()"
-                          @click:append="saveNewCoordinatorEmail()"
+                          @blur="saveNewCoordinatorEmail(1)"
+                          @click:append="saveNewCoordinatorEmail(1)"
+                        />
+                      </v-form>
+                    </v-col>
+                    <!-- อีเมล 2 -->
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <div class="cp-text-description">
+                        อีเมล 2
+                      </div>
+                      <div
+                        v-if="!editCoordinatorEmail2.focus"
+                        class="box-edit truncate"
+                        @click="(editCoordinatorEmail2.oldData = projectDetail.coordinator.coordinator_email_2 || ''),
+                                (editCoordinatorEmail2.newData = projectDetail.coordinator.coordinator_email_2 || ''),
+                                (editCoordinatorEmail2.focus = true)"
+                      >
+                        {{ projectDetail.coordinator.coordinator_email_2 || '-' }}
+                      </div>
+                      <v-form
+                        v-else
+                        ref="formEditCoordinatorEmail2"
+                        v-model="editCoordinatorEmail2.valid"
+                        lazy-validation
+                      >
+                        <v-text-field
+                          v-model="editCoordinatorEmail2.newData"
+                          :append-icon="editCoordinatorEmail2.status
+                            ? 'mdi-content-save-outline'
+                            : ''
+                          "
+                          :autofocus="editCoordinatorEmail2.focus"
+                          dense
+                          outlined
+                          @blur="saveNewCoordinatorEmail(2)"
+                          @click:append="saveNewCoordinatorEmail(2)"
+                        />
+                      </v-form>
+                    </v-col>
+                    <!-- อีเมล 3 -->
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <div class="cp-text-description">
+                        อีเมล 3
+                      </div>
+                      <div
+                        v-if="!editCoordinatorEmail3.focus"
+                        class="box-edit truncate"
+                        @click="(editCoordinatorEmail3.oldData = projectDetail.coordinator.coordinator_email_3 || ''),
+                                (editCoordinatorEmail3.newData = projectDetail.coordinator.coordinator_email_3 || ''),
+                                (editCoordinatorEmail3.focus = true)"
+                      >
+                        {{ projectDetail.coordinator.coordinator_email_3 || '-' }}
+                      </div>
+                      <v-form
+                        v-else
+                        ref="formEditCoordinatorEmail3"
+                        v-model="editCoordinatorEmail3.valid"
+                        lazy-validation
+                      >
+                        <v-text-field
+                          v-model="editCoordinatorEmail3.newData"
+                          :append-icon="editCoordinatorEmail3.status
+                            ? 'mdi-content-save-outline'
+                            : ''
+                          "
+                          :autofocus="editCoordinatorEmail3.focus"
+                          dense
+                          outlined
+                          @blur="saveNewCoordinatorEmail(3)"
+                          @click:append="saveNewCoordinatorEmail(3)"
                         />
                       </v-form>
                     </v-col>
@@ -504,7 +702,9 @@
           <!-- Project Team -->
           <v-col cols="12">
             <cp-card-max class="pa-6">
-              <div class="cp-title pl-4">หัวหน้าทีม</div>
+              <div class="cp-title pl-4">
+                หัวหน้าทีม
+              </div>
               <div
                 v-if="projectTeams.supervisor.length === 0 && role == 'Checker'"
                 class="cp-no-team-no-action"
@@ -516,14 +716,19 @@
                   v-if="projectTeams.supervisor.length === 0"
                   class="cp-no-team"
                   @click="
-                    ;(addTeams.dialog = true),
-                      (addTeams.teamSelectType = 'supervisor')
-                  "
+                  ; (addTeams.dialog = true),
+                  (addTeams.teamSelectType = 'supervisor') "
                 >
                   <span class="ml-2">เพิ่มหัวหน้าทีม</span>
                 </div>
-                <div v-else class="pa-4 d-flex align-center">
-                  <v-avatar size="55" color="primary">
+                <div
+                  v-else
+                  class="pa-4 d-flex align-center"
+                >
+                  <v-avatar
+                    size="55"
+                    color="primary"
+                  >
                     <v-img
                       v-if="projectTeams.supervisor[0].avatar_path"
                       :src="projectTeams.supervisor[0].avatar_path"
@@ -542,10 +747,9 @@
                       <span class="ml-1">
                         {{
                           projectTeams.supervisor[0].first_name +
-                          ' ' +
-                          projectTeams.supervisor[0].last_name
-                        }}</span
-                      >
+                            ' ' +
+                            projectTeams.supervisor[0].last_name
+                        }}</span>
                     </div>
 
                     <div class="green--text">
@@ -565,8 +769,8 @@
                       color="primary"
                       outlined
                       @click="
-                        ;(addTeams.dialog = true),
-                          (addTeams.teamSelectType = 'supervisor')
+                      ; (addTeams.dialog = true),
+                      (addTeams.teamSelectType = 'supervisor')
                       "
                     >
                       เปลี่ยน
@@ -595,12 +799,14 @@
                       height="36"
                       color="primary"
                       @click="
-                        ;(addTeams.dialog = true),
-                          (addTeams.teamSelectType = 'checker')
+                       ; (addTeams.dialog = true),
+                      (addTeams.teamSelectType = 'checker')
                       "
                     >
                       <div class="cp-text-capitalize">
-                        <v-icon left>mdi-plus</v-icon>
+                        <v-icon left>
+                          mdi-plus
+                        </v-icon>
                         เพิ่ม Checker
                       </div>
                     </v-btn>
@@ -609,8 +815,14 @@
 
                 <template #item.first_name="{ item }">
                   <div class="col-user">
-                    <v-avatar size="40" color="primary">
-                      <img v-if="item.avatar_path" :src="item.avatar_path" />
+                    <v-avatar
+                      size="40"
+                      color="primary"
+                    >
+                      <img
+                        v-if="item.avatar_path"
+                        :src="item.avatar_path"
+                      >
                       <v-img
                         v-else
                         :src="require('@/assets/images/no-avatar.png')"
@@ -636,20 +848,26 @@
                       v-if="role != 'Checker'"
                       small
                       @click="
-                        ;(deleteTeamChecker.dialog = true),
-                          (deleteTeamChecker.data = item)
+                      ; (deleteTeamChecker.dialog = true),
+                      (deleteTeamChecker.data = item)
                       "
                     >
                       mdi-trash-can-outline
                     </v-icon>
-                    <v-icon v-else disabled small>
+                    <v-icon
+                      v-else
+                      disabled
+                      small
+                    >
                       mdi-delete-off-outline
                     </v-icon>
                   </cp-col>
                 </template>
 
                 <template #no-data>
-                  <div class="my-6">ไม่มีข้อมูลทีม Checker</div>
+                  <div class="my-6">
+                    ไม่มีข้อมูลทีม Checker
+                  </div>
                 </template>
               </v-data-table>
             </cp-card-max>
@@ -658,9 +876,16 @@
       </v-col>
 
       <!-- ไฟล์ภาพของโปรเจค -->
-      <v-col cols="12" sm="4" md="4" lg="4">
+      <v-col
+        cols="12"
+        sm="4"
+        md="4"
+        lg="4"
+      >
         <cp-card-max class="pa-6">
-          <div class="cp-subtitle pb-4">ไฟล์ภาพของโปรเจค</div>
+          <div class="cp-subtitle pb-4">
+            ไฟล์ภาพของโปรเจค
+          </div>
           <v-row>
             <v-col cols="12">
               <input
@@ -669,11 +894,16 @@
                 style="display: none"
                 accept="image/*"
                 @change="uploadImage"
-              />
+              >
               <cp-label> รูปโปรเจค </cp-label>
-              <div v-if="projectFile.mainPreview" class="image-zone">
-                <v-img :src="projectFile.mainPreview" aspect-ratio="1.6">
-                </v-img>
+              <div
+                v-if="projectFile.mainPreview"
+                class="image-zone"
+              >
+                <v-img
+                  :src="projectFile.mainPreview"
+                  aspect-ratio="1.6"
+                />
               </div>
               <div
                 v-else-if="!projectFile.main"
@@ -681,24 +911,38 @@
                 @click="openImageInput(), (projectFile.uploadType = 'main')"
               >
                 <div class="text-center">
-                  <v-icon size="32" class="upload-icon">
+                  <v-icon
+                    size="32"
+                    class="upload-icon"
+                  >
                     mdi-cloud-upload-outline
                   </v-icon>
                   <div>อัพโหลดรูป</div>
                 </div>
               </div>
-              <div v-else class="image-zone">
+              <div
+                v-else
+                class="image-zone"
+              >
                 <v-img
                   :src="projectFile.main.src"
                   aspect-ratio="1.6"
-                  @click=";(projectFile.dialog = true), (projectFile.show = 0)"
+                  @click="; (projectFile.dialog = true), (projectFile.show = 0)"
                 >
                   <div class="cp-img">
-                    <v-icon color="white" large> mdi-arrow-expand-all </v-icon>
+                    <v-icon
+                      color="white"
+                      large
+                    >
+                      mdi-arrow-expand-all
+                    </v-icon>
                   </div>
                 </v-img>
               </div>
-              <div v-if="projectFile.main" class="pt-2 d-flex">
+              <div
+                v-if="projectFile.main"
+                class="pt-2 d-flex"
+              >
                 <v-spacer />
                 <v-btn
                   icon
@@ -709,8 +953,8 @@
                 <v-btn
                   icon
                   @click="
-                    ;(projectFile.delete.dialog = true),
-                      (projectFile.delete.fileData = projectFile.main)
+                  ; (projectFile.delete.dialog = true),
+                  (projectFile.delete.fileData = projectFile.main)
                   "
                 >
                   <v-icon>mdi-trash-can-outline</v-icon>
@@ -742,15 +986,20 @@
               </div>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col
+              cols="12"
+              md="6"
+            >
               <cp-label> แปลนที่ 1 </cp-label>
-              <div v-if="projectFile.plan1Preview" class="image-zone">
+              <div
+                v-if="projectFile.plan1Preview"
+                class="image-zone"
+              >
                 <v-img
                   :src="projectFile.plan1Preview"
                   aspect-ratio="1.6"
                   contain
-                >
-                </v-img>
+                />
               </div>
               <div
                 v-else-if="!projectFile.plan1"
@@ -758,25 +1007,36 @@
                 @click="openImageInput(), (projectFile.uploadType = 'plan1')"
               >
                 <div class="text-center">
-                  <v-icon size="32" class="upload-icon">
+                  <v-icon
+                    size="32"
+                    class="upload-icon"
+                  >
                     mdi-cloud-upload-outline
                   </v-icon>
                   <div>อัพโหลดรูป</div>
                 </div>
               </div>
-              <div v-else class="image-zone">
+              <div
+                v-else
+                class="image-zone"
+              >
                 <v-img
                   :src="projectFile.plan1"
                   aspect-ratio="1.6"
                   contain
-                  @click=";(projectFile.dialog = true), (projectFile.show = 1)"
+                  @click="; (projectFile.dialog = true), (projectFile.show = 1)"
                 >
                   <div class="cp-img">
-                    <v-icon color="white"> mdi-arrow-expand-all </v-icon>
+                    <v-icon color="white">
+                      mdi-arrow-expand-all
+                    </v-icon>
                   </div>
                 </v-img>
               </div>
-              <div v-if="projectFile.plan1" class="pt-2 d-flex justify-end">
+              <div
+                v-if="projectFile.plan1"
+                class="pt-2 d-flex justify-end"
+              >
                 <v-btn
                   icon
                   @click="onDonwloadImage(projectFile.plan1.src, 'รูปแปลน-1')"
@@ -787,8 +1047,8 @@
                   v-if="!projectFile.plan2"
                   icon
                   @click="
-                    ;(projectFile.delete.dialog = true),
-                      (projectFile.delete.fileData = projectFile.plan1)
+                  ; (projectFile.delete.dialog = true),
+                  (projectFile.delete.fileData = projectFile.plan1)
                   "
                 >
                   <v-icon>mdi-trash-can-outline</v-icon>
@@ -820,23 +1080,34 @@
               </div>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col
+              cols="12"
+              md="6"
+            >
               <cp-label> แปลนที่ 2 </cp-label>
-              <div v-if="!projectFile.plan1" class="file-card-upload-disable">
+              <div
+                v-if="!projectFile.plan1"
+                class="file-card-upload-disable"
+              >
                 <div class="text-center">
-                  <v-icon size="32" color="grey lighten-2">
+                  <v-icon
+                    size="32"
+                    color="grey lighten-2"
+                  >
                     mdi-cloud-upload-outline
                   </v-icon>
                   <div>อัพโหลดแปลน 1 ก่อน</div>
                 </div>
               </div>
-              <div v-else-if="projectFile.plan2Preview" class="image-zone">
+              <div
+                v-else-if="projectFile.plan2Preview"
+                class="image-zone"
+              >
                 <v-img
                   :src="projectFile.plan2Preview"
                   aspect-ratio="1.6"
                   contain
-                >
-                </v-img>
+                />
               </div>
               <div
                 v-else-if="!projectFile.plan2"
@@ -844,25 +1115,36 @@
                 @click="openImageInput(), (projectFile.uploadType = 'plan2')"
               >
                 <div class="text-center">
-                  <v-icon size="32" class="upload-icon">
+                  <v-icon
+                    size="32"
+                    class="upload-icon"
+                  >
                     mdi-cloud-upload-outline
                   </v-icon>
                   <div>อัพโหลดรูป</div>
                 </div>
               </div>
-              <div v-else class="image-zone">
+              <div
+                v-else
+                class="image-zone"
+              >
                 <v-img
                   :src="projectFile.plan2"
                   aspect-ratio="1.6"
                   contain
-                  @click=";(projectFile.dialog = true), (projectFile.show = 2)"
+                  @click="; (projectFile.dialog = true), (projectFile.show = 2)"
                 >
                   <div class="cp-img">
-                    <v-icon color="white"> mdi-arrow-expand-all </v-icon>
+                    <v-icon color="white">
+                      mdi-arrow-expand-all
+                    </v-icon>
                   </div>
                 </v-img>
               </div>
-              <div v-if="projectFile.plan2" class="pt-2 d-flex justify-end">
+              <div
+                v-if="projectFile.plan2"
+                class="pt-2 d-flex justify-end"
+              >
                 <v-btn
                   icon
                   @click="onDonwloadImage(projectFile.plan2.src, 'รูปแปลน-2')"
@@ -873,8 +1155,8 @@
                   v-if="!projectFile.plan3"
                   icon
                   @click="
-                    ;(projectFile.delete.dialog = true),
-                      (projectFile.delete.fileData = projectFile.plan2)
+                    ; (projectFile.delete.dialog = true),
+                  (projectFile.delete.fileData = projectFile.plan2)
                   "
                 >
                   <v-icon>mdi-trash-can-outline</v-icon>
@@ -906,23 +1188,34 @@
               </div>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col
+              cols="12"
+              md="6"
+            >
               <cp-label> แปลนที่ 3 </cp-label>
-              <div v-if="!projectFile.plan2" class="file-card-upload-disable">
+              <div
+                v-if="!projectFile.plan2"
+                class="file-card-upload-disable"
+              >
                 <div class="text-center">
-                  <v-icon size="32" color="grey lighten-2">
+                  <v-icon
+                    size="32"
+                    color="grey lighten-2"
+                  >
                     mdi-cloud-upload-outline
                   </v-icon>
                   <div>อัพโหลดแปลน 2 ก่อน</div>
                 </div>
               </div>
-              <div v-else-if="projectFile.plan3Preview" class="image-zone">
+              <div
+                v-else-if="projectFile.plan3Preview"
+                class="image-zone"
+              >
                 <v-img
                   :src="projectFile.plan3Preview"
                   aspect-ratio="1.6"
                   contain
-                >
-                </v-img>
+                />
               </div>
               <div
                 v-else-if="!projectFile.plan3"
@@ -930,25 +1223,36 @@
                 @click="openImageInput(), (projectFile.uploadType = 'plan3')"
               >
                 <div class="text-center">
-                  <v-icon size="32" class="upload-icon">
+                  <v-icon
+                    size="32"
+                    class="upload-icon"
+                  >
                     mdi-cloud-upload-outline
                   </v-icon>
                   <div>อัพโหลดรูป</div>
                 </div>
               </div>
-              <div v-else class="image-zone">
+              <div
+                v-else
+                class="image-zone"
+              >
                 <v-img
                   :src="projectFile.plan3"
                   aspect-ratio="1.6"
                   contain
-                  @click=";(projectFile.dialog = true), (projectFile.show = 3)"
+                  @click="; (projectFile.dialog = true), (projectFile.show = 3)"
                 >
                   <div class="cp-img">
-                    <v-icon color="white"> mdi-arrow-expand-all </v-icon>
+                    <v-icon color="white">
+                      mdi-arrow-expand-all
+                    </v-icon>
                   </div>
                 </v-img>
               </div>
-              <div v-if="projectFile.plan3" class="pt-2 d-flex justify-end">
+              <div
+                v-if="projectFile.plan3"
+                class="pt-2 d-flex justify-end"
+              >
                 <v-btn
                   icon
                   @click="onDonwloadImage(projectFile.plan3.src, 'รูปแปลน-3')"
@@ -959,8 +1263,8 @@
                   v-if="!projectFile.plan4"
                   icon
                   @click="
-                    ;(projectFile.delete.dialog = true),
-                      (projectFile.delete.fileData = projectFile.plan3)
+                  ; (projectFile.delete.dialog = true),
+                  (projectFile.delete.fileData = projectFile.plan3)
                   "
                 >
                   <v-icon>mdi-trash-can-outline</v-icon>
@@ -992,23 +1296,34 @@
               </div>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col
+              cols="12"
+              md="6"
+            >
               <cp-label> แปลนที่ 4 </cp-label>
-              <div v-if="!projectFile.plan3" class="file-card-upload-disable">
+              <div
+                v-if="!projectFile.plan3"
+                class="file-card-upload-disable"
+              >
                 <div class="text-center">
-                  <v-icon size="32" color="grey lighten-2">
+                  <v-icon
+                    size="32"
+                    color="grey lighten-2"
+                  >
                     mdi-cloud-upload-outline
                   </v-icon>
                   <div>อัพโหลดแปลน 3 ก่อน</div>
                 </div>
               </div>
-              <div v-else-if="projectFile.plan4Preview" class="image-zone">
+              <div
+                v-else-if="projectFile.plan4Preview"
+                class="image-zone"
+              >
                 <v-img
                   :src="projectFile.plan4Preview"
                   aspect-ratio="1.6"
                   contain
-                >
-                </v-img>
+                />
               </div>
               <div
                 v-else-if="!projectFile.plan4"
@@ -1016,25 +1331,36 @@
                 @click="openImageInput(), (projectFile.uploadType = 'plan4')"
               >
                 <div class="text-center">
-                  <v-icon size="32" class="upload-icon">
+                  <v-icon
+                    size="32"
+                    class="upload-icon"
+                  >
                     mdi-cloud-upload-outline
                   </v-icon>
                   <div>อัพโหลดรูป</div>
                 </div>
               </div>
-              <div v-else class="image-zone">
+              <div
+                v-else
+                class="image-zone"
+              >
                 <v-img
                   :src="projectFile.plan4"
                   aspect-ratio="1.6"
                   contain
-                  @click=";(projectFile.dialog = true), (projectFile.show = 4)"
+                  @click="; (projectFile.dialog = true), (projectFile.show = 4)"
                 >
                   <div class="cp-img">
-                    <v-icon color="white"> mdi-arrow-expand-all </v-icon>
+                    <v-icon color="white">
+                      mdi-arrow-expand-all
+                    </v-icon>
                   </div>
                 </v-img>
               </div>
-              <div v-if="projectFile.plan4" class="pt-2 d-flex justify-end">
+              <div
+                v-if="projectFile.plan4"
+                class="pt-2 d-flex justify-end"
+              >
                 <v-btn
                   icon
                   @click="onDonwloadImage(projectFile.plan4.src, 'รูปแปลน-4')"
@@ -1044,8 +1370,8 @@
                 <v-btn
                   icon
                   @click="
-                    ;(projectFile.delete.dialog = true),
-                      (projectFile.delete.fileData = projectFile.plan4)
+                  ; (projectFile.delete.dialog = true),
+                  (projectFile.delete.fileData = projectFile.plan4)
                   "
                 >
                   <v-icon>mdi-trash-can-outline</v-icon>
@@ -1084,14 +1410,18 @@
     <!-- รายการตรวจ -->
     <v-row v-if="projectDetail">
       <v-col cols="12">
-        <cp-card class="pa-6" style="height: 100%">
+        <cp-card
+          class="pa-6"
+          style="height: 100%"
+        >
           <div class="d-flex pb-4">
-            <div class="cp-subtitle pb-4">รายการตรวจ</div>
+            <div class="cp-subtitle pb-4">
+              รายการตรวจ
+            </div>
             <v-spacer />
             <v-btn
               v-if="role != 'Checker'"
-              :disabled="
-                projectDetail.project_status == 'in-progress' ||
+              :disabled="projectDetail.project_status == 'in-progress' ||
                 projectDetail.project_status == 'report-approval' ||
                 (projectDetail.project_status == 'to-do' &&
                   projectTeams.supervisor.length === 0 &&
@@ -1101,13 +1431,18 @@
               elevation="0"
               @click="projectInspection.dialog = true"
             >
-              <v-icon left>mdi-list-box-outline</v-icon>
+              <v-icon left>
+                mdi-list-box-outline
+              </v-icon>
               สร้างรายการตรวจสอบ
             </v-btn>
           </div>
 
           <div v-if="projectInspection.inspectionList.length === 0">
-            <v-card elevation="0" color="grey lighten-5">
+            <v-card
+              elevation="0"
+              color="grey lighten-5"
+            >
               <v-card-text>
                 <div class="text-center cp-text-disable py-6">
                   ไม่มีข้อมูลรายการตรวจ
@@ -1155,17 +1490,28 @@
               </div>
               <v-spacer />
               <!-- Menu -->
-              <v-menu :close-on-content-click="false" bottom left>
+              <v-menu
+                :close-on-content-click="false"
+                bottom
+                left
+              >
                 <template #activator="{ on, attrs }">
-                  <v-btn small icon v-bind="attrs" v-on="on">
+                  <v-btn
+                    small
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                  >
                     <v-icon>mdi-dots-horizontal</v-icon>
                   </v-btn>
                 </template>
-                <v-list dense nav>
+                <v-list
+                  dense
+                  nav
+                >
                   <div v-if="!list.report_id">
                     <v-list-item
-                      v-if="
-                        role == 'Project Manager' ||
+                      v-if="role == 'Project Manager' ||
                         role == 'Admin' ||
                         role == 'Supervisor'
                       "
@@ -1187,22 +1533,17 @@
                     </v-list-item>
                   </div>
                   <div
-                    v-if="
-                      role == 'Project Manager' ||
+                    v-if="role == 'Project Manager' ||
                       role == 'Admin' ||
                       role == 'Supervisor'
                     "
                   >
                     <div
-                      v-if="
-                        projectInspection.inspectionList.length ==
+                      v-if="projectInspection.inspectionList.length ==
                         list.inspection_no
                       "
                       class="delete-inspection"
-                      @click="
-                        ;(deleteInspection.dialog = true),
-                          (deleteInspection.inspectionData = list)
-                      "
+                      @click="; (deleteInspection.dialog = true), (deleteInspection.inspectionData = list)"
                     >
                       ลบรายการตรวจ
                     </div>
@@ -1225,27 +1566,73 @@
             <v-card-text>
               <v-divider class="mb-4" />
               <v-row>
-                <v-col cols="12" sm="5" md="4">
+                <v-col
+                  cols="12"
+                  sm="5"
+                  md="4"
+                >
                   <div class="pb-4">
                     <b>รายละเอียด : </b>
                   </div>
                   <v-row no-gutters>
-                    <v-col cols="4" sm="4" md="4" lg="4" class="mt-2">
-                      <div class="cp-text-description">สร้างโดย:</div>
+                    <v-col
+                      cols="4"
+                      sm="4"
+                      md="4"
+                      lg="4"
+                      class="mt-2"
+                    >
+                      <div class="cp-text-description">
+                        สร้างโดย:
+                      </div>
                     </v-col>
-                    <v-col cols="8" sm="8" md="8" lg="8" class="mt-2">
+                    <v-col
+                      cols="8"
+                      sm="8"
+                      md="8"
+                      lg="8"
+                      class="mt-2"
+                    >
                       <b>{{ list.created_by.code_name }}</b>
                     </v-col>
-                    <v-col cols="4" sm="4" md="4" lg="4" class="mt-2">
-                      <div class="cp-text-description">วันที่เข้าตรวจ:</div>
+                    <v-col
+                      cols="4"
+                      sm="4"
+                      md="4"
+                      lg="4"
+                      class="mt-2"
+                    >
+                      <div class="cp-text-description">
+                        วันที่เข้าตรวจ:
+                      </div>
                     </v-col>
-                    <v-col cols="8" sm="8" md="8" lg="8" class="mt-2">
+                    <v-col
+                      cols="8"
+                      sm="8"
+                      md="8"
+                      lg="8"
+                      class="mt-2"
+                    >
                       <b>{{ formatDate(list.working_date) }}</b>
                     </v-col>
-                    <v-col cols="4" sm="4" md="4" lg="4" class="mt-2">
-                      <div class="cp-text-description">รายงาน:</div>
+                    <v-col
+                      cols="4"
+                      sm="4"
+                      md="4"
+                      lg="4"
+                      class="mt-2"
+                    >
+                      <div class="cp-text-description">
+                        รายงาน:
+                      </div>
                     </v-col>
-                    <v-col cols="8" sm="8" md="8" lg="8" class="mt-2">
+                    <v-col
+                      cols="8"
+                      sm="8"
+                      md="8"
+                      lg="8"
+                      class="mt-2"
+                    >
                       <div v-if="!list.report_id">
                         <div
                           v-if="projectDetail.project_status == 'to-do'"
@@ -1255,8 +1642,7 @@
                         </div>
                         <div v-else>
                           <cp-link
-                            v-if="
-                              role == 'Project Manager' ||
+                            v-if="role == 'Project Manager' ||
                               role == 'Admin' ||
                               role == 'Supervisor'
                             "
@@ -1270,11 +1656,7 @@
                       <div v-else>
                         <cp-link
                           class="primary--text"
-                          @click="
-                            $router.push(
-                              `/projects/reports/detail?id=${list.report_id}`
-                            )
-                          "
+                          @click="$router.push(`/projects/reports/detail?id=${list.report_id}`)"
                         >
                           ดูรายงาน
                         </cp-link>
@@ -1282,24 +1664,21 @@
                     </v-col>
                   </v-row>
                 </v-col>
-                <v-col cols="12" sm="7" md="8">
+                <v-col
+                  cols="12"
+                  sm="7"
+                  md="8"
+                >
                   <div class="d-flex align-center pb-4">
                     <div><b>หมายเหตุ : </b> รายงาน</div>
                     <v-spacer />
                     <div>
                       <v-btn
-                        :disabled="
-                          list.report_status == 'approval' ||
-                          list.report_status == 'approved'
-                        "
                         color="primary"
                         elevation="0"
                         outlined
                         small
-                        @click="
-                          ;(createInspectionNote.dialog = true),
-                            (createInspectionNote.data = list)
-                        "
+                        @click="; (createInspectionNote.dialog = true), (createInspectionNote.data = list)"
                       >
                         เพิ่มหมายเหตุ
                       </v-btn>
@@ -1325,29 +1704,25 @@
                         <div v-if="!open">
                           {{ item.edit_note_title }}
                         </div>
-                        <div v-else class="cp-text-description">
+                        <div
+                          v-else
+                          class="cp-text-description"
+                        >
                           แก้ไขหมายเหตุ
                         </div>
                       </v-expansion-panel-header>
                       <v-expansion-panel-content>
                         <div class="d-flex">
-                          <v-sheet min-width="40px" class="text-center pr-4">
+                          <v-sheet
+                            min-width="40px"
+                            class="text-center pr-4"
+                          >
                             <div>
                               <v-btn
-                                :disabled="
-                                  i + 1 === 1 ||
-                                  list.report_status == 'approval' ||
-                                  list.report_status == 'approved'
-                                "
+                                :disabled="i + 1 === 1"
                                 icon
                                 color="info"
-                                @click="
-                                  moveLocationItemList(
-                                    'up',
-                                    item.note_id,
-                                    item.inspection_id
-                                  )
-                                "
+                                @click="moveLocationItemList('up', item.note_id, item.inspection_id)"
                               >
                                 <v-icon>mdi-arrow-up-bold</v-icon>
                               </v-btn>
@@ -1357,20 +1732,10 @@
                             </div>
                             <div>
                               <v-btn
-                                :disabled="
-                                  i + 1 === list.inspection_note.length ||
-                                  list.report_status == 'approval' ||
-                                  list.report_status == 'approved'
-                                "
+                                :disabled="i + 1 === list.inspection_note.length"
                                 icon
                                 color="info"
-                                @click="
-                                  moveLocationItemList(
-                                    'down',
-                                    item.note_id,
-                                    item.inspection_id
-                                  )
-                                "
+                                @click="moveLocationItemList('down', item.note_id, item.inspection_id)"
                               >
                                 <v-icon>mdi-arrow-down-bold</v-icon>
                               </v-btn>
@@ -1380,66 +1745,43 @@
                             <v-text-field
                               v-model="item.edit_note_title"
                               :rules="item.titleRules"
-                              :append-icon="
-                                item.edit_note_title === item.note_title
-                                  ? ''
-                                  : 'mdi-sync'
-                              "
-                              :disabled="
-                                list.report_status == 'approval' ||
-                                list.report_status == 'approved'
+                              :append-icon="item.edit_note_title === item.note_title
+                                ? ''
+                                : 'mdi-sync'
                               "
                               counter="80"
                               maxlength="80"
                               outlined
                               dense
-                              @click:append="
-                                item.edit_note_title = item.note_title
-                              "
+                              @click:append="item.edit_note_title = item.note_title"
                             />
                             <v-textarea
                               v-model="item.edit_note_message"
-                              :append-icon="
-                                item.edit_note_message === item.note_message
-                                  ? ''
-                                  : 'mdi-sync'
-                              "
-                              :disabled="
-                                list.report_status == 'approval' ||
-                                list.report_status == 'approved'
+                              :append-icon="item.edit_note_message === item.note_message
+                                ? ''
+                                : 'mdi-sync'
                               "
                               placeholder="เพิ่มรายการหมายเหตุ"
                               rows="5"
                               outlined
                               no-resize
                               hide-details
-                              @click:append="
-                                item.edit_note_message = item.note_message
-                              "
-                            >
-                            </v-textarea>
+                              @click:append=" item.edit_note_message = item.note_message"
+                            />
                             <div class="d-flex align-center pt-4">
                               <v-btn
-                                :disabled="
-                                  list.report_status == 'approval' ||
-                                  list.report_status == 'approved'
-                                "
                                 color="error"
                                 text
                                 small
-                                @click="
-                                  ;(deleteInspectionNote.dialog = true),
-                                    (deleteInspectionNote.data = item)
-                                "
+                                @click="; (deleteInspectionNote.dialog = true), (deleteInspectionNote.data = item)"
                               >
                                 ลบหมายเหตู
                               </v-btn>
                               <v-spacer />
                               <v-btn
-                                :disabled="
-                                  (item.edit_note_title === item.note_title &&
-                                    item.edit_note_message ===
-                                      item.note_message) ||
+                                :disabled="(item.edit_note_title === item.note_title &&
+                                  item.edit_note_message ===
+                                  item.note_message) ||
                                   item.edit_note_title.length === 0
                                 "
                                 color="primary"
@@ -1475,15 +1817,29 @@
         <v-card-title>
           ไฟล์ภาพของโปรเจค
           <v-spacer />
-          <v-btn icon class="mt-n4 mr-n4" @click="projectFile.dialog = false">
+          <v-btn
+            icon
+            class="mt-n4 mr-n4"
+            @click="projectFile.dialog = false"
+          >
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
         <v-card-text>
-          <v-carousel v-model="projectFile.show" hide-delimiters>
-            <v-carousel-item v-for="(item, i) in projectFile.items" :key="i">
+          <v-carousel
+            v-model="projectFile.show"
+            hide-delimiters
+          >
+            <v-carousel-item
+              v-for="(item, i) in projectFile.items"
+              :key="i"
+            >
               <div class="image-zone">
-                <v-img :src="item.src" aspect-ratio="1.6" contain />
+                <v-img
+                  :src="item.src"
+                  aspect-ratio="1.6"
+                  contain
+                />
               </div>
             </v-carousel-item>
           </v-carousel>
@@ -1523,7 +1879,9 @@
               color="error"
               @click="onDeleteProjectFile()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -1587,7 +1945,9 @@
               color="primary"
               @click="onCreateInspection()"
             >
-              <div class="cp-text-capitalize">ยืนยันการสร้าง</div>
+              <div class="cp-text-capitalize">
+                ยืนยันการสร้าง
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -1618,18 +1978,20 @@
           </v-btn>
         </v-card-title>
         <v-card-text>
-          <div class="mb-4">รายการที่จะถูกลบมีดังนี้</div>
-
+          <div class="mb-4">
+            รายการที่จะถูกลบมีดังนี้
+          </div>
           <v-row no-gutters>
-            <v-col cols="4"> รายงาน </v-col>
+            <v-col cols="4">
+              รายงาน
+            </v-col>
             <v-col cols="8">
               <div v-if="deleteInspection.reportDeleteDone">
                 <b class="success--text">ถูกลบแล้ว</b>
               </div>
               <div v-else>
                 <div
-                  v-if="
-                    deleteInspection.loading &&
+                  v-if="deleteInspection.loading &&
                     deleteInspection.inspectionData.report_id
                   "
                 >
@@ -1651,8 +2013,16 @@
               </div>
             </v-col>
 
-            <v-col cols="4" class="mt-2"> Location </v-col>
-            <v-col cols="8" class="mt-2">
+            <v-col
+              cols="4"
+              class="mt-2"
+            >
+              Location
+            </v-col>
+            <v-col
+              cols="8"
+              class="mt-2"
+            >
               <div v-if="deleteInspection.locationDeleteDone">
                 <b class="success--text">ถูกลบแล้ว</b>
               </div>
@@ -1686,8 +2056,16 @@
               </div>
             </v-col>
 
-            <v-col cols="4" class="mt-2"> System </v-col>
-            <v-col cols="8" class="mt-2">
+            <v-col
+              cols="4"
+              class="mt-2"
+            >
+              System
+            </v-col>
+            <v-col
+              cols="8"
+              class="mt-2"
+            >
               <div v-if="deleteInspection.systemDeleteDone">
                 <b class="success--text">ถูกลบแล้ว</b>
               </div>
@@ -1721,8 +2099,16 @@
               </div>
             </v-col>
 
-            <v-col cols="4" class="mt-2"> Location Deflect </v-col>
-            <v-col cols="8" class="mt-2">
+            <v-col
+              cols="4"
+              class="mt-2"
+            >
+              Location Deflect
+            </v-col>
+            <v-col
+              cols="8"
+              class="mt-2"
+            >
               <div v-if="deleteInspection.loading">
                 <v-progress-linear
                   v-model="deleteInspection.locationProgress"
@@ -1753,8 +2139,16 @@
               </div>
             </v-col>
 
-            <v-col cols="4" class="mt-2"> System Deflect </v-col>
-            <v-col cols="8" class="mt-2">
+            <v-col
+              cols="4"
+              class="mt-2"
+            >
+              System Deflect
+            </v-col>
+            <v-col
+              cols="8"
+              class="mt-2"
+            >
               <div v-if="deleteInspection.loading">
                 <v-progress-linear
                   v-model="deleteInspection.systemProgress"
@@ -1797,7 +2191,9 @@
               color="error"
               @click="onDeleteInspection()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -1827,7 +2223,10 @@
           </v-btn>
         </v-card-title>
         <v-card-text>
-          <div v-if="addTeams.teamList.length == 0" class="no-teams-list">
+          <div
+            v-if="addTeams.teamList.length == 0"
+            class="no-teams-list"
+          >
             ไม่มีรายการทีมงานเหลือแล้ว
           </div>
           <v-list v-else>
@@ -1839,15 +2238,26 @@
               @click="addTeamsSelect(item)"
             >
               <v-list-item-action>
-                <v-icon v-if="item.active" color="primary">
+                <v-icon
+                  v-if="item.active"
+                  color="primary"
+                >
                   mdi-checkbox-marked
                 </v-icon>
-                <v-icon v-else>mdi-checkbox-blank-outline</v-icon>
+                <v-icon v-else>
+                  mdi-checkbox-blank-outline
+                </v-icon>
               </v-list-item-action>
 
               <v-list-item-avatar>
-                <img v-if="item.avatar_path" :src="item.avatar_path" />
-                <v-img v-else :src="require('@/assets/images/no-avatar.png')" />
+                <img
+                  v-if="item.avatar_path"
+                  :src="item.avatar_path"
+                >
+                <v-img
+                  v-else
+                  :src="require('@/assets/images/no-avatar.png')"
+                />
               </v-list-item-avatar>
 
               <v-list-item-content>
@@ -1919,7 +2329,9 @@
               color="error"
               @click="onDeleteProjectTeamChecker()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -2012,7 +2424,9 @@
               color="error"
               @click="onDeleteInspectionNote()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -2140,7 +2554,33 @@ export default {
         status: false,
         valid: false,
       },
-      editCustomerEmail: {
+      editCustomerEmail1: {
+        oldData: '',
+        newData: '',
+        rules: [
+          (v) =>
+            /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/.test(v) ||
+            v.length === 0 ||
+            'กรอกอีเมลที่ถูกต้อง',
+        ],
+        focus: false,
+        status: false,
+        valid: false,
+      },
+      editCustomerEmail2: {
+        oldData: '',
+        newData: '',
+        rules: [
+          (v) =>
+            /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/.test(v) ||
+            v.length === 0 ||
+            'กรอกอีเมลที่ถูกต้อง',
+        ],
+        focus: false,
+        status: false,
+        valid: false,
+      },
+      editCustomerEmail3: {
         oldData: '',
         newData: '',
         rules: [
@@ -2177,7 +2617,33 @@ export default {
         status: false,
         valid: false,
       },
-      editCoordinatorEmail: {
+      editCoordinatorEmail1: {
+        oldData: '',
+        newData: '',
+        rules: [
+          (v) =>
+            /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/.test(v) ||
+            v.length === 0 ||
+            'กรอกอีเมลที่ถูกต้อง',
+        ],
+        focus: false,
+        status: false,
+        valid: false,
+      },
+      editCoordinatorEmail2: {
+        oldData: '',
+        newData: '',
+        rules: [
+          (v) =>
+            /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/.test(v) ||
+            v.length === 0 ||
+            'กรอกอีเมลที่ถูกต้อง',
+        ],
+        focus: false,
+        status: false,
+        valid: false,
+      },
+      editCoordinatorEmail3: {
         oldData: '',
         newData: '',
         rules: [
@@ -2282,9 +2748,17 @@ export default {
       this.editCustomerPhone.status =
         newValue !== this.editCustomerPhone.oldData
     },
-    'editCustomerEmail.newData'(newValue) {
-      this.editCustomerEmail.status =
-        newValue !== this.editCustomerEmail.oldData
+    'editCustomerEmail1.newData'(newValue) {
+      this.editCustomerEmail1.status =
+        newValue !== this.editCustomerEmail1.oldData
+    },
+    'editCustomerEmail2.newData'(newValue) {
+      this.editCustomerEmail2.status =
+        newValue !== this.editCustomerEmail2.oldData
+    },
+    'editCustomerEmail3.newData'(newValue) {
+      this.editCustomerEmail3.status =
+        newValue !== this.editCustomerEmail3.oldData
     },
     'editCoordinatorName.newData'(newValue) {
       this.editCoordinatorName.status =
@@ -2294,9 +2768,17 @@ export default {
       this.editCoordinatorPhone.status =
         newValue !== this.editCoordinatorPhone.oldData
     },
-    'editCoordinatorEmail.newData'(newValue) {
-      this.editCoordinatorEmail.status =
-        newValue !== this.editCoordinatorEmail.oldData
+    'editCoordinatorEmail1.newData'(newValue) {
+      this.editCoordinatorEmail1.status =
+        newValue !== this.editCoordinatorEmail1.oldData
+    },
+    'editCoordinatorEmail2.newData'(newValue) {
+      this.editCoordinatorEmail2.status =
+        newValue !== this.editCoordinatorEmail2.oldData
+    },
+    'editCoordinatorEmail3.newData'(newValue) {
+      this.editCoordinatorEmail3.status =
+        newValue !== this.editCoordinatorEmail3.oldData
     },
     async 'addTeams.dialog'(newValue) {
       if (newValue) {
@@ -2440,6 +2922,26 @@ export default {
             }
           )
           .then(({ data }) => {
+            if (data.data.customer.customer_email) {
+              const customerEmail = data.data.customer.customer_email.split(",");
+              data.data.customer.customer_email_1 = customerEmail[0] || null;
+              data.data.customer.customer_email_2 = customerEmail[1] || null;
+              data.data.customer.customer_email_3 = customerEmail[2] || null;
+            } else {
+              data.data.customer.customer_email_1 = null;
+              data.data.customer.customer_email_2 = null;
+              data.data.customer.customer_email_3 = null;
+            }
+            if (data.data.coordinator.coordinator_email) {
+              const coordinatorEmail = data.data.coordinator.coordinator_email.split(",");
+              data.data.coordinator.coordinator_email_1 = coordinatorEmail[0] || null;
+              data.data.coordinator.coordinator_email_2 = coordinatorEmail[1] || null;
+              data.data.coordinator.coordinator_email_3 = coordinatorEmail[2] || null;
+            } else {
+              data.data.coordinator.coordinator_email_1 = null;
+              data.data.coordinator.coordinator_email_2 = null;
+              data.data.coordinator.coordinator_email_3 = null;
+            }
             this.projectDetail = data.data
             if (this.projectDetail.checker_supervisor.code_name) {
               this.projectTeams.supervisor = []
@@ -2607,7 +3109,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.projectDetail.project_name =
                 this.editProjectName.newData.trim()
               this.editProjectName.oldData = ''
@@ -2650,7 +3152,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.projectDetail.project_note =
                 this.editProjectNote.newData.trim()
               this.editProjectNote.oldData = ''
@@ -2693,7 +3195,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.projectDetail.type_address =
                 this.editTypeAddress.newData.trim()
               this.editTypeAddress.oldData = ''
@@ -2740,7 +3242,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.projectDetail.type_usable_area = parseInt(
                 this.editTypeUsableArea.newData,
                 10
@@ -2788,7 +3290,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.projectDetail.customer.customer_name =
                 this.editCustomerName.newData.trim()
               this.editCustomerName.oldData = ''
@@ -2830,7 +3332,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.projectDetail.customer.customer_phone =
                 this.editCustomerPhone.newData.trim()
               this.editCustomerPhone.oldData = ''
@@ -2855,16 +3357,28 @@ export default {
       }
     },
 
-    async saveNewCustomerEmail() {
-      if (this.editCustomerEmail.valid && this.editCustomerEmail.status) {
+    async saveNewCustomerEmail(mailNumber) {
+      if (this.editCustomerEmail1.status || this.editCustomerEmail2.status || this.editCustomerEmail3.status) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
+          if (mailNumber === 1) {
+            this.projectDetail.customer.customer_email_1 = this.editCustomerEmail1.newData.trim()
+          } else if (mailNumber === 2) {
+            this.projectDetail.customer.customer_email_2 = this.editCustomerEmail2.newData.trim()
+          } else if (mailNumber === 3) {
+            this.projectDetail.customer.customer_email_3 = this.editCustomerEmail3.newData.trim()
+          }
+          const groupCustomerEmail = [
+            this.projectDetail.customer.customer_email_1, 
+            this.projectDetail.customer.customer_email_2, 
+            this.projectDetail.customer.customer_email_3
+          ].filter(email => email).join(",");
           this.$axios
             .post(
               `${process.env.API_ENDPOINT}/v1/project/edit/customer-email`,
               {
                 project_id: this.$route.query.id,
-                customer_email: this.editCustomerEmail.newData.trim(),
+                customer_email: groupCustomerEmail,
               },
               {
                 headers: {
@@ -2872,13 +3386,23 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
-              this.projectDetail.customer.customer_email =
-                this.editCustomerEmail.newData.trim()
-              this.editCustomerEmail.oldData = ''
-              this.editCustomerEmail.newData = ''
-              this.editCustomerEmail.status = false
-              this.editCustomerEmail.focus = false
+            .then(() => {
+              this.editCustomerEmail1.oldData = ''
+              this.editCustomerEmail1.newData = ''
+              this.editCustomerEmail1.status = false
+              this.editCustomerEmail1.focus = false
+
+              this.editCustomerEmail2.oldData = ''
+              this.editCustomerEmail2.newData = ''
+              this.editCustomerEmail2.status = false
+              this.editCustomerEmail2.focus = false
+
+              this.editCustomerEmail3.oldData = ''
+              this.editCustomerEmail3.newData = ''
+              this.editCustomerEmail3.status = false
+              this.editCustomerEmail3.focus = false
+
+              this.getProjectDetail()
             })
             .catch(({ response }) => {
               this.onNotify({
@@ -2890,10 +3414,20 @@ export default {
             })
         }
       } else {
-        this.editCustomerEmail.oldData = ''
-        this.editCustomerEmail.newData = ''
-        this.editCustomerEmail.status = false
-        this.editCustomerEmail.focus = false
+        this.editCustomerEmail1.oldData = ''
+        this.editCustomerEmail1.newData = ''
+        this.editCustomerEmail1.status = false
+        this.editCustomerEmail1.focus = false
+
+        this.editCustomerEmail2.oldData = ''
+        this.editCustomerEmail2.newData = ''
+        this.editCustomerEmail2.status = false
+        this.editCustomerEmail2.focus = false
+
+        this.editCustomerEmail3.oldData = ''
+        this.editCustomerEmail3.newData = ''
+        this.editCustomerEmail3.status = false
+        this.editCustomerEmail3.focus = false
       }
     },
 
@@ -2914,7 +3448,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.projectDetail.coordinator.coordinator_name =
                 this.editCoordinatorName.newData.trim()
               this.editCoordinatorName.oldData = ''
@@ -2956,7 +3490,7 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.projectDetail.coordinator.coordinator_phone =
                 this.editCoordinatorPhone.newData.trim()
               this.editCoordinatorPhone.oldData = ''
@@ -2981,16 +3515,28 @@ export default {
       }
     },
 
-    async saveNewCoordinatorEmail() {
-      if (this.editCoordinatorEmail.valid && this.editCoordinatorEmail.status) {
+    async saveNewCoordinatorEmail(mailNumber) {
+      if (this.editCoordinatorEmail1.status || this.editCoordinatorEmail2.status || this.editCoordinatorEmail3.status) {
         const accessToken = await this.getAccessToken()
         if (accessToken) {
+          if (mailNumber === 1) {
+            this.projectDetail.coordinator.coordinator_email_1 = this.editCoordinatorEmail1.newData.trim()
+          } else if (mailNumber === 2) {
+            this.projectDetail.coordinator.coordinator_email_2 = this.editCoordinatorEmail2.newData.trim()
+          } else if (mailNumber === 3) {
+            this.projectDetail.coordinator.coordinator_email_3 = this.editCoordinatorEmail3.newData.trim()
+          }
+          const groupCoordinatorEmail = [
+            this.projectDetail.coordinator.coordinator_email_1, 
+            this.projectDetail.coordinator.coordinator_email_2, 
+            this.projectDetail.coordinator.coordinator_email_3
+          ].filter(email => email).join(",");
           this.$axios
             .post(
               `${process.env.API_ENDPOINT}/v1/project/edit/coordinator-email`,
               {
                 project_id: this.$route.query.id,
-                coordinator_email: this.editCoordinatorEmail.newData.trim(),
+                coordinator_email: groupCoordinatorEmail,
               },
               {
                 headers: {
@@ -2998,13 +3544,23 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
-              this.projectDetail.coordinator.coordinator_email =
-                this.editCoordinatorEmail.newData.trim()
-              this.editCoordinatorEmail.oldData = ''
-              this.editCoordinatorEmail.newData = ''
-              this.editCoordinatorEmail.status = false
-              this.editCoordinatorEmail.focus = false
+            .then(() => {
+              this.editCoordinatorEmail1.oldData = ''
+              this.editCoordinatorEmail1.newData = ''
+              this.editCoordinatorEmail1.status = false
+              this.editCoordinatorEmail1.focus = false
+
+              this.editCoordinatorEmail2.oldData = ''
+              this.editCoordinatorEmail2.newData = ''
+              this.editCoordinatorEmail2.status = false
+              this.editCoordinatorEmail2.focus = false
+
+              this.editCoordinatorEmail3.oldData = ''
+              this.editCoordinatorEmail3.newData = ''
+              this.editCoordinatorEmail3.status = false
+              this.editCoordinatorEmail3.focus = false
+
+              this.getProjectDetail()
             })
             .catch(({ response }) => {
               this.onNotify({
@@ -3016,10 +3572,20 @@ export default {
             })
         }
       } else {
-        this.editCoordinatorEmail.oldData = ''
-        this.editCoordinatorEmail.newData = ''
-        this.editCoordinatorEmail.status = false
-        this.editCoordinatorEmail.focus = false
+        this.editCoordinatorEmail1.oldData = ''
+        this.editCoordinatorEmail1.newData = ''
+        this.editCoordinatorEmail1.status = false
+        this.editCoordinatorEmail1.focus = false
+
+        this.editCoordinatorEmail2.oldData = ''
+        this.editCoordinatorEmail2.newData = ''
+        this.editCoordinatorEmail2.status = false
+        this.editCoordinatorEmail2.focus = false
+
+        this.editCoordinatorEmail3.oldData = ''
+        this.editCoordinatorEmail3.newData = ''
+        this.editCoordinatorEmail3.status = false
+        this.editCoordinatorEmail3.focus = false
       }
     },
 
@@ -3126,7 +3692,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             if (fileType === 'main') {
               this.projectFile.mainLoading = false
               this.projectFile.mainPreview = null
@@ -3213,7 +3779,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.projectFile.delete.dialog = false
             this.projectFile.delete.loading = false
             this.getProjectFile()
@@ -3314,9 +3880,8 @@ export default {
                 notifyValue: true,
                 type: 'info',
                 title: 'ข้อความจากระบบ',
-                message: `มีรายการตรวจที่ ${
-                  this.projectInspection.inspectionList.length + 1
-                } ในระบบแล้ว ระบบได้ดำเนินการโหลดข้อมูลให้ใหม่สำเร็จ`,
+                message: `มีรายการตรวจที่ ${this.projectInspection.inspectionList.length + 1
+                  } ในระบบแล้ว ระบบได้ดำเนินการโหลดข้อมูลให้ใหม่สำเร็จ`,
               })
               this.projectInspection.loading = false
               this.projectInspection.dialog = false
@@ -3401,7 +3966,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             if (this.addTeams.teamSelectType === 'supervisor') {
               this.getProjectDetail()
             } else if (this.addTeams.teamSelectType === 'checker') {
@@ -3440,12 +4005,12 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.deleteTeamChecker.loading = false
             this.deleteTeamChecker.dialog = false
             this.getCheckerTeam()
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.deleteTeamChecker.loading = false
             this.deleteTeamChecker.dialog = false
             this.onNotify({
@@ -3904,12 +4469,12 @@ export default {
                 },
               }
             )
-            .then(({ data }) => {
+            .then(() => {
               this.createInspectionNote.loading = false
               this.createInspectionNote.dialog = false
               this.getInspectionList()
             })
-            .catch(({ response }) => {
+            .catch(() => {
               this.createInspectionNote.loading = false
               this.onNotify({
                 notifyValue: true,
@@ -3940,12 +4505,12 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.deleteInspectionNote.loading = false
             this.deleteInspectionNote.dialog = false
             this.getInspectionList()
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.deleteInspectionNote.loading = false
             this.onNotify({
               notifyValue: true,
@@ -3977,10 +4542,10 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.getInspectionList()
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.onNotify({
               notifyValue: true,
               type: 'error',
@@ -4009,7 +4574,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.getInspectionList()
           })
           .catch(({ response }) => {
@@ -4033,15 +4598,18 @@ export default {
   text-overflow: ellipsis;
   max-width: 500px;
 }
+
 .box-edit-project-name {
   border-radius: 4px;
   padding: 4px 0;
   transition: all ease 0.3s;
 }
+
 .box-edit-project-name:hover {
   padding: 4px 8px;
   background-color: var(--gray-opacity-1);
 }
+
 .box-no-edit {
   display: flex;
   align-items: center;
@@ -4049,6 +4617,7 @@ export default {
   border-radius: 4px;
   padding: 4px 0;
 }
+
 .box-edit {
   display: flex;
   align-items: center;
@@ -4057,10 +4626,12 @@ export default {
   padding: 4px 0;
   transition: all ease 0.3s;
 }
+
 .box-edit:hover {
   padding: 4px 8px;
   background-color: var(--gray-opacity-1);
 }
+
 .box-edit-note {
   display: flex;
   align-items: center;
@@ -4069,13 +4640,16 @@ export default {
   padding: 4px 0;
   transition: all ease 0.3s;
 }
+
 .box-edit-note:hover {
   padding: 4px 8px;
   background-color: var(--gray-opacity-1);
 }
+
 .image-zone {
   background-color: var(--gray-100);
 }
+
 .file-card-upload-main {
   display: flex;
   align-items: center;
@@ -4088,16 +4662,20 @@ export default {
   color: var(--gray-500);
   transition: all ease 0.3s;
 }
+
 .file-card-upload-main .upload-icon {
   color: var(--gray-500);
 }
+
 .file-card-upload-main:hover {
   border: 3px dotted var(--base-primary);
   color: var(--base-primary);
 }
+
 .file-card-upload-main:hover .upload-icon {
   color: var(--base-primary);
 }
+
 .file-card-upload-disable {
   display: flex;
   align-items: center;
@@ -4108,6 +4686,7 @@ export default {
   border-radius: 4px;
   color: var(--gray-300);
 }
+
 .file-card-upload {
   display: flex;
   align-items: center;
@@ -4120,16 +4699,20 @@ export default {
   color: var(--gray-500);
   transition: all ease 0.3s;
 }
+
 .file-card-upload .upload-icon {
   color: var(--gray-500);
 }
+
 .file-card-upload:hover {
   border: 3px dotted var(--base-primary);
   color: var(--base-primary);
 }
+
 .file-card-upload:hover .upload-icon {
   color: var(--base-primary);
 }
+
 .cp-no-team-no-action {
   width: 300px;
   height: 55px;
@@ -4143,6 +4726,7 @@ export default {
   border: 1px solid var(--gray-200);
   background-color: var(--gray-opacity-1);
 }
+
 .cp-no-team {
   width: 300px;
   height: 55px;
@@ -4157,9 +4741,11 @@ export default {
   background-color: var(--gray-opacity-1);
   transition: all ease 0.3s;
 }
+
 .cp-no-team:hover {
   background-color: var(--gray-opacity-2);
 }
+
 .cp-img {
   display: flex;
   align-items: center;
@@ -4170,10 +4756,12 @@ export default {
   cursor: pointer;
   transition: all ease 0.3s;
 }
+
 .cp-img:hover {
   opacity: 1;
   background-color: var(--gray-opacity-2);
 }
+
 .cp-inspection-no-data {
   display: flex;
   align-items: center;
@@ -4183,6 +4771,7 @@ export default {
   height: 200px;
   background-color: var(--gray-opacity-1);
 }
+
 .cp-inspection-card {
   width: 100%;
   overflow: hidden;
@@ -4195,15 +4784,19 @@ export default {
   border: 1px solid var(--gray-300);
   transition: all ease 0.3s;
 }
+
 .cp-inspection-card-no {
   width: 200px;
 }
+
 .cp-inspection-card-detail {
   width: 100%;
 }
+
 .cp-inspection-card-action {
   width: 50px;
 }
+
 .delete-inspection {
   display: flex;
   align-items: center;
@@ -4213,13 +4806,16 @@ export default {
   height: 40px;
   transition: all ease 0.3s;
 }
+
 .delete-inspection:hover {
   color: var(--base-error);
   background-color: var(--red-opacity-2);
 }
+
 .delete-inspection:hover .delete-inspection-icon {
   color: var(--base-error);
 }
+
 .col-user {
   display: flex;
   width: 100%;
@@ -4227,6 +4823,7 @@ export default {
   padding: 12px 0;
   gap: 16px;
 }
+
 .no-teams-list {
   display: flex;
   align-items: center;
@@ -4237,6 +4834,7 @@ export default {
   border: 1px solid var(--gray-300);
   background-color: var(--gray-opacity-1);
 }
+
 textarea {
   border: 1px solid var(--gray-100);
   border-radius: 4px;
@@ -4244,6 +4842,7 @@ textarea {
   padding: 12px;
   resize: none;
 }
+
 textarea:focus {
   outline: 2px solid var(--base-primary);
 }

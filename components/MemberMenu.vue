@@ -10,24 +10,41 @@
       left
     >
       <template #activator="{ on }">
-        <v-btn icon height="40" width="40" v-on="on">
-          <v-avatar color="primary" size="40">
+        <v-btn
+          icon
+          height="40"
+          width="40"
+          v-on="on"
+        >
+          <v-avatar
+            color="primary"
+            size="40"
+          >
             <v-img
               v-if="!internalAvatarPath"
               :src="require('@/assets/images/no-avatar.png')"
             />
-            <v-img v-else :src="internalAvatarPath" />
+            <v-img
+              v-else
+              :src="internalAvatarPath"
+            />
           </v-avatar>
         </v-btn>
       </template>
       <cp-card>
         <div class="layout-menu-header">
-          <v-avatar color="primary" size="40">
+          <v-avatar
+            color="primary"
+            size="40"
+          >
             <v-img
               v-if="!internalAvatarPath"
               :src="require('@/assets/images/no-avatar.png')"
             />
-            <v-img v-else :src="internalAvatarPath" />
+            <v-img
+              v-else
+              :src="internalAvatarPath"
+            />
           </v-avatar>
           <div>
             <div style="text-transform: capitalize; font-weight: 500">
@@ -45,14 +62,27 @@
         <v-divider />
         <ul>
           <li @click="dialogSetting = true">
-            <v-icon small class="li-icon">mdi-tune-vertical-variant</v-icon>
+            <v-icon
+              small
+              class="li-icon"
+            >
+              mdi-tune-vertical-variant
+            </v-icon>
             <span>ตั้งค่าบัญชีผู้ใช้</span>
           </li>
         </ul>
         <v-divider />
         <ul>
-          <li class="li-error" @click="dialogLogout = true">
-            <v-icon small class="li-icon-error">mdi-logout</v-icon>
+          <li
+            class="li-error"
+            @click="dialogLogout = true"
+          >
+            <v-icon
+              small
+              class="li-icon-error"
+            >
+              mdi-logout
+            </v-icon>
             <span>ออกจากระบบ</span>
           </li>
         </ul>
@@ -71,7 +101,11 @@
         <v-card-title>
           กรุณายืนยันการออกจากระบบ
           <v-spacer />
-          <v-btn icon class="mt-n4 mr-n4" @click="dialogLogout = false">
+          <v-btn
+            icon
+            class="mt-n4 mr-n4"
+            @click="dialogLogout = false"
+          >
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
@@ -85,7 +119,9 @@
               block
               @click="onLogOut()"
             >
-              <div class="cp-text-capitalize">ออกจากระบบ</div>
+              <div class="cp-text-capitalize">
+                ออกจากระบบ
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -119,14 +155,25 @@
             <v-col cols="5">
               <div class="text-center">
                 <div>
-                  <v-avatar v-if="!avatarSelect" size="150" color="primary">
+                  <v-avatar
+                    v-if="!avatarSelect"
+                    size="150"
+                    color="primary"
+                  >
                     <v-img
                       v-if="!internalAvatarPath"
                       :src="require('@/assets/images/no-avatar.png')"
                     />
-                    <v-img v-else :src="internalAvatarPath" />
+                    <v-img
+                      v-else
+                      :src="internalAvatarPath"
+                    />
                   </v-avatar>
-                  <v-avatar v-else size="150" color="primary">
+                  <v-avatar
+                    v-else
+                    size="150"
+                    color="primary"
+                  >
                     <v-img :src="avatarSelect" />
                   </v-avatar>
                 </div>
@@ -137,7 +184,9 @@
                   small
                   @click="onUploadAvatar(), (imgErrorMessage = '')"
                 >
-                  <div class="cp-text-capitalize">แก้ไข</div>
+                  <div class="cp-text-capitalize">
+                    แก้ไข
+                  </div>
                 </v-btn>
                 <div v-else>
                   <v-btn
@@ -147,7 +196,9 @@
                     small
                     @click="avatarSelect = ''"
                   >
-                    <div class="cp-text-capitalize">ยกเลิก</div>
+                    <div class="cp-text-capitalize">
+                      ยกเลิก
+                    </div>
                   </v-btn>
                   <v-btn
                     :disabled="modalLoading"
@@ -157,7 +208,9 @@
                     small
                     @click="onUploadAvatar(), (imgErrorMessage = '')"
                   >
-                    <div class="cp-text-capitalize">เปลี่ยน</div>
+                    <div class="cp-text-capitalize">
+                      เปลี่ยน
+                    </div>
                   </v-btn>
                   <div>
                     <v-btn
@@ -168,37 +221,53 @@
                       small
                       @click="uploadAvatar()"
                     >
-                      <div class="cp-text-capitalize">บันทึก</div>
+                      <div class="cp-text-capitalize">
+                        บันทึก
+                      </div>
                     </v-btn>
                   </div>
                 </div>
-                <div v-if="imgErrorMessage" class="cp-caption error--text pt-4">
+                <div
+                  v-if="imgErrorMessage"
+                  class="cp-caption error--text pt-4"
+                >
                   {{ imgErrorMessage }}
                 </div>
               </div>
             </v-col>
             <v-col cols="7">
               <div class="pb-6">
-                <div class="label-content">ชื่อ นามสกุล</div>
+                <div class="label-content">
+                  ชื่อ นามสกุล
+                </div>
                 <div class="py-2">
                   <span class="mr-1">{{ firstName ? firstName : 'Null' }}</span>
                   <span>{{ lastName ? lastName : 'Null' }}</span>
                 </div>
               </div>
               <div class="pb-6">
-                <div class="label-content">Code Name</div>
+                <div class="label-content">
+                  Code Name
+                </div>
                 <div class="py-2">
                   {{ codeName ? codeName : 'Null' }}
                 </div>
               </div>
               <div class="pb-6">
-                <div class="label-content">บทบาทในระบบ</div>
-                <div class="py-2" style="text-transform: capitalize">
+                <div class="label-content">
+                  บทบาทในระบบ
+                </div>
+                <div
+                  class="py-2"
+                  style="text-transform: capitalize"
+                >
                   {{ role ? role : 'Null' }}
                 </div>
               </div>
               <div class="pb-6">
-                <div class="label-content mb-2">รหัสผ่าน</div>
+                <div class="label-content mb-2">
+                  รหัสผ่าน
+                </div>
                 <a
                   @click="
                     ;(dialogResetPassword = true), (dialogSetting = false)
@@ -209,7 +278,9 @@
               </div>
               <v-divider />
               <div class="pt-6 pb-4">
-                <div class="label-content mb-2">บัญชี</div>
+                <div class="label-content mb-2">
+                  บัญชี
+                </div>
                 <a
                   class="error--text"
                   @click="
@@ -295,7 +366,9 @@
               color="primary"
               @click="validateResetPassword()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -327,7 +400,10 @@
         <v-card-text>
           <div class="pb-4">
             เพื่อดำเนินการลบบัญชี โปรดป้อน Code Name ของคุณเพื่อยืนยัน
-            <v-card outlined class="mt-4">
+            <v-card
+              outlined
+              class="mt-4"
+            >
               <v-card-text>
                 <div class="cp-title cp-semibold">
                   {{ codeName }}
@@ -360,7 +436,9 @@
               color="error"
               @click="validateDeleteAccount()"
             >
-              <div class="cp-text-capitalize">ลบบัญชี</div>
+              <div class="cp-text-capitalize">
+                ลบบัญชี
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -443,7 +521,7 @@ export default {
         this.$refs.formResetPassword.reset()
       }
     },
-    confirmPassword(newValue) {
+    confirmPassword() {
       if (this.confirmPasswordError !== '') {
         this.validResetPassword = true
         this.confirmPasswordError = ''
@@ -479,11 +557,10 @@ export default {
             const image = new Image()
             image.src = reader.result
             image.onload = () => {
-              if (image.width === image.height && image.width <= 500) {
+              if (image.width === image.height) {
                 this.avatarSelect = reader.result
               } else {
-                this.imgErrorMessage =
-                  'รูป Avatar จะต้องมีอัตราส่วน 1:1 และขนาดไม่เกิน 500x500 พิกเซลเท่านั้น'
+                this.imgErrorMessage = 'รูป Avatar จะต้องมีอัตราส่วน 1:1 เท่านั้น'
               }
             }
           }

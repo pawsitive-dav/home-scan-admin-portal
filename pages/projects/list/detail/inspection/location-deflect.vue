@@ -2,11 +2,17 @@
 <template>
   <div>
     <div class="d-flex cp-text-description cp-subtitle cp-medium">
-      <span class="mr-1" @click="$router.push('/projects/list')">
+      <span
+        class="mr-1"
+        @click="$router.push('/projects/list')"
+      >
         <cp-link> รายการโปรเจค </cp-link>
       </span>
       /
-      <span v-if="!locationDetail" class="mx-1 cp-text-disable">...</span>
+      <span
+        v-if="!locationDetail"
+        class="mx-1 cp-text-disable"
+      >...</span>
       <span
         v-else
         class="mx-1"
@@ -19,7 +25,10 @@
         </cp-link>
       </span>
       /
-      <span v-if="!locationDetail" class="mx-1 cp-text-disable">...</span>
+      <span
+        v-if="!locationDetail"
+        class="mx-1 cp-text-disable"
+      >...</span>
       <span
         v-else
         class="mx-1"
@@ -35,21 +44,42 @@
         </cp-link>
       </span>
       /
-      <span v-if="!locationDetail" class="mx-1 cp-text-disable">...</span>
-      <span v-else class="mx-1 cp-text-disable">
+      <span
+        v-if="!locationDetail"
+        class="mx-1 cp-text-disable"
+      >...</span>
+      <span
+        v-else
+        class="mx-1 cp-text-disable"
+      >
         {{ locationDetail ? locationDetail.location_name : '' }}
       </span>
     </div>
 
-    <v-row v-if="!locationDetail" class="mt-4">
+    <v-row
+      v-if="!locationDetail"
+      class="mt-4"
+    >
       <v-col cols="12">
-        <v-sheet color="grey lighten-2" width="300" height="30" />
-        <v-sheet color="grey lighten-2" width="500" height="20" class="mt-4" />
+        <v-sheet
+          color="grey lighten-2"
+          width="300"
+          height="30"
+        />
+        <v-sheet
+          color="grey lighten-2"
+          width="500"
+          height="20"
+          class="mt-4"
+        />
       </v-col>
     </v-row>
 
     <v-row class="mt-2">
-      <v-col v-if="locationDetail" cols="12">
+      <v-col
+        v-if="locationDetail"
+        cols="12"
+      >
         <div class="d-flex align-center cp-header-2 cp-bold mb-2">
           <div class="mr-2">
             {{ locationDetail.location_name }}
@@ -79,7 +109,9 @@
                 )
               "
             >
-              <v-icon left>mdi-arrow-left</v-icon>
+              <v-icon left>
+                mdi-arrow-left
+              </v-icon>
               ย้อนกลับ
             </v-btn>
             <v-spacer />
@@ -94,7 +126,11 @@
           <v-row v-if="locationDetail">
             <v-col cols="12">
               <div class="d-flex align-center">
-                <v-menu offset-y bottom right>
+                <v-menu
+                  offset-y
+                  bottom
+                  right
+                >
                   <template #activator="{ on, attrs }">
                     <v-btn
                       elevation="0"
@@ -103,33 +139,58 @@
                       v-bind="attrs"
                       v-on="on"
                     >
-                      <v-icon left>mdi-filter</v-icon>
+                      <v-icon left>
+                        mdi-filter
+                      </v-icon>
                       กรองข้อมูล
                     </v-btn>
                   </template>
-                  <v-list nav dense>
+                  <v-list
+                    nav
+                    dense
+                  >
                     <v-list-item @click="onSortDeflect('pass')">
                       <span class="mr-3">เรียงข้อมูลจาก</span>
                       <b class="success--text">ผ่าน</b>
-                      <v-icon small class="mx-2">mdi-arrow-right-thin</v-icon>
+                      <v-icon
+                        small
+                        class="mx-2"
+                      >
+                        mdi-arrow-right-thin
+                      </v-icon>
                       <b class="error--text">ไม่ผ่าน</b>
                     </v-list-item>
                     <v-list-item @click="onSortDeflect('not-pass')">
                       <span class="mr-3">เรียงข้อมูลจาก</span>
                       <b class="error--text">ไม่ผ่าน</b>
-                      <v-icon small class="mx-2">mdi-arrow-right-thin</v-icon>
+                      <v-icon
+                        small
+                        class="mx-2"
+                      >
+                        mdi-arrow-right-thin
+                      </v-icon>
                       <b class="success--text">ผ่าน</b>
                     </v-list-item>
                     <v-list-item @click="onSortDeflect('new')">
                       <span class="mr-3">เรียงข้อมูลจาก</span>
                       <b>ล่าสุด</b>
-                      <v-icon small class="mx-2">mdi-arrow-right-thin</v-icon>
+                      <v-icon
+                        small
+                        class="mx-2"
+                      >
+                        mdi-arrow-right-thin
+                      </v-icon>
                       <b>เก่าสุด</b>
                     </v-list-item>
                     <v-list-item @click="onSortDeflect('old')">
                       <span class="mr-3">เรียงข้อมูลจาก</span>
                       <b>เก่าสุด</b>
-                      <v-icon small class="mx-2">mdi-arrow-right-thin</v-icon>
+                      <v-icon
+                        small
+                        class="mx-2"
+                      >
+                        mdi-arrow-right-thin
+                      </v-icon>
                       <b>ล่าสุด</b>
                     </v-list-item>
                   </v-list>
@@ -144,16 +205,14 @@
                   @click="multipleDeleteDeflect.dialog = true"
                 >
                   <div class="cp-text-capitalize">
-                    <v-icon left>mdi-trash-can-outline</v-icon>
+                    <v-icon left>
+                      mdi-trash-can-outline
+                    </v-icon>
                     {{ selected.length }} Deflect
                   </div>
                 </v-btn>
 
                 <label
-                  v-if="
-                    locationDetail.report_status == 'in-progress' ||
-                    locationDetail.report_status == null
-                  "
                   class="custom-file-upload"
                 >
                   <input
@@ -163,8 +222,12 @@
                     accept="image/*"
                     multiple
                     @change="uploadImage"
-                  />
-                  <v-icon small left class="upload-icon">
+                  >
+                  <v-icon
+                    small
+                    left
+                    class="upload-icon"
+                  >
                     mdi-file-image-plus-outline
                   </v-icon>
                   <div class="cp-caption">สร้าง Deflect</div>
@@ -180,10 +243,7 @@
             :headers="headers"
             :items="deflectList"
             :footer-props="{ 'items-per-page-options': [10, 20, 50, 100] }"
-            :show-select="
-              locationDetail.report_status == 'in-progress' ||
-              locationDetail.report_status == null
-            "
+            show-select
             class="mt-6"
           >
             <template #item.image_path="{ item }">
@@ -218,14 +278,15 @@
             </template>
 
             <template #item.deflect_status="{ item }">
-              <v-card min-width="210" color="transparent" class="d-flex" flat>
+              <v-card
+                min-width="210"
+                color="transparent"
+                class="d-flex"
+                flat
+              >
                 <v-btn
-                  v-if="
-                    locationDetail.report_status == 'in-progress' ||
-                    locationDetail.report_status == null
-                  "
                   :color="
-                    item.deflect_status === 0 || item.deflect_status === null
+                    Number(item.deflect_status) === 0 || item.deflect_status === null
                       ? 'grey lighten-2'
                       : 'success'
                   "
@@ -238,40 +299,18 @@
                       1,
                       item.deflect_status
                     ),
-                      (item.deflect_status = 1)
+                    (item.deflect_status = 1)
                   "
                 >
-                  <div class="cp-body">ผ่าน</div>
-                </v-btn>
-                <v-sheet
-                  v-else
-                  :color="
-                    item.deflect_status === 0 || item.deflect_status === null
-                      ? 'grey lighten-2'
-                      : 'success'
-                  "
-                  width="100"
-                  height="36"
-                  class="d-flex align-center justify-center"
-                >
-                  <div
-                    v-if="
-                      item.deflect_status === 0 || item.deflect_status === null
-                    "
-                    class="cp-body"
-                  >
+                  <div class="cp-body">
                     ผ่าน
                   </div>
-                  <div v-else class="cp-body white--text">ผ่าน</div>
-                </v-sheet>
+                </v-btn>
+         
 
                 <v-btn
-                  v-if="
-                    locationDetail.report_status == 'in-progress' ||
-                    locationDetail.report_status == null
-                  "
                   :color="
-                    item.deflect_status === 1 || item.deflect_status === null
+                    Number(item.deflect_status) === 1 || item.deflect_status === null
                       ? 'grey lighten-2'
                       : 'error'
                   "
@@ -284,44 +323,42 @@
                       0,
                       item.deflect_status
                     ),
-                      (item.deflect_status = 0)
+                    (item.deflect_status = 0)
                   "
                 >
-                  <div class="cp-body">ไม่ผ่าน</div>
-                </v-btn>
-                <v-sheet
-                  v-else
-                  :color="
-                    item.deflect_status === 1 || item.deflect_status === null
-                      ? 'grey lighten-2'
-                      : 'error'
-                  "
-                  width="100"
-                  height="36"
-                  class="d-flex align-center justify-center"
-                >
-                  <div
-                    v-if="
-                      item.deflect_status === 1 || item.deflect_status === null
-                    "
-                    class="cp-body"
-                  >
+                  <div class="cp-body">
                     ไม่ผ่าน
                   </div>
-                  <div v-else class="cp-body white--text">ไม่ผ่าน</div>
-                </v-sheet>
+                </v-btn>
               </v-card>
             </template>
 
             <template #item.deflect_detail="{ item }">
-              <v-card min-width="150" max-width="150" color="transparent" flat>
-                <p v-if="item.deflect_detail">{{ item.deflect_detail }}</p>
-                <p v-else class="cp-text-disable">ยังไม่มีรายละเอียด</p>
+              <v-card
+                min-width="150"
+                max-width="150"
+                color="transparent"
+                flat
+              >
+                <p v-if="item.deflect_detail">
+                  {{ item.deflect_detail }}
+                </p>
+                <p
+                  v-else
+                  class="cp-text-disable"
+                >
+                  ยังไม่มีรายละเอียด
+                </p>
               </v-card>
             </template>
 
             <template #item.created_at="{ item }">
-              <v-card max-width="130" min-width="130" color="transparent" flat>
+              <v-card
+                max-width="130"
+                min-width="130"
+                color="transparent"
+                flat
+              >
                 <div>
                   {{ item.created_by.code_name }}
                 </div>
@@ -332,7 +369,12 @@
             </template>
 
             <template #item.update_status_at="{ item }">
-              <v-card max-width="130" min-width="130" color="transparent" flat>
+              <v-card
+                max-width="130"
+                min-width="130"
+                color="transparent"
+                flat
+              >
                 <div>
                   {{ item.update_status_by.code_name }}
                 </div>
@@ -345,10 +387,6 @@
             <template #item.actions="{ item }">
               <cp-col min="100">
                 <v-icon
-                  v-if="
-                    locationDetail.report_status == 'in-progress' ||
-                    locationDetail.report_status == null
-                  "
                   small
                   class="mr-2"
                   @click="
@@ -359,14 +397,7 @@
                 >
                   mdi-pencil-outline
                 </v-icon>
-                <v-icon v-else small disabled class="mr-2">
-                  mdi-pencil-off-outline
-                </v-icon>
                 <v-icon
-                  v-if="
-                    locationDetail.report_status == 'in-progress' ||
-                    locationDetail.report_status == null
-                  "
                   small
                   class="cp-vbtn-error ml-4"
                   @click="
@@ -376,14 +407,13 @@
                 >
                   mdi-trash-can-outline
                 </v-icon>
-                <v-icon v-else small disabled class="ml-4">
-                  mdi-delete-off-outline
-                </v-icon>
               </cp-col>
             </template>
 
             <template #no-data>
-              <div class="cp-text-disable">ไม่มีรายการ Deflect</div>
+              <div class="cp-text-disable">
+                ไม่มีรายการ Deflect
+              </div>
             </template>
           </v-data-table>
         </cp-card>
@@ -405,9 +435,18 @@
           <div v-if="imagePreview.imageData.image_name">
             {{ imagePreview.imageData.image_name }}
           </div>
-          <div v-else class="cp-text-disable">ไม่มีชื่อรูป</div>
+          <div
+            v-else
+            class="cp-text-disable"
+          >
+            ไม่มีชื่อรูป
+          </div>
           <v-spacer />
-          <v-btn icon class="mt-n4 mr-n4" @click="imagePreview.dialog = false">
+          <v-btn
+            icon
+            class="mt-n4 mr-n4"
+            @click="imagePreview.dialog = false"
+          >
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-card-title>
@@ -418,7 +457,7 @@
               width="100%"
               aspect-ratio="1.4"
               contain
-            ></v-img>
+            />
           </v-sheet>
         </v-card-text>
       </v-card>
@@ -436,7 +475,9 @@
         <v-card-title> ระบบกำลังดำเนินการ </v-card-title>
         <v-card-text>
           <v-row>
-            <v-col cols="3"> สร้าง Deflect </v-col>
+            <v-col cols="3">
+              สร้าง Deflect
+            </v-col>
             <v-col cols="9">
               <v-progress-linear
                 v-model="createDeflectProgress.createDeflect"
@@ -486,7 +527,9 @@
               color="error"
               @click="onSingleDeleteDeflect()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -521,7 +564,9 @@
             {{ selected.length }} รายการ
           </div>
           <v-row v-else>
-            <v-col cols="3"> ดำเนินการลบ </v-col>
+            <v-col cols="3">
+              ดำเนินการลบ
+            </v-col>
             <v-col cols="9">
               <v-progress-linear
                 v-model="multipleDeleteDeflect.deleteProgress"
@@ -547,7 +592,9 @@
               color="error"
               @click="onMultipleDeleteDeflect()"
             >
-              <div class="cp-text-capitalize">ยืนยัน</div>
+              <div class="cp-text-capitalize">
+                ยืนยัน
+              </div>
             </v-btn>
           </div>
         </v-card-text>
@@ -586,7 +633,7 @@
             rows="1"
             counter="50"
             maxlength="50"
-          ></v-textarea>
+          />
         </v-card-text>
         <v-card-actions class="py-4">
           <v-spacer />
@@ -598,7 +645,9 @@
             class="px-4"
             @click="onSaveDeflectDetail()"
           >
-            <div class="cp-text-capitalize">ยืนยันการแก้ไข</div>
+            <div class="cp-text-capitalize">
+              ยืนยันการแก้ไข
+            </div>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -943,10 +992,10 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.onGetDeflectList()
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.onNotify({
               notifyValue: true,
               type: 'error',
@@ -978,12 +1027,12 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.onGetDeflectList()
             this.editDetail.loading = false
             this.editDetail.dialog = false
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.editDetail.loading = false
             this.onNotify({
               notifyValue: true,
@@ -1057,7 +1106,7 @@ export default {
               },
             }
           )
-          .then(({ data }) => {
+          .then(() => {
             this.deleteDeflect.loading = false
             this.deleteDeflect.dialog = false
             this.onGetDeflectList()
@@ -1068,7 +1117,7 @@ export default {
               message: 'Deflect ถูกลบสำเร็จแล้ว',
             })
           })
-          .catch(({ response }) => {
+          .catch(() => {
             this.deleteDeflect.loading = false
             this.onNotify({
               notifyValue: true,
